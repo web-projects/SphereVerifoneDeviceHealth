@@ -41,21 +41,21 @@ namespace DEVICE_CORE
         static async Task Main(string[] args)
         {
             // setup working environment
-            (DirectoryInfo di, bool allowDebugCommands, Execution mode) = SetupEnvironment();
+            (DirectoryInfo di, bool allowDebugCommands, Execution executionMode, string healthCheckValidationMode) = SetupEnvironment();
 
-            if (mode == Execution.Undefined)
+            if (executionMode == Execution.Undefined)
             {
                 ParseArguments(args);
-                mode = ParseArguments(args);
+                executionMode = ParseArguments(args);
             }
 
             // Device discovery
             string pluginPath = Path.Combine(Environment.CurrentDirectory, "DevicePlugins");
 
             IDeviceApplication application = activator.Start(pluginPath);
-            await application.Run(mode).ConfigureAwait(false);
+            await application.Run(executionMode, healthCheckValidationMode).ConfigureAwait(false);
 
-            switch (mode)
+            switch (executionMode)
             {
                 case Execution.Console:
                 {
@@ -65,7 +65,7 @@ namespace DEVICE_CORE
 
                 case Execution.StandAlone:
                 {
-                    await StandAloneOperation(application);
+                    StandAloneOperation(application);
                     break;
                 }
             }
@@ -76,7 +76,7 @@ namespace DEVICE_CORE
             DeleteWorkingDirectory(di);
         }
 
-        static private (DirectoryInfo, bool, Execution) SetupEnvironment()
+        static private (DirectoryInfo, bool, Execution, string) SetupEnvironment()
         {
             DirectoryInfo di = null;
 
@@ -102,7 +102,16 @@ namespace DEVICE_CORE
             Console.WriteLine($"{Assembly.GetEntryAssembly().GetName().Name} - Version {Assembly.GetEntryAssembly().GetName().Version}");
             Console.WriteLine($"==========================================================================================\r\n");
 
-            return (di, AllowDebugCommands(configuration, 0), GetApplicationExecutionMode(configuration));
+
+            Execution executionMode = GetApplicationExecutionMode(configuration);
+            string healthCheckValidationMode = null;
+
+            if (executionMode == Execution.StandAlone)
+            {
+                healthCheckValidationMode = GetHealthCheckStatusSetup(configuration);
+            }
+
+            return (di, AllowDebugCommands(configuration, 0), executionMode, healthCheckValidationMode);
         }
 
         static Execution ParseArguments(string[] args)
@@ -113,6 +122,12 @@ namespace DEVICE_CORE
             {
                 switch (arg)
                 {
+                    case "/C":
+                    {
+                        mode = Execution.Console;
+                        break;
+                    }
+
                     case "/S":
                     {
                         mode = Execution.StandAlone;
@@ -273,13 +288,12 @@ namespace DEVICE_CORE
             Console.WriteLine("\r\nCOMMAND: [QUIT]\r\n");
         }
 
-        static async Task StandAloneOperation(IDeviceApplication application)
+        static void StandAloneOperation(IDeviceApplication application)
         {
             ConsoleKeyInfo keypressed = new ConsoleKeyInfo();
 
             while (keypressed.Key != ConsoleKey.Q)
             {
-                await application.Command(LinkDeviceActionType.GetSecurityConfiguration).ConfigureAwait(false);
                 keypressed = GetKeyPressed(false);
             }
         }
@@ -397,6 +411,11 @@ namespace DEVICE_CORE
             return GetExecutionMode(configuration.GetValue<string>("Application:ExecutionMode"));
         }
 
+        static string GetHealthCheckStatusSetup(IConfiguration configuration)
+        {
+            return configuration.GetSection("Devices:Verifone").GetValue<string>("HealthStatusValidationRequired");
+        }
+
         static ConsoleColor GetColor(string color) => color switch
         {
             "BLACK" => ConsoleColor.Black,
@@ -424,6 +443,5 @@ namespace DEVICE_CORE
             "Console" => Execution.Console,
             _ => Execution.Undefined
         };
-
     }
 }

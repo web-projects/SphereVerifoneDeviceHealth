@@ -1,5 +1,6 @@
 ﻿using Common.Config;
 using Common.Core.Patterns.Queuing;
+using Common.Helpers;
 using Common.XO.Device;
 using Common.XO.Requests;
 using DEVICE_SDK.Sdk;
@@ -71,6 +72,9 @@ namespace Devices.Core.State.Management
         public List<ICardDevice> AvailableCardDevices { get; private set; } = new List<ICardDevice>();
 
         public Execution ExecutionMode { get; private set; }
+
+        public string HealthCheckValidationMode { get; private set; }
+
         public string PluginPath { get; private set; }
 
         public List<ICardDevice> TargetDevices { get; private set; }
@@ -80,6 +84,8 @@ namespace Devices.Core.State.Management
         public ComPortEventHandler ComPortEventReceived { get; set; }
 
         public PriorityQueue<PriorityQueueDeviceEvents> PriorityQueue { get; set; }
+
+        public QueueEventHandler QueueEventReceived { get; set; }
 
         public StateActionRules StateActionRules { get; private set; }
 
@@ -112,6 +118,8 @@ namespace Devices.Core.State.Management
             SerialPortMonitor.ComportEventOccured += OnComPortEventReceivedAsync;
             SerialPortMonitor.StartMonitoring();
 
+            QueueEventReceived = OnQueueEventOcurred;
+
             StateActionRules = new StateActionRules();
 
             DeviceConfigurationProvider.InitializeConfiguration();
@@ -125,6 +133,8 @@ namespace Devices.Core.State.Management
         }
 
         public void SetExecutionMode(Execution mode) => (ExecutionMode) = (mode);
+
+        public void SetHealthCheckMode(string healthCheckValidationMode) => (HealthCheckValidationMode) = (healthCheckValidationMode);
 
         public void SetPluginPath(string pluginPath) => (PluginPath) = (pluginPath);
 
@@ -143,7 +153,7 @@ namespace Devices.Core.State.Management
             {
                 foreach (var device in targetDevices)
                 {
-                    device.SetDeviceSectionConfig(Configuration, ExecutionMode);
+                    device.SetDeviceSectionConfig(Configuration, ExecutionMode, HealthCheckValidationMode);
                 }
             }
         }
@@ -230,9 +240,15 @@ namespace Devices.Core.State.Management
                         {
                             if (device == deviceDisconnected)
                             {
-                                Console.WriteLine($"\n\nDEVICE: Comport unplugged: '{portNumber}', " +
+                                if (ExecutionMode == Execution.Console)
+                                {
+                                    Console.WriteLine($"\n\nDEVICE: Comport unplugged: '{portNumber}', " +
                                    $"DeviceType '{device.ManufacturerConfigID}', SerialNumber '{device.DeviceInformation?.SerialNumber}'");
-
+                                }
+                                else if (ExecutionMode == Execution.StandAlone)
+                                {
+                                    Console.WriteLine($"disconnectevent_{device.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}");
+                                }
                                 //PublishDeviceDisconnectEvent(device, portNumber);
                             }
                         }
@@ -256,7 +272,10 @@ namespace Devices.Core.State.Management
 
             if (comPortEvent == PortEventType.Insertion)
             {
-                Console.WriteLine($"DEVICE: Comport Plugged. ComportNumber '{portNumber}'. Detecting a new connection...");
+                if (ExecutionMode == Execution.Console)
+                {
+                    Console.WriteLine($"DEVICE: Comport Plugged. ComportNumber '{portNumber}'. Detecting a new connection...");
+                }
                 peformDeviceDiscovery = DisconnectAllDevices(comPortEvent, portNumber);
                 deviceNeedsToBeAdded = true;
             }
@@ -272,7 +291,10 @@ namespace Devices.Core.State.Management
             // only perform discovery when an existing device is disconnected or a new connection is detected
             if (peformDeviceDiscovery.Result)
             {
-                Console.WriteLine($"DEVICE: discovery in progress...");
+                if (ExecutionMode == Execution.Console)
+                {
+                    Console.WriteLine($"DEVICE: discovery in progress...");
+                }
 
                 // wait for USB driver to detach/reattach device
                 //await Task.Delay(Configuration.DeviceDiscoveryDelay * 1024);
@@ -296,6 +318,12 @@ namespace Devices.Core.State.Management
         private void OnQueueEventOcurred()
         {
             //TODO: EventChecker will handle PriorityQueue event dequeuing
+            PriorityQueueDeviceEvents queueRequest = PriorityQueue.Dequeue();
+
+            if (queueRequest.eventType == PriorityEventType.DeviceReport)
+            {
+                SetWorkflow(LinkDeviceActionType.GetSecurityConfiguration);
+            }
         }
 
         private void LogError(string message, object data)
@@ -522,9 +550,30 @@ namespace Devices.Core.State.Management
             }
             else
             {
-                Console.WriteLine($"SERIAL: ON PORT={TargetDevices[0].DeviceInformation?.ComPort} - CONNECTION OPEN");
-                Console.WriteLine($"DEVICE FOUND: name='{TargetDevices[0]?.Name}', model='{TargetDevices[0]?.DeviceInformation?.Model}', " +
+                if (ExecutionMode == Execution.Console)
+                {
+                    Console.WriteLine($"SERIAL: ON PORT={TargetDevices[0].DeviceInformation?.ComPort} - CONNECTION OPEN");
+                    Console.WriteLine($"DEVICE FOUND: name='{TargetDevices[0]?.Name}', model='{TargetDevices[0]?.DeviceInformation?.Model}', " +
                     $"serial='{TargetDevices[0]?.DeviceInformation?.SerialNumber}'\n");
+                }
+                else if (ExecutionMode == Execution.StandAlone)
+                {
+                    Console.WriteLine($"connectevent_{TargetDevices[0]?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}");
+
+                    // request device health report
+                    PriorityQueueDeviceEvents add = new PriorityQueueDeviceEvents(PriorityEventType.DeviceReport, (int)PriorityEventType.DeviceReport);
+                    PriorityQueue.Enqueue(add);
+
+                    Task.Run(() =>
+                    { 
+                        // Wait for transition to Manage State
+                        while (currentStateAction.WorkflowStateType != DeviceWorkflowState.Manage)
+                        {
+                            Task.Delay(100);
+                        }
+                        QueueEventReceived?.Invoke();
+                    });
+                }
             }
         }
 

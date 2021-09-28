@@ -49,7 +49,7 @@ namespace DEVICE_CORE.Application.Tests
             mockStateManager.Setup(e => e.LaunchWorkflow()).Callback(() => asyncManager.Trigger());
 
             subject.Initialize(someFakePath);
-            await subject.Run(Execution.Console);
+            await subject.Run(Execution.Console, null);
 
             Assert.True(asyncManager.WaitFor());
 

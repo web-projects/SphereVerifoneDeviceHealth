@@ -7,7 +7,8 @@ namespace Devices.Core.State.Management
 {
     public interface IDeviceStateManager : IDisposable
     {
-        void SetExecutionMode(Execution mode);
+        void SetExecutionMode(Execution executionMode);
+        void SetHealthCheckMode(string healthCheckValidationMode);
         void SetPluginPath(string pluginPath);
         void SetWorkflow(LinkDeviceActionType action);
         void LaunchWorkflow();

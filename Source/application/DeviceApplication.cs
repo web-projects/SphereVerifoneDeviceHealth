@@ -43,13 +43,14 @@ namespace DEVICE_CORE
             }
         }
 
-        public async Task Run(Execution mode)
+        public async Task Run(Execution executionMode, string healthCheckValidationMode)
         {
-            ExecutionMode = mode;
+            ExecutionMode = executionMode;
             DeviceStateManager.SetPluginPath(pluginPath);
-            DeviceStateManager.SetExecutionMode(mode);
+            DeviceStateManager.SetExecutionMode(ExecutionMode);
+            DeviceStateManager.SetHealthCheckMode(healthCheckValidationMode);
             _ = Task.Run(() => DeviceStateManager.LaunchWorkflow());
-            await WaitForManageWorkflow(true);
+            await WaitForManageWorkflow(ExecutionMode == Execution.Console);
             DeviceStateManager.DisplayDeviceStatus();
         }
 

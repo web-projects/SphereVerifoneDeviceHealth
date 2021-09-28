@@ -28,7 +28,7 @@ namespace Devices.Common.Interfaces
 
         bool IsConnected(object request);
 
-        void SetDeviceSectionConfig(DeviceSection config, Execution mode);
+        void SetDeviceSectionConfig(DeviceSection config, Execution executionMode, string healthCheckValidationMode);
 
         List<DeviceInformation> DiscoverDevices();
 

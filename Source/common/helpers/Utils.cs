@@ -32,6 +32,12 @@ namespace Common.Helpers
             }
         }
 
+        public static String GetTimeStampToSeconds()
+        {
+            DateTime value = DateTime.Now;
+            return value.ToString("yyyyMMddHHmmss");
+        }
+
         public static String GetTimeStamp()
         {
             DateTime value = DateTime.Now;

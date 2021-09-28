@@ -7,7 +7,7 @@ namespace DEVICE_CORE
     public interface IDeviceApplication
     {
         void Initialize(string pluginPath);
-        Task Run(Execution mode);
+        Task Run(Execution executionMode, string healthCheckValidationMode);
         Task Command(LinkDeviceActionType action);
         void Shutdown();
     }

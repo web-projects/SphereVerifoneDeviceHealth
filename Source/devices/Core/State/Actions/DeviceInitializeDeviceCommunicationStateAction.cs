@@ -176,7 +176,7 @@ namespace Devices.Core.State.Actions
 
             if (Controller.TargetDevices != null)
             {
-                foreach (var device in Controller.TargetDevices)
+                foreach (ICardDevice device in Controller.TargetDevices)
                 {
                     //Controller.LoggingClient.LogInfoAsync($"Device found: name='{device.Name}', model={device.DeviceInformation.Model}, " +
                     //    $"serial={device.DeviceInformation.SerialNumber}");
