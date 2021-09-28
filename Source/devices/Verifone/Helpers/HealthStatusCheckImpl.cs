@@ -5,6 +5,8 @@ namespace Devices.Verifone.Helpers
 {
     public static class HealthStatusCheckImpl
     {
+        public const string Device24HourReboot = "07:00:00";
+
         public enum HealthStatusValidationRequired
         {
             [StringValue("NOTREQUIRED")]

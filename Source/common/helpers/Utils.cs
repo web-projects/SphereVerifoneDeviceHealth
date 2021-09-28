@@ -32,13 +32,19 @@ namespace Common.Helpers
             }
         }
 
-        public static String GetTimeStampToSeconds()
+        public static string GetUTCTimeStampToMinutes()
+        {
+            DateTime value = DateTime.UtcNow;
+            return value.ToString("MMddyyyyHHmm");
+        }
+
+        public static string GetTimeStampToSeconds()
         {
             DateTime value = DateTime.Now;
             return value.ToString("yyyyMMddHHmmss");
         }
 
-        public static String GetTimeStamp()
+        public static string GetTimeStamp()
         {
             DateTime value = DateTime.Now;
             return value.ToString("yyyyMMdd-HH:mm:ss.fff");

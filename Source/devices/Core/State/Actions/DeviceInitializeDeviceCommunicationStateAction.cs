@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.XO.Responses;
+using System.Linq;
+using static Devices.Common.SupportedDevices;
 
 namespace Devices.Core.State.Actions
 {
@@ -20,11 +22,43 @@ namespace Devices.Core.State.Actions
 
         public DeviceInitializeDeviceCommunicationStateAction(IDeviceStateController _) : base(_) { }
 
-        public override bool DoDeviceDiscovery()
+        private bool DeviceIsSupported(List<IPaymentDevice> availableCardDevices, IPaymentDevice targetDevice)
         {
-            LastException = new StateException("device recovery is needed");
-            _ = Error(this);
-            return true;
+            bool result = false;
+            DeviceSection deviceSection = Controller.Configuration;
+
+            foreach (IPaymentDevice device in availableCardDevices)
+            {
+                if (string.Equals(device.ManufacturerConfigID, targetDevice.ManufacturerConfigID, StringComparison.OrdinalIgnoreCase))
+                {
+                    switch (device.ManufacturerConfigID)
+                    {
+                        case IdTechManufacturerId:
+                            break;
+
+                        case VerifoneManufacturerId:
+                            result = (deviceSection.Verifone.SupportedDevices.Select(x => x).Where(y => y.Equals($"{targetDevice.DeviceInformation.Manufacturer}-{targetDevice.DeviceInformation.Model}", StringComparison.OrdinalIgnoreCase)).Count() == 1);
+                            break;
+
+                        case SimulatorManufacturerId:
+                            result = (deviceSection.Simulator.SupportedDevices.Select(x => x).Where(y => y.Equals($"{targetDevice.DeviceInformation.Manufacturer}-{targetDevice.DeviceInformation.Model}", StringComparison.OrdinalIgnoreCase)).Count() == 1);
+                            break;
+
+                        case NullDeviceManufacturerId:
+                            break;
+
+                        //case MagTekManufacturerId:
+                        //    result = deviceSection.MagTekConfig != null;  //We don't need name validation until we have more than 1 model
+                        //    break;
+
+                        default:
+                            //_ = Controller.LoggingClient.LogErrorAsync($"Unable to obtain a device reference");
+                            break;
+                    }
+                    break;
+                }
+            }
+            return result;
         }
 
         public override Task DoWork()
@@ -115,7 +149,7 @@ namespace Devices.Core.State.Actions
                             // This occurs when a USB device repowers the USB interface and the virtual port is open.
                             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
                             IDeviceCancellationBroker cancellationBroker = Controller.GetCancellationBroker();
-                            var timeoutPolicy = cancellationBroker.ExecuteWithTimeoutAsync<List<LinkErrorValue>>(
+                            Task<Polly.PolicyResult<List<LinkErrorValue>>> timeoutPolicy = cancellationBroker.ExecuteWithTimeoutAsync<List<LinkErrorValue>>(
                                 _ => device.Probe(deviceConfig, deviceInfo, out success),
                                 Timeouts.DALDeviceRecoveryTimeout,
                                 cancellationTokenSource.Token);
