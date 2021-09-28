@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SphereVerifoneDeviceHealth": {
+      "commandName": "Project",
+      "commandLineArgs": "/C"
+    }
+  }
+}
