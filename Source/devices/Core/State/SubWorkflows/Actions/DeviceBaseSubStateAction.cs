@@ -64,13 +64,15 @@ namespace Devices.Core.State.SubWorkflows.Actions
             }
         }
 
-        public virtual void ComportEventReceived(PortEventType comPortEvent, string portNumber)
+        public virtual Task ComportEventReceived(PortEventType comPortEvent, string portNumber)
         {
             if (comPortEvent == PortEventType.Removal)
             {
                 //_ = Controller.LoggingClient.LogInfoAsync($"device event received: {comPortEvent} on port: {portNumber}");
                 Console.WriteLine($"device event received: {comPortEvent} on port: {portNumber}");
             }
+
+            return Task.CompletedTask;
         }
 
         public void BuildSubworkflowErrorResponse(LinkRequest linkRequest, DeviceInformation deviceInformation, DeviceEvent deviceEvent)

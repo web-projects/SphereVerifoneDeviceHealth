@@ -304,13 +304,13 @@ namespace Devices.Core.State.SubWorkflows.Management
             }
         }
 
-        public void ComportEventReceived(PortEventType comPortEvent, string portNumber)
+        public async Task ComportEventReceived(PortEventType comPortEvent, string portNumber)
         {
             DeviceEvent = (comPortEvent == PortEventType.Insertion) ? DeviceEvent.DevicePlugged : DeviceEvent.DeviceUnplugged;
 
             if (currentStateAction?.LaunchRules?.DisableRequestPreProcessing ?? false)
             {
-                currentStateAction?.ComportEventReceived(comPortEvent, portNumber);
+                await currentStateAction?.ComportEventReceived(comPortEvent, portNumber);
             }
             else
             {

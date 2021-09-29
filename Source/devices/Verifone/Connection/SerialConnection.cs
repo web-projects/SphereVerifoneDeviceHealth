@@ -267,8 +267,6 @@ namespace Devices.Verifone.Connection
 
                             if (IsChainedMessageResponse)
                             {
-                                //Logger.debug($"{BitConverter.ToString(buffer, 0, readLength).Replace("-", "")}");
-
                                 // SW1-SW2-LRC in trailing edge of data frame
                                 if (buffer[readLength - 3] == 0x90 && buffer[readLength - 2] == 0x00)
                                 {

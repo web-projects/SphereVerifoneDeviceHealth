@@ -30,5 +30,6 @@ namespace Devices.Core.State.Interfaces
         ISubStateManagerProvider GetSubStateManagerProvider();
         IDeviceCancellationBroker GetCancellationBroker();
         void DeviceStatusUpdate();
+        void PublishDeviceConnectEvent(ICardDevice device, string portNumber);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Common.XO.Requests;
 using Devices.Common;
 using Devices.Common.Helpers;
+using System.Threading.Tasks;
 
 namespace Devices.Core.State.Interfaces
 {
@@ -8,6 +9,6 @@ namespace Devices.Core.State.Interfaces
     {
         void RequestReceived(LinkRequest request);
         void DeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation);
-        void ComportEventReceived(PortEventType comPortEvent, string portNumber);
+        Task ComportEventReceived(PortEventType comPortEvent, string portNumber);
     }
 }

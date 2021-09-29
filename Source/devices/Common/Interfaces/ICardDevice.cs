@@ -11,7 +11,7 @@ namespace Devices.Common.Interfaces
     public delegate void PublishEvent(EventTypeType eventType, EventCodeType eventCode,
             List<LinkDeviceResponse> devices, object request, string message);
 
-    public interface ICardDevice : ICloneable
+    public interface ICardDevice : ICloneable, IDisposable
     {
         event PublishEvent PublishEvent;
         event DeviceEventHandler DeviceEventOccured;

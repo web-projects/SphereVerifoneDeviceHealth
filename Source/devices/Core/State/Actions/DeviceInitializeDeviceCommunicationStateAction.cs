@@ -53,6 +53,7 @@ namespace Devices.Core.State.Actions
 
                         default:
                             //_ = Controller.LoggingClient.LogErrorAsync($"Unable to obtain a device reference");
+                            System.Diagnostics.Debug.WriteLine("Unable to obtain a device reference");
                             break;
                     }
                     break;
@@ -216,6 +217,14 @@ namespace Devices.Core.State.Actions
                     //    $"serial={device.DeviceInformation.SerialNumber}");
                     //Console.WriteLine($"DEVICE FOUND: name='{device.Name}', model='{device?.DeviceInformation?.Model}', " +
                     //    $"serial='{device?.DeviceInformation?.SerialNumber}'\n");
+
+                    // Always publish device connect event
+                    //if (!string.Equals(device.DeviceInformation.Manufacturer, Controller.TargetDevices[0].DeviceInformation?.Manufacturer, StringComparison.CurrentCultureIgnoreCase) ||
+                    //    !string.Equals(device.DeviceInformation.SerialNumber, Controller.TargetDevices[0].DeviceInformation?.SerialNumber, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        Controller.PublishDeviceConnectEvent(device, device.DeviceInformation.ComPort);
+                    }
+
                     Controller.DeviceStatusUpdate();
                     device.DeviceSetIdle();
                 }

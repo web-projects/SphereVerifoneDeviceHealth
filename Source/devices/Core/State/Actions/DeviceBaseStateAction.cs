@@ -67,10 +67,11 @@ namespace Devices.Core.State.Actions
             // multiple devices
         }
 
-        public void ComportEventReceived(PortEventType comPortEvent, string portNumber)
+        public Task ComportEventReceived(PortEventType comPortEvent, string portNumber)
         {
             // TODO: currently the workflow supports a single TargetDevice - we need to enhance the code to support 
             // multiple devices
+            return Task.CompletedTask;
         }
 
         public ICardDevice FindTargetDevice(LinkDeviceIdentifier deviceIdentifier)

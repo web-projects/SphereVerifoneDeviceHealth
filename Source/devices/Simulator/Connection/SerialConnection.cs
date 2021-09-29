@@ -206,11 +206,13 @@ namespace Devices.Simulator.Connection
 
         protected virtual void Dispose(bool disposing)
         {
-            Stream internalSerialStream = (Stream)serialPort.GetType()
-                .GetField("internalSerialStream", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(serialPort);
-
-            GC.SuppressFinalize(serialPort);
-            GC.SuppressFinalize(internalSerialStream);
+            if (serialPort != null)
+            {
+                Stream internalSerialStream = (Stream)serialPort.GetType()
+                    .GetField("internalSerialStream", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(serialPort);
+                GC.SuppressFinalize(serialPort);
+                GC.SuppressFinalize(internalSerialStream);
+            }
             GC.SuppressFinalize(this);
         }
 
