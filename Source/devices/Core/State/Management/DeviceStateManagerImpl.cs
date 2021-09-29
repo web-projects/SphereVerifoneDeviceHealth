@@ -1,5 +1,6 @@
 ﻿using Common.Config;
 using Common.Core.Patterns.Queuing;
+using Common.Execution;
 using Common.Helpers;
 using Common.XO.Device;
 using Common.XO.Requests;
@@ -107,6 +108,8 @@ namespace Devices.Core.State.Management
         public event OnWorkflowStopped WorkflowStopped;
         public event OnRequestReceived RequestReceived;
 
+        private ProgressBar DeviceProgressBar = new ProgressBar();
+
         public DeviceStateManagerImpl()
         {
             PriorityQueue = new PriorityQueue<PriorityQueueDeviceEvents>();
@@ -132,6 +135,19 @@ namespace Devices.Core.State.Management
             stateActionController = DeviceStateActionControllerProvider.GetStateActionController(this);
 
             InitializeConnectorEvents();
+        }
+
+        public void StartProgressReporting()
+        {
+            // display progress bar
+            Task.Run(async () =>
+            {
+                while (DeviceProgressBar != null)
+                {
+                    DeviceProgressBar.UpdateBar();
+                    await Task.Delay(1000);
+                }
+            });
         }
 
         public void SetExecutionMode(Execution mode) => (ExecutionMode) = (mode);
@@ -500,12 +516,12 @@ namespace Devices.Core.State.Management
                     PriorityQueueDeviceEvents add = new PriorityQueueDeviceEvents(PriorityEventType.DeviceReport, (int)PriorityEventType.DeviceReport);
                     PriorityQueue.Enqueue(add);
 
-                    Task.Run(() =>
+                    Task.Run(async () =>
                     {
                         // Wait for transition to Manage State
                         while (currentStateAction.WorkflowStateType != DeviceWorkflowState.Manage)
                         {
-                            Task.Delay(100);
+                            await Task.Delay(100);
                         }
                         QueueEventReceived?.Invoke();
                     });
@@ -527,6 +543,12 @@ namespace Devices.Core.State.Management
                 //        linkDeviceResponses, LastGetStatus, message);
                 //}
             }
+
+            if (DeviceProgressBar != null)
+            {
+                DeviceProgressBar.Dispose();
+                DeviceProgressBar = null;
+            }
         }
 
         internal void PublishDeviceDisconnectEvent(ICardDevice device, string portNumber)
@@ -537,6 +559,21 @@ namespace Devices.Core.State.Management
                 {
                     Console.WriteLine($"disconnectevent_{TargetDevices[0]?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}\r\n");
                 }
+
+                if (DeviceProgressBar is null)
+                {
+                    DeviceProgressBar = new ProgressBar();
+                }
+
+                // display progress bar
+                Task.Run(async () =>
+                {
+                    while (DeviceProgressBar != null)
+                    {
+                        DeviceProgressBar.UpdateBar();
+                        await Task.Delay(1000);
+                    }
+                });
 
                 //string message = $"Comport unplugged: '{portNumber}', DeviceType: '{device.ManufacturerConfigID}', Model: '{device.DeviceInformation?.Model}', SerialNumber: '{device.DeviceInformation?.SerialNumber}'";
                 //LinkDeviceResponse deviceInfo = new LinkDeviceResponse()
@@ -850,6 +887,7 @@ namespace Devices.Core.State.Management
                 messageReceived.Dispose();
                 messageReceived = null;
             }
+            DeviceProgressBar.Dispose();
         }
 
         #endregion --- state machine management ---

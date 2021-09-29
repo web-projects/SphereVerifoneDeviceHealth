@@ -1,5 +1,4 @@
-﻿
-using Common.Helpers;
+﻿using Common.Helpers;
 
 namespace Common.Execution
 {

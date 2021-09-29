@@ -49,6 +49,7 @@ namespace DEVICE_CORE
             DeviceStateManager.SetPluginPath(pluginPath);
             DeviceStateManager.SetExecutionMode(ExecutionMode);
             DeviceStateManager.SetHealthCheckMode(healthCheckValidationMode);
+            DeviceStateManager.StartProgressReporting();
             _ = Task.Run(() => DeviceStateManager.LaunchWorkflow());
             await WaitForManageWorkflow(ExecutionMode == Execution.Console);
             DeviceStateManager.DisplayDeviceStatus();

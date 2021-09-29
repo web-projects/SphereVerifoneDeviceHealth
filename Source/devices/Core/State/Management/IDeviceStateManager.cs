@@ -15,5 +15,6 @@ namespace Devices.Core.State.Management
         DeviceWorkflowState GetCurrentWorkflow();
         void StopWorkflow();
         void DisplayDeviceStatus();
+        void StartProgressReporting();
     }
 }
