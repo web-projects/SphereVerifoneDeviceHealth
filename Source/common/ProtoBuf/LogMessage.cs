@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace IPA5.XO.ProtoBuf {
+namespace XO.ProtoBuf {
 
   /// <summary>Holder for reflection information generated from log_message.proto</summary>
   public static partial class LogMessageReflection {
@@ -50,8 +50,8 @@ namespace IPA5.XO.ProtoBuf {
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::IPA5.XO.ProtoBuf.LogMessage), global::IPA5.XO.ProtoBuf.LogMessage.Parser, new[]{ "Parameters", "LogLevel", "Message", "Exception", "AssemblyName", "LogType", "MessageName", "SessionId", "LinkRequestMessageId", "LinkActionMessageId", "TimeStamp", "Input", "Output", "Class", "Function", "Target", "Source", "HostName", "StatusCode", "StatusType" }, null, new[]{ typeof(global::IPA5.XO.ProtoBuf.LogMessage.Types.LogLevel), typeof(global::IPA5.XO.ProtoBuf.LogMessage.Types.LogType) }, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::IPA5.XO.ProtoBuf.LogBatch), global::IPA5.XO.ProtoBuf.LogBatch.Parser, new[]{ "LogMessages" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::XO.ProtoBuf.LogMessage), global::XO.ProtoBuf.LogMessage.Parser, new[]{ "Parameters", "LogLevel", "Message", "Exception", "AssemblyName", "LogType", "MessageName", "SessionId", "LinkRequestMessageId", "LinkActionMessageId", "TimeStamp", "Input", "Output", "Class", "Function", "Target", "Source", "HostName", "StatusCode", "StatusType" }, null, new[]{ typeof(global::XO.ProtoBuf.LogMessage.Types.LogLevel), typeof(global::XO.ProtoBuf.LogMessage.Types.LogType) }, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::XO.ProtoBuf.LogBatch), global::XO.ProtoBuf.LogBatch.Parser, new[]{ "LogMessages" }, null, null, null, null)
           }));
     }
     #endregion
@@ -66,7 +66,7 @@ namespace IPA5.XO.ProtoBuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::IPA5.XO.ProtoBuf.LogMessageReflection.Descriptor.MessageTypes[0]; }
+      get { return global::XO.ProtoBuf.LogMessageReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -123,9 +123,9 @@ namespace IPA5.XO.ProtoBuf {
 
     /// <summary>Field number for the "log_level" field.</summary>
     public const int LogLevelFieldNumber = 2;
-    private global::IPA5.XO.ProtoBuf.LogMessage.Types.LogLevel logLevel_ = global::IPA5.XO.ProtoBuf.LogMessage.Types.LogLevel.Trace;
+    private global::XO.ProtoBuf.LogMessage.Types.LogLevel logLevel_ = global::XO.ProtoBuf.LogMessage.Types.LogLevel.Trace;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::IPA5.XO.ProtoBuf.LogMessage.Types.LogLevel LogLevel {
+    public global::XO.ProtoBuf.LogMessage.Types.LogLevel LogLevel {
       get { return logLevel_; }
       set {
         logLevel_ = value;
@@ -167,9 +167,9 @@ namespace IPA5.XO.ProtoBuf {
 
     /// <summary>Field number for the "log_type" field.</summary>
     public const int LogTypeFieldNumber = 6;
-    private global::IPA5.XO.ProtoBuf.LogMessage.Types.LogType logType_ = global::IPA5.XO.ProtoBuf.LogMessage.Types.LogType.Exception;
+    private global::XO.ProtoBuf.LogMessage.Types.LogType logType_ = global::XO.ProtoBuf.LogMessage.Types.LogType.Exception;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::IPA5.XO.ProtoBuf.LogMessage.Types.LogType LogType {
+    public global::XO.ProtoBuf.LogMessage.Types.LogType LogType {
       get { return logType_; }
       set {
         logType_ = value;
@@ -393,11 +393,11 @@ namespace IPA5.XO.ProtoBuf {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= Parameters.GetHashCode();
-      if (LogLevel != global::IPA5.XO.ProtoBuf.LogMessage.Types.LogLevel.Trace) hash ^= LogLevel.GetHashCode();
+      if (LogLevel != global::XO.ProtoBuf.LogMessage.Types.LogLevel.Trace) hash ^= LogLevel.GetHashCode();
       if (Message.Length != 0) hash ^= Message.GetHashCode();
       if (Exception.Length != 0) hash ^= Exception.GetHashCode();
       if (AssemblyName.Length != 0) hash ^= AssemblyName.GetHashCode();
-      if (LogType != global::IPA5.XO.ProtoBuf.LogMessage.Types.LogType.Exception) hash ^= LogType.GetHashCode();
+      if (LogType != global::XO.ProtoBuf.LogMessage.Types.LogType.Exception) hash ^= LogType.GetHashCode();
       if (MessageName.Length != 0) hash ^= MessageName.GetHashCode();
       if (SessionId.Length != 0) hash ^= SessionId.GetHashCode();
       if (LinkRequestMessageId.Length != 0) hash ^= LinkRequestMessageId.GetHashCode();
@@ -426,7 +426,7 @@ namespace IPA5.XO.ProtoBuf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
       parameters_.WriteTo(output, _map_parameters_codec);
-      if (LogLevel != global::IPA5.XO.ProtoBuf.LogMessage.Types.LogLevel.Trace) {
+      if (LogLevel != global::XO.ProtoBuf.LogMessage.Types.LogLevel.Trace) {
         output.WriteRawTag(16);
         output.WriteEnum((int) LogLevel);
       }
@@ -442,7 +442,7 @@ namespace IPA5.XO.ProtoBuf {
         output.WriteRawTag(42);
         output.WriteString(AssemblyName);
       }
-      if (LogType != global::IPA5.XO.ProtoBuf.LogMessage.Types.LogType.Exception) {
+      if (LogType != global::XO.ProtoBuf.LogMessage.Types.LogType.Exception) {
         output.WriteRawTag(48);
         output.WriteEnum((int) LogType);
       }
@@ -508,7 +508,7 @@ namespace IPA5.XO.ProtoBuf {
     public int CalculateSize() {
       int size = 0;
       size += parameters_.CalculateSize(_map_parameters_codec);
-      if (LogLevel != global::IPA5.XO.ProtoBuf.LogMessage.Types.LogLevel.Trace) {
+      if (LogLevel != global::XO.ProtoBuf.LogMessage.Types.LogLevel.Trace) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) LogLevel);
       }
       if (Message.Length != 0) {
@@ -520,7 +520,7 @@ namespace IPA5.XO.ProtoBuf {
       if (AssemblyName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AssemblyName);
       }
-      if (LogType != global::IPA5.XO.ProtoBuf.LogMessage.Types.LogType.Exception) {
+      if (LogType != global::XO.ProtoBuf.LogMessage.Types.LogType.Exception) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) LogType);
       }
       if (MessageName.Length != 0) {
@@ -575,7 +575,7 @@ namespace IPA5.XO.ProtoBuf {
         return;
       }
       parameters_.Add(other.parameters_);
-      if (other.LogLevel != global::IPA5.XO.ProtoBuf.LogMessage.Types.LogLevel.Trace) {
+      if (other.LogLevel != global::XO.ProtoBuf.LogMessage.Types.LogLevel.Trace) {
         LogLevel = other.LogLevel;
       }
       if (other.Message.Length != 0) {
@@ -587,7 +587,7 @@ namespace IPA5.XO.ProtoBuf {
       if (other.AssemblyName.Length != 0) {
         AssemblyName = other.AssemblyName;
       }
-      if (other.LogType != global::IPA5.XO.ProtoBuf.LogMessage.Types.LogType.Exception) {
+      if (other.LogType != global::XO.ProtoBuf.LogMessage.Types.LogType.Exception) {
         LogType = other.LogType;
       }
       if (other.MessageName.Length != 0) {
@@ -646,7 +646,7 @@ namespace IPA5.XO.ProtoBuf {
             break;
           }
           case 16: {
-            LogLevel = (global::IPA5.XO.ProtoBuf.LogMessage.Types.LogLevel) input.ReadEnum();
+            LogLevel = (global::XO.ProtoBuf.LogMessage.Types.LogLevel) input.ReadEnum();
             break;
           }
           case 26: {
@@ -662,7 +662,7 @@ namespace IPA5.XO.ProtoBuf {
             break;
           }
           case 48: {
-            LogType = (global::IPA5.XO.ProtoBuf.LogMessage.Types.LogType) input.ReadEnum();
+            LogType = (global::XO.ProtoBuf.LogMessage.Types.LogType) input.ReadEnum();
             break;
           }
           case 58: {
@@ -762,7 +762,7 @@ namespace IPA5.XO.ProtoBuf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::IPA5.XO.ProtoBuf.LogMessageReflection.Descriptor.MessageTypes[1]; }
+      get { return global::XO.ProtoBuf.LogMessageReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -790,11 +790,11 @@ namespace IPA5.XO.ProtoBuf {
 
     /// <summary>Field number for the "logMessages" field.</summary>
     public const int LogMessagesFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::IPA5.XO.ProtoBuf.LogMessage> _repeated_logMessages_codec
-        = pb::FieldCodec.ForMessage(10, global::IPA5.XO.ProtoBuf.LogMessage.Parser);
-    private readonly pbc::RepeatedField<global::IPA5.XO.ProtoBuf.LogMessage> logMessages_ = new pbc::RepeatedField<global::IPA5.XO.ProtoBuf.LogMessage>();
+    private static readonly pb::FieldCodec<global::XO.ProtoBuf.LogMessage> _repeated_logMessages_codec
+        = pb::FieldCodec.ForMessage(10, global::XO.ProtoBuf.LogMessage.Parser);
+    private readonly pbc::RepeatedField<global::XO.ProtoBuf.LogMessage> logMessages_ = new pbc::RepeatedField<global::XO.ProtoBuf.LogMessage>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::IPA5.XO.ProtoBuf.LogMessage> LogMessages {
+    public pbc::RepeatedField<global::XO.ProtoBuf.LogMessage> LogMessages {
       get { return logMessages_; }
     }
 

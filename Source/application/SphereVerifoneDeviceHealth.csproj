@@ -269,6 +269,7 @@
     <ProjectReference Include="..\config\Config.csproj" />
     <ProjectReference Include="..\devices\common\Devices.Common.csproj" />
     <ProjectReference Include="..\devices\Core\Devices.Core.csproj" />
+    <ProjectReference Include="..\devices\Devices.Sdk\Devices.Sdk.csproj" />
     <ProjectReference Include="..\devices\sdk\Devices.SDK.csproj" />
   </ItemGroup>
 

@@ -138,7 +138,7 @@ namespace Devices.Core.State.Actions
                             };
                             SerialDeviceConfig serialConfig = new SerialDeviceConfig
                             {
-                                CommPortName = Controller.Configuration.DefaultDevicePort
+                                CommPortName = deviceInfo.ComPort
                             };
                             deviceConfig.SetSerialDeviceConfig(serialConfig);
 

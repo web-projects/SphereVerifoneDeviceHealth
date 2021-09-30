@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\common\execution\Execution.csproj" />
+    <ProjectReference Include="..\..\common\ProtoBuf\ProtoBuf.csproj" />
     <ProjectReference Include="..\..\common\xo\XO.csproj" />
   </ItemGroup>
 

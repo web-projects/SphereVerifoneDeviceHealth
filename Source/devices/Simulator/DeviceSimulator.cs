@@ -98,7 +98,7 @@ namespace Devices.Simulator
 
         }
 
-        public void SetDeviceSectionConfig(DeviceSection config, Execution exectutionMode, string healthCheckValidationMode)
+        public void SetDeviceSectionConfig(DeviceSection config, Execution exectutionMode, string healthCheckValidationMode, ConsoleColor fore, ConsoleColor back)
         {
 
         }

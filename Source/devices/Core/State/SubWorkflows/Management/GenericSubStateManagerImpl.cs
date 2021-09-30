@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.XO.Requests;
+using Common.Execution;
 
 namespace Devices.Core.State.SubWorkflows.Management
 {
@@ -44,6 +45,8 @@ namespace Devices.Core.State.SubWorkflows.Management
         private IDeviceSubStateAction currentStateAction;
         private IDeviceSubStateActionController stateActionController;
 
+        private ProgressBar DeviceProgressBar = new ProgressBar();
+
         public event OnSubWorkflowCompleted SubWorkflowComplete;
         public event OnSubWorkflowError SubWorkflowError;
 
@@ -54,6 +57,12 @@ namespace Devices.Core.State.SubWorkflows.Management
 
         public void Dispose()
         {
+            if (DeviceProgressBar != null)
+            {
+                DeviceProgressBar.Dispose();
+                DeviceProgressBar = null;
+            }
+
             TeardownGlobalExecutionTimer();
             TeardownCancellationTokenSource();
         }
@@ -93,6 +102,16 @@ namespace Devices.Core.State.SubWorkflows.Management
 
             if (launchOptions != null)
             {
+                // display progress bar
+                Task.Run(async () =>
+                {
+                    while (DeviceProgressBar != null)
+                    {
+                        DeviceProgressBar.UpdateBar();
+                        await Task.Delay(100);
+                    }
+                });
+
                 if (launchOptions.StateObject != null)
                 {
                     SaveState(launchOptions.StateObject);

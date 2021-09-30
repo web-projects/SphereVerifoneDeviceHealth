@@ -1,4 +1,5 @@
 ﻿using Common.Helpers;
+using Common.LoggerManager;
 using Common.XO.Private;
 using Devices.Common.AppConfig;
 using Devices.Common.Config;
@@ -30,6 +31,8 @@ namespace Devices.Verifone.Helpers
             DEBITPINKEY,
         }
 
+        public ConsoleColor ScreenForeColor;
+        public ConsoleColor ScreenBackColor;
         public Execution ExecutionMode { get; set; }
         public string HealthCheckValidationMode { get; set; }
         public string SigningMethodActive { get; set; }
@@ -43,6 +46,9 @@ namespace Devices.Verifone.Helpers
         public (string Timestamp, int VipaResponse) Reboot24Hour { get; set; }
         public (KernelConfigurationObject kernelConfigurationObject, int VipaResponse) EmvKernelInformation { get; set; }
         #endregion --- attributes ---
+
+        private void DeviceErrorLogger(string message) =>
+            Logger.error($"{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Manufacturer}[{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Port}]: {{{message}}}");
 
         public int ProcessHealthFromExectutionMode() => ExecutionMode switch
         {
@@ -100,7 +106,15 @@ namespace Devices.Verifone.Helpers
         /// <returns></returns>
         private bool SetHealthCheckValidation()
         {
-            (bool vipaResponseNotValid, bool emptyKSN) configTest  = (ConfigTest.VipaResponse != (int)VipaSW1SW2Codes.Success, string.IsNullOrEmpty(ConfigTest.securityConfigurationObject.SRedCardKSN));
+            // PROD SLOT IS ALWAYS REQUIRED
+            (bool vipaResponseNotValid, bool emptyKSN) configProd = (ConfigProd.VipaResponse != (int)VipaSW1SW2Codes.Success, string.IsNullOrEmpty(ConfigProd.securityConfigurationObject.SRedCardKSN));
+            if (configProd.vipaResponseNotValid || configProd.emptyKSN)
+            {
+                DeviceErrorLogger($"ADEPRODKEY: VIPA-RESPONSE-VALID={configProd.vipaResponseNotValid}, KSN-IS-NULL={configProd.emptyKSN}");
+                return false;
+            }
+
+            (bool vipaResponseNotValid, bool emptyKSN) configTest = (ConfigTest.VipaResponse != (int)VipaSW1SW2Codes.Success, string.IsNullOrEmpty(ConfigTest.securityConfigurationObject.SRedCardKSN));
             (bool vipaResponseNotValid, bool emptyKSN) configDebitPin = (ConfigDebitPin.VipaResponse != (int)VipaSW1SW2Codes.Success, string.IsNullOrEmpty(ConfigDebitPin.securityConfigurationObject.OnlinePinKSN));
 
             List<HealthStatusValidationRequired> requiredChecks = GetHealthConfigurationHealthStatus();
@@ -115,6 +129,7 @@ namespace Devices.Verifone.Helpers
                         {
                             if (configTest.vipaResponseNotValid || configTest.emptyKSN)
                             {
+                                DeviceErrorLogger($"ADETESTKEY: VIPA-RESPONSE-VALID={configTest.vipaResponseNotValid}, KSN-IS-NULL={configTest.emptyKSN}");
                                 return false;
                             }
                             break;
@@ -123,6 +138,7 @@ namespace Devices.Verifone.Helpers
                         {
                             if (configDebitPin.vipaResponseNotValid || configDebitPin.emptyKSN)
                             {
+                                DeviceErrorLogger($"DEBITPINTKEY: VIPA-RESPONSE-VALID={configDebitPin.vipaResponseNotValid}, KSN-IS-NULL={configDebitPin.emptyKSN}");
                                 return false;
                             }
                             break;
@@ -296,58 +312,91 @@ namespace Devices.Verifone.Helpers
             return 0;
         }
 
+        private StringBuilder DisplayHealthStatus(bool configIsValid)
+        {
+            StringBuilder healthStatus = new StringBuilder($"{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}");
+            healthStatus.Append($"_{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.FirmwareVersion.Replace(".", "")}");
+            healthStatus.Append($"_{(configIsValid ? "PASS" : "FAIL")}");
+            healthStatus.Append($"_{Utils.GetTimeStampToSeconds()}");
+
+            ConsoleColor foreColor = Console.ForegroundColor;
+            ConsoleColor backColor = Console.BackgroundColor;
+            Console.BackgroundColor = ScreenBackColor;
+            Console.ForegroundColor = ScreenForeColor;
+            Console.WriteLine(healthStatus);
+            Console.BackgroundColor = backColor;
+            Console.ForegroundColor = foreColor;
+
+            return healthStatus;
+        }
+
         private int StandAloneModeOutput()
         {
             // VALIDATION STEP 1: PROD-KEYS + DEBIT PIN KEYS
             bool configIsValid = SetHealthCheckValidation();
 
             // VALIDATION STEP 2: package version tags [VIPA, EMV, IDLE]
-            if (configIsValid)
+            if (string.IsNullOrEmpty(VipaVersions.DALCdbData.VIPAVersion.DateCode) ||
+                string.IsNullOrEmpty(VipaVersions.DALCdbData.EMVVersion.DateCode) ||
+                string.IsNullOrEmpty(VipaVersions.DALCdbData.IdleVersion.DateCode))
             {
-                configIsValid = !string.IsNullOrEmpty(VipaVersions.DALCdbData.VIPAVersion.DateCode) &&
-                    !string.IsNullOrEmpty(VipaVersions.DALCdbData.EMVVersion.DateCode) &&
-                    !string.IsNullOrEmpty(VipaVersions.DALCdbData.IdleVersion.DateCode);
+                if (string.IsNullOrEmpty(VipaVersions.DALCdbData.VIPAVersion.DateCode))
+                {
+                    DeviceErrorLogger($"BUNDLE VIPA_VER DATECODE: IS-EMPTY");
+                    configIsValid = false;
+                }
+                if (string.IsNullOrEmpty(VipaVersions.DALCdbData.EMVVersion.DateCode))
+                {
+                    DeviceErrorLogger($"BUNDLE EMV_VER DATECODE: IS-EMPTY");
+                    configIsValid = false;
+                }
+                if (string.IsNullOrEmpty(VipaVersions.DALCdbData.IdleVersion.DateCode))
+                {
+                    DeviceErrorLogger($"BUNDLE IDLE_VER DATECODE: IS-EMPTY");
+                    configIsValid = false;
+                }
             }
 
             // VALIDATION STEP 3: time injection (UTC)
-            if (configIsValid)
+            if (string.IsNullOrEmpty(TerminalDateTime.Timestamp))
             {
-                if (string.IsNullOrEmpty(TerminalDateTime.Timestamp))
-                {
-                    configIsValid = false;
-                }
-                else
-                {
-                    string TerminalDateTimeStamp = string.Format("{1}{2}{0}{3}{4}",
-                        TerminalDateTime.Timestamp.Substring(0, 4), TerminalDateTime.Timestamp.Substring(4, 2), TerminalDateTime.Timestamp.Substring(6, 2),
-                        TerminalDateTime.Timestamp.Substring(8, 2), TerminalDateTime.Timestamp.Substring(10, 2));
-                    string utcDateTimeStamp = Utils.GetUTCTimeStampToMinutes();
+                DeviceErrorLogger($"TERMINAL TIMESTAMP: IS-EMPTY");
+                configIsValid = false;
+            }
+            else
+            {
+                string terminalDateTimeStamp = string.Format("{1}{2}{0}{3}{4}",
+                    TerminalDateTime.Timestamp.Substring(0, 4), TerminalDateTime.Timestamp.Substring(4, 2), TerminalDateTime.Timestamp.Substring(6, 2),
+                    TerminalDateTime.Timestamp.Substring(8, 2), TerminalDateTime.Timestamp.Substring(10, 2));
+                string utcDateTimeStamp = Utils.GetUTCTimeStampToMinutes();
 
-                    configIsValid = TerminalDateTimeStamp.Equals(utcDateTimeStamp);
+                // avoid clock drift in timestamp comparison
+                configIsValid = terminalDateTimeStamp.Substring(0, terminalDateTimeStamp.Length - 1).Equals(utcDateTimeStamp.Substring(0, utcDateTimeStamp.Length - 1));
+                if (!configIsValid)
+                {
+                    DeviceErrorLogger($"TERMINAL TIMESTAMP {terminalDateTimeStamp}: DOES NOT MATCH UTC TIME={utcDateTimeStamp}");
                 }
             }
 
             // VALIDATION STEP 4: 24 hour reboot set to 07:00
-            if (configIsValid)
+            if (string.IsNullOrEmpty(Reboot24Hour.Timestamp))
             {
-                if (string.IsNullOrEmpty(TerminalDateTime.Timestamp))
+                configIsValid = false;
+                DeviceErrorLogger($"TERMINAL 24-HOUR REBOOT: IS-EMPTY");
+            }
+            else
+            {
+                string rebootDateTimeStamp = string.Format("{0}:{1}:{2}",
+                            Reboot24Hour.Timestamp.Substring(0, 2), Reboot24Hour.Timestamp.Substring(2, 2), Reboot24Hour.Timestamp.Substring(4, 2));
+                configIsValid = rebootDateTimeStamp.Equals(HealthStatusCheckImpl.Device24HourReboot);
+                if (!configIsValid)
                 {
-                    configIsValid = false;
-                }
-                else
-                {
-                    string rebootDateTimeStamp = string.Format("{0}:{1}:{2}",
-                                Reboot24Hour.Timestamp.Substring(0, 2), Reboot24Hour.Timestamp.Substring(2, 2), Reboot24Hour.Timestamp.Substring(4, 2));
-                    configIsValid = rebootDateTimeStamp.Equals(HealthStatusCheckImpl.Device24HourReboot);
+                    DeviceErrorLogger($"TERMINAL 24-HOUR REBOOT {rebootDateTimeStamp}: DOES NOT MATCH EXPECTED TIME={HealthStatusCheckImpl.Device24HourReboot}");
                 }
             }
 
-            StringBuilder healthStatus = new StringBuilder($"{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}");
-            healthStatus.Append($"_{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.FirmwareVersion.Replace(".", "")}");
-            healthStatus.Append($"_{(configIsValid ? "PASS" : "FAIL")}");
-            healthStatus.Append($"_{Utils.GetTimeStampToSeconds()}");
-
-            Console.WriteLine(healthStatus);
+            // output status to console window
+            StringBuilder healthStatus = DisplayHealthStatus(configIsValid);
 
             string fileName = healthStatus + ".txt";
             string fileDir = Directory.GetCurrentDirectory() + "\\logs";
@@ -507,6 +556,8 @@ namespace Devices.Verifone.Helpers
                         streamWriter.WriteLine($"DEVICE: {signature} BUNDLE(S) __: VIPA{vipaDateCode}, EMV{emvDateCode}, IDLE{idleDateCode}");
                     }
                 }
+
+                streamWriter.WriteLine($"DEVICE: HEALTH VALIDATION _: {(configIsValid ? "PASS" : "FAIL")}");
 
                 streamWriter.Close();
             }

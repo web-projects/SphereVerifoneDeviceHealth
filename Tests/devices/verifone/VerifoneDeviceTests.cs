@@ -17,7 +17,7 @@ using Xunit;
 using static Common.Execution.Modes;
 using static Common.XO.Responses.LinkEventResponse;
 using static Devices.Verifone.VIPA.VIPAImpl;
-using static IPA5.XO.ProtoBuf.LogMessage.Types;
+using static XO.ProtoBuf.LogMessage.Types;
 using EventCodeType = Common.XO.Responses.LinkEventResponse.EventCodeType;
 
 namespace Devices.Verifone.Tests

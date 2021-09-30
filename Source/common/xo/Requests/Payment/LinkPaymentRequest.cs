@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using XO.Device;
 
 namespace Common.XO.Requests.Payment
 {
@@ -25,7 +26,7 @@ namespace Common.XO.Requests.Payment
         public LinkPaymentRequestedTenderType RequestedTenderType { get; set; }
         //public LinkPaymentAttributes PaymentAttributes { get; set; }
         //public LinkWorkflowControls WorkflowControls { get; set; }
-        //public LinkCardWorkflowControls CardWorkflowControls { get; set; }
+        public LinkCardWorkflowControls CardWorkflowControls { get; set; }
         //public LinkIIASRequest IIASRequest { get; set; }
         public bool? Demo { get; set; }
     }

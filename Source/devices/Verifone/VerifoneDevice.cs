@@ -1,5 +1,4 @@
-﻿using Common.Helpers;
-using Common.LoggerManager;
+﻿using Common.LoggerManager;
 using Common.XO.Device;
 using Common.XO.Private;
 using Common.XO.Requests;
@@ -19,12 +18,9 @@ using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Composition;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using static Common.Execution.Modes;
-using static Devices.Verifone.Helpers.HealthStatusCheckImpl;
 using StringValueAttribute = Devices.Common.Helpers.StringValueAttribute;
 
 namespace Devices.Verifone
@@ -79,6 +75,9 @@ namespace Devices.Verifone
         bool EnableHMAC { get; set; }
 
         LinkDALRequestIPA5Object VipaVersions { get; set; }
+
+        private ConsoleColor screenForeColor;
+        private ConsoleColor screenBackColor;
 
         public VerifoneDevice()
         {
@@ -170,12 +169,15 @@ namespace Devices.Verifone
 
         }
 
-        public void SetDeviceSectionConfig(DeviceSection config, Execution executionMode, string healthCheckValidationMode)
+        public void SetDeviceSectionConfig(DeviceSection config, Execution executionMode, string healthCheckValidationMode, ConsoleColor fore, ConsoleColor back)
         {
             deviceSectionConfig = config;
 
             ExecutionMode = executionMode;
             HealthCheckValidationMode = healthCheckValidationMode;
+
+            screenForeColor = fore;
+            screenBackColor = back;
 
             // BUNDLE Signatures
             GetBundleSignatures();
@@ -525,8 +527,10 @@ namespace Devices.Verifone
                         // REPORT IT
                         HealthStatusCheckImpl healthStatusCheckImpl = new HealthStatusCheckImpl
                         {
+                            ScreenForeColor = screenForeColor,
+                            ScreenBackColor = screenBackColor,
                             ExecutionMode = ExecutionMode,
-                            HealthCheckValidationMode = HealthCheckValidationMode, 
+                            HealthCheckValidationMode = HealthCheckValidationMode,
                             SigningMethodActive = SigningMethodActive,
                             DeviceSectionConfig = deviceSectionConfig,
                             VipaVersions = VipaVersions,

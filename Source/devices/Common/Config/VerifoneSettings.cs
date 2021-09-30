@@ -15,6 +15,7 @@ namespace Devices.Common.Config
         public string ConfigurationPackageActive { get; set; } = VerifoneSettingsConfigurationPackages.Epic;
         public string ActiveCustomerId { get; set; } = CustomerIdentifers.Default;
         public string Reboot24Hour { get; set; } = "020000";
+        public bool AllowPreSwipeMode { get; set; }
     }
 
     /// <summary>

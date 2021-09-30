@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Common.XO.Requests.Payment;
+using Common.XO.Requests.DAL;
 
 namespace Common.XO.Requests
 {

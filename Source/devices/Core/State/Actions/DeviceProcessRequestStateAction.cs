@@ -1,14 +1,14 @@
-﻿using Devices.Core.State.Enums;
+﻿using Common.XO.Device;
+using Common.XO.Requests;
+using Devices.Common.Helpers;
+using Devices.Common.Interfaces;
+using Devices.Core.State.Enums;
 using Devices.Core.State.Interfaces;
 using Devices.Core.State.SubWorkflows;
-using Devices.Common.Interfaces;
-using LinkRequestExtensions;
 using Newtonsoft.Json;
 using System;
-using System.Threading.Tasks;
-using Common.XO.Device;
-using Common.XO.Requests;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Devices.Core.State.Actions
 {

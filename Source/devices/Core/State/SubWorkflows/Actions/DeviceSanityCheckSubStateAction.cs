@@ -1,13 +1,12 @@
-﻿using Devices.Common.Helpers;
+﻿using Common.XO.Device;
+using Common.XO.Requests;
+using Devices.Common.Helpers;
 using Devices.Common.Interfaces;
-using LinkRequestExtensions;
 using Devices.Core.Cancellation;
 using Devices.Core.Helpers;
 using Devices.Core.State.Enums;
 using System;
 using System.Threading.Tasks;
-using Common.XO.Device;
-using Common.XO.Requests;
 using static Devices.Core.State.Enums.DeviceSubWorkflowState;
 
 namespace Devices.Core.State.SubWorkflows.Actions

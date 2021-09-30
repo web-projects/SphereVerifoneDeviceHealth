@@ -1,4 +1,5 @@
 ﻿using Common.XO.Requests;
+using Common.XO.Requests.DAL;
 using Common.XO.Requests.Payment;
 using Devices.Common.Helpers;
 using System.Collections.Generic;

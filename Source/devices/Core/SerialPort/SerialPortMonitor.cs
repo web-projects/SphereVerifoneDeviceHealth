@@ -43,6 +43,9 @@ namespace Devices.Core.SerialPort
                 //Detect insertion/removal of all USB devices
                 WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_USBHub'");   //Query every 1 second for device remove/insert
                 WqlEventQuery deviceRemovalQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_USBHub'");
+                //WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT* FROM Win32_DeviceChangeEvent WHERE EventType = 2");
+                //WqlEventQuery deviceRemovalQuery = new WqlEventQuery("SELECT* FROM Win32_DeviceChangeEvent WHERE EventType = 3");
+
                 arrival = new ManagementEventWatcher(deviceArrivalQuery);
                 removal = new ManagementEventWatcher(deviceRemovalQuery);
 

@@ -4,7 +4,7 @@ using Common.Execution;
 using Common.Helpers;
 using Common.XO.Device;
 using Common.XO.Requests;
-using DEVICE_SDK.Sdk;
+using Devices.Sdk;
 using Devices.Common;
 using Devices.Common.AppConfig;
 using Devices.Common.Helpers;
@@ -108,6 +108,9 @@ namespace Devices.Core.State.Management
         public event OnWorkflowStopped WorkflowStopped;
         public event OnRequestReceived RequestReceived;
 
+        private ConsoleColor screenForeColor = Console.ForegroundColor;
+        private ConsoleColor screenBackColor = Console.BackgroundColor;
+
         private ProgressBar DeviceProgressBar = new ProgressBar();
 
         public DeviceStateManagerImpl()
@@ -145,7 +148,7 @@ namespace Devices.Core.State.Management
                 while (DeviceProgressBar != null)
                 {
                     DeviceProgressBar.UpdateBar();
-                    await Task.Delay(1000);
+                    await Task.Delay(100);
                 }
             });
         }
@@ -171,7 +174,7 @@ namespace Devices.Core.State.Management
             {
                 foreach (var device in targetDevices)
                 {
-                    device.SetDeviceSectionConfig(Configuration, ExecutionMode, HealthCheckValidationMode);
+                    device.SetDeviceSectionConfig(Configuration, ExecutionMode, HealthCheckValidationMode, screenForeColor, screenBackColor);
                 }
             }
         }
@@ -300,6 +303,8 @@ namespace Devices.Core.State.Management
 
         private async Task OnComPortEventReceivedAsync(PortEventType comPortEvent, string portNumber)
         {
+            Debug.WriteLine($"Comport event received={comPortEvent.ToString()}");
+
             bool peformDeviceDiscovery = false;
 
             if (comPortEvent == PortEventType.Insertion)
@@ -508,6 +513,12 @@ namespace Devices.Core.State.Management
         {
             if (device != null)
             {
+                if (DeviceProgressBar != null)
+                {
+                    DeviceProgressBar.Dispose();
+                    DeviceProgressBar = null;
+                }
+
                 if (ExecutionMode == Execution.StandAlone)
                 {
                     Console.WriteLine($"connectevent_{TargetDevices[0]?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}");
@@ -543,12 +554,6 @@ namespace Devices.Core.State.Management
                 //        linkDeviceResponses, LastGetStatus, message);
                 //}
             }
-
-            if (DeviceProgressBar != null)
-            {
-                DeviceProgressBar.Dispose();
-                DeviceProgressBar = null;
-            }
         }
 
         internal void PublishDeviceDisconnectEvent(ICardDevice device, string portNumber)
@@ -571,7 +576,7 @@ namespace Devices.Core.State.Management
                     while (DeviceProgressBar != null)
                     {
                         DeviceProgressBar.UpdateBar();
-                        await Task.Delay(1000);
+                        await Task.Delay(100);
                     }
                 });
 

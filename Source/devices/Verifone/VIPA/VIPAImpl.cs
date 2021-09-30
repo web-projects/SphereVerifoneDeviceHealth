@@ -2084,6 +2084,8 @@ namespace Devices.Verifone.VIPA
                         LinkDeviceResponse = deviceResponse,
                         LinkDALRequestIPA5Object = cardInfo
                     };
+                    deviceInfoObject.LinkDeviceResponse.Port = DeviceInformation.ComPort;
+
                     DeviceIdentifier?.TrySetResult((deviceInfoObject, responseCode));
                 }
                 //else

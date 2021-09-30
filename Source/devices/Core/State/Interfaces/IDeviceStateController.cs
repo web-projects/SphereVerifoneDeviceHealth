@@ -1,5 +1,5 @@
 ﻿using Common.Core.Patterns.Queuing;
-using DEVICE_SDK.Sdk;
+using Devices.Sdk;
 using Devices.Common.AppConfig;
 using Devices.Common.Interfaces;
 using Devices.Core.Cancellation;
