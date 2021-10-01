@@ -142,20 +142,7 @@ namespace Devices.Core.State.Management
 
         public void StartProgressReporting()
         {
-            if (AppExecConfig.DisplayProgressBar)
-            {
-                DeviceProgressBar = new ProgressBar();
-
-                // display progress bar
-                Task.Run(async () =>
-                {
-                    while (DeviceProgressBar != null)
-                    {
-                        DeviceProgressBar.UpdateBar();
-                        await Task.Delay(100);
-                    }
-                });
-            }
+            StartProgressBar();
         }
 
         public void SetAppConfig(AppExecConfig appConfig) => (AppExecConfig) = (appConfig);
@@ -518,11 +505,7 @@ namespace Devices.Core.State.Management
         {
             if (device != null)
             {
-                if (DeviceProgressBar != null)
-                {
-                    DeviceProgressBar.Dispose();
-                    DeviceProgressBar = null;
-                }
+                StopProgressBar();
 
                 if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
                 {
@@ -570,23 +553,7 @@ namespace Devices.Core.State.Management
                     Console.WriteLine($"disconnectevent_{TargetDevices[0]?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}\r\n");
                 }
 
-                if (AppExecConfig.DisplayProgressBar)
-                {
-                    if (DeviceProgressBar is null)
-                    {
-                        DeviceProgressBar = new ProgressBar();
-                    }
-
-                    // display progress bar
-                    Task.Run(async () =>
-                    {
-                        while (DeviceProgressBar != null)
-                        {
-                            DeviceProgressBar.UpdateBar();
-                            await Task.Delay(100);
-                        }
-                    });
-                }
+                StartProgressBar();
 
                 //string message = $"Comport unplugged: '{portNumber}', DeviceType: '{device.ManufacturerConfigID}', Model: '{device.DeviceInformation?.Model}', SerialNumber: '{device.DeviceInformation?.SerialNumber}'";
                 //LinkDeviceResponse deviceInfo = new LinkDeviceResponse()
@@ -894,16 +861,41 @@ namespace Devices.Core.State.Management
 
         public void Dispose()
         {
+            StopProgressBar();
+
             StopWorkflow();
+
             if (messageReceived != null)
             {
                 messageReceived.Dispose();
                 messageReceived = null;
             }
+        }
 
+        private void StartProgressBar()
+        {
+            if (AppExecConfig.DisplayProgressBar)
+            {
+                DeviceProgressBar = new ProgressBar();
+
+                // display progress bar
+                Task.Run(async () =>
+                {
+                    while (DeviceProgressBar != null)
+                    {
+                        DeviceProgressBar.UpdateBar();
+                        await Task.Delay(ProgressBar.TimeDelay);
+                    }
+                });
+            }
+        }
+
+        private void StopProgressBar()
+        {
             if (DeviceProgressBar != null)
             {
                 DeviceProgressBar.Dispose();
+                DeviceProgressBar = null;
             }
         }
 

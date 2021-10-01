@@ -45,7 +45,7 @@ namespace Devices.Core.State.SubWorkflows.Management
         private IDeviceSubStateAction currentStateAction;
         private IDeviceSubStateActionController stateActionController;
 
-        private ProgressBar DeviceProgressBar = new ProgressBar();
+        private ProgressBar DeviceProgressBar = null;
 
         public event OnSubWorkflowCompleted SubWorkflowComplete;
         public event OnSubWorkflowError SubWorkflowError;
@@ -57,11 +57,7 @@ namespace Devices.Core.State.SubWorkflows.Management
 
         public void Dispose()
         {
-            if (DeviceProgressBar != null)
-            {
-                DeviceProgressBar.Dispose();
-                DeviceProgressBar = null;
-            }
+            StopProgressBar();
 
             TeardownGlobalExecutionTimer();
             TeardownCancellationTokenSource();
@@ -102,15 +98,7 @@ namespace Devices.Core.State.SubWorkflows.Management
 
             if (launchOptions != null)
             {
-                // display progress bar
-                Task.Run(async () =>
-                {
-                    while (DeviceProgressBar != null)
-                    {
-                        DeviceProgressBar.UpdateBar();
-                        await Task.Delay(100);
-                    }
-                });
+                StartProgressBar();
 
                 if (launchOptions.StateObject != null)
                 {
@@ -279,6 +267,30 @@ namespace Devices.Core.State.SubWorkflows.Management
         }
 
         #endregion --- Cancellation Tokens ---
+
+        private void StartProgressBar()
+        {
+            DeviceProgressBar = new ProgressBar();
+
+            // display progress bar
+            Task.Run(async () =>
+            {
+                while (DeviceProgressBar != null)
+                {
+                    DeviceProgressBar.UpdateBar();
+                    await Task.Delay(ProgressBar.TimeDelay);
+                }
+            });
+        }
+
+        private void StopProgressBar()
+        {
+            if (DeviceProgressBar != null)
+            {
+                DeviceProgressBar.Dispose();
+                DeviceProgressBar = null;
+            }
+        }
 
         protected void RaiseOnWorkflowComplete() => SubWorkflowComplete?.Invoke();
 

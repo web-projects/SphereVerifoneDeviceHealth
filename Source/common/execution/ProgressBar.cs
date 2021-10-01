@@ -22,6 +22,9 @@ namespace Common.Execution
         private ConsoleColor foreColor;
         private ConsoleColor backColor;
 
+        // delay between screen updates
+        public const int TimeDelay = 500;
+		
         public ProgressBar()
         {
             barProgress = 0;
