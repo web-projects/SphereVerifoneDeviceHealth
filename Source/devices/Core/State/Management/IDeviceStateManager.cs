@@ -1,14 +1,13 @@
 ﻿using Common.XO.Requests;
 using Devices.Core.State.Enums;
+using Execution;
 using System;
-using static Common.Execution.Modes;
 
 namespace Devices.Core.State.Management
 {
     public interface IDeviceStateManager : IDisposable
     {
-        void SetExecutionMode(Execution executionMode);
-        void SetHealthCheckMode(string healthCheckValidationMode);
+        void SetAppConfig(AppExecConfig appConfig);
         void SetPluginPath(string pluginPath);
         void SetWorkflow(LinkDeviceActionType action);
         void LaunchWorkflow();
@@ -16,5 +15,6 @@ namespace Devices.Core.State.Management
         void StopWorkflow();
         void DisplayDeviceStatus();
         void StartProgressReporting();
+        bool ProgressBarIsActive();
     }
 }

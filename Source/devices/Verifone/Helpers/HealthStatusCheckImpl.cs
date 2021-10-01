@@ -1,17 +1,20 @@
-﻿using Common.Helpers;
+﻿using Common.Execution;
+using Common.Helpers;
 using Common.LoggerManager;
 using Common.XO.Private;
+using Devices.Common;
 using Devices.Common.AppConfig;
 using Devices.Common.Config;
 using Devices.Common.Helpers;
 using Devices.Verifone.VIPA;
 using Devices.Verifone.VIPA.Helpers;
+using Execution;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static Common.Execution.Modes;
+using System.Threading.Tasks;
 using static System.ExtensionMethods;
 
 namespace Devices.Verifone.Helpers
@@ -31,10 +34,10 @@ namespace Devices.Verifone.Helpers
             DEBITPINKEY,
         }
 
-        public ConsoleColor ScreenForeColor;
-        public ConsoleColor ScreenBackColor;
-        public Execution ExecutionMode { get; set; }
-        public string HealthCheckValidationMode { get; set; }
+        public event DeviceEventHandler DeviceEventOccured;
+
+        public DeviceInformation DeviceInformation { get; set; }
+        public AppExecConfig AppExecConfig { get; set; }
         public string SigningMethodActive { get; set; }
         public DeviceSection DeviceSectionConfig { get; set; }
         public LinkDALRequestIPA5Object VipaVersions { get; set; }
@@ -50,10 +53,10 @@ namespace Devices.Verifone.Helpers
         private void DeviceErrorLogger(string message) =>
             Logger.error($"{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Manufacturer}[{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Port}]: {{{message}}}");
 
-        public int ProcessHealthFromExectutionMode() => ExecutionMode switch
+        public int ProcessHealthFromExectutionMode() => AppExecConfig.ExecutionMode switch
         {
-            Execution.Console => ConsoleModeOutput(),
-            Execution.StandAlone => StandAloneModeOutput(),
+            Modes.Execution.Console => ConsoleModeOutput(),
+            Modes.Execution.StandAlone => StandAloneModeOutput(),
             _ => throw new Exception("HEALTH CHECK: undefined execution mode")
         };
 
@@ -76,9 +79,9 @@ namespace Devices.Verifone.Helpers
         {
             List<HealthStatusValidationRequired> requiredChecks = new List<HealthStatusValidationRequired>();
 
-            if (ExecutionMode == Execution.StandAlone && !string.IsNullOrEmpty(HealthCheckValidationMode))
+            if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone && !string.IsNullOrEmpty(AppExecConfig.HealthCheckValidationMode))
             {
-                string[] requirements = HealthCheckValidationMode.Split("|");
+                string[] requirements = AppExecConfig.HealthCheckValidationMode.Split("|");
 
                 foreach (string value in requirements)
                 {
@@ -319,13 +322,17 @@ namespace Devices.Verifone.Helpers
             healthStatus.Append($"_{(configIsValid ? "PASS" : "FAIL")}");
             healthStatus.Append($"_{Utils.GetTimeStampToSeconds()}");
 
-            ConsoleColor foreColor = Console.ForegroundColor;
-            ConsoleColor backColor = Console.BackgroundColor;
-            Console.BackgroundColor = ScreenBackColor;
-            Console.ForegroundColor = ScreenForeColor;
-            Console.WriteLine(healthStatus);
-            Console.BackgroundColor = backColor;
-            Console.ForegroundColor = foreColor;
+
+            // wait for progress bar to dismiss prior to writing results
+            Task.Run(async () =>
+            {
+                while ((bool)DeviceEventOccured?.Invoke(DeviceEvent.ProgressBarActive, DeviceInformation))
+                {
+                    await Task.Delay(100);
+                }
+                await Task.Delay(1000);
+                Console.WriteLine(healthStatus);
+            });
 
             return healthStatus;
         }
@@ -530,7 +537,8 @@ namespace Devices.Verifone.Helpers
                 }
                 else
                 {
-                    streamWriter.WriteLine(string.Format("DEVICE: FAILED GET KERNEL CHECKSUM REQUEST WITH ERROR=0x{0:X4}\n", EmvKernelInformation.VipaResponse));
+                    //                                    123456789|1234567890123456789|
+                    streamWriter.WriteLine(string.Format("DEVICE KERNEL CHECKSUM ____: REQUEST FAILED WITH ERROR=0x{0:X4}", EmvKernelInformation.VipaResponse));
                 }
 
                 // PACKAGE TAGS

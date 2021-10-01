@@ -1,4 +1,5 @@
-﻿using Common.LoggerManager;
+﻿using Common.Execution;
+using Common.LoggerManager;
 using Common.XO.Device;
 using Common.XO.Private;
 using Common.XO.Requests;
@@ -13,6 +14,7 @@ using Devices.Verifone.Helpers;
 using Devices.Verifone.VIPA;
 using Devices.Verifone.VIPA.Helpers;
 using Devices.Verifone.VIPA.Interfaces;
+using Execution;
 using Helpers;
 using Ninject;
 using System;
@@ -20,7 +22,6 @@ using System.Collections.Generic;
 using System.Composition;
 using System.Linq;
 using System.Threading;
-using static Common.Execution.Modes;
 using StringValueAttribute = Devices.Common.Helpers.StringValueAttribute;
 
 namespace Devices.Verifone
@@ -50,9 +51,7 @@ namespace Devices.Verifone
 
         public IVipa VipaDevice { get; private set; }
 
-        public Execution ExecutionMode { get; set; } = Execution.Console;
-
-        public string HealthCheckValidationMode { get; set; }
+        public AppExecConfig AppExecConfig { get; set; }
 
         public DeviceInformation DeviceInformation { get; private set; }
 
@@ -75,9 +74,6 @@ namespace Devices.Verifone
         bool EnableHMAC { get; set; }
 
         LinkDALRequestIPA5Object VipaVersions { get; set; }
-
-        private ConsoleColor screenForeColor;
-        private ConsoleColor screenBackColor;
 
         public VerifoneDevice()
         {
@@ -169,15 +165,11 @@ namespace Devices.Verifone
 
         }
 
-        public void SetDeviceSectionConfig(DeviceSection config, Execution executionMode, string healthCheckValidationMode, ConsoleColor fore, ConsoleColor back)
+        public void SetDeviceSectionConfig(DeviceSection config, AppExecConfig appConfig)
         {
             deviceSectionConfig = config;
 
-            ExecutionMode = executionMode;
-            HealthCheckValidationMode = healthCheckValidationMode;
-
-            screenForeColor = fore;
-            screenBackColor = back;
+            AppExecConfig = appConfig;
 
             // BUNDLE Signatures
             GetBundleSignatures();
@@ -192,7 +184,7 @@ namespace Devices.Verifone
 
             if (VipaConnection != null)
             {
-                if (ExecutionMode == Execution.Console)
+                if (AppExecConfig.ExecutionMode == Modes.Execution.Console)
                 {
                     Console.WriteLine($"\r\n\r\nACTIVE SIGNATURE _____: {SigningMethodActive.ToUpper()}");
                     Console.WriteLine($"ACTIVE CONFIGURATION _: {deviceSectionConfig.Verifone?.ConfigurationPackageActive}");
@@ -433,7 +425,8 @@ namespace Devices.Verifone
                         }
                         else
                         {
-                            Console.WriteLine(string.Format("DEVICE: FAILED GET KERNEL CHECKSUM REQUEST WITH ERROR=0x{0:X4}\n", response.VipaResponse));
+                            //                               123456789|1234567890123456789|
+                            Console.WriteLine(string.Format("DEVICE KERNEL CHECKSUM ____: REQUEST FAILED WITH ERROR=0x{0:X4}\n", response.VipaResponse));
                         }
                     }
                 }
@@ -446,7 +439,7 @@ namespace Devices.Verifone
         {
             LinkActionRequest linkActionRequest = linkRequest?.Actions?.First();
 
-            if (ExecutionMode == Execution.Console)
+            if (AppExecConfig.ExecutionMode == Modes.Execution.Console)
             {
                 Console.WriteLine($"DEVICE[{DeviceInformation.ComPort}]: GET SECURITY CONFIGURATION for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
             }
@@ -527,10 +520,8 @@ namespace Devices.Verifone
                         // REPORT IT
                         HealthStatusCheckImpl healthStatusCheckImpl = new HealthStatusCheckImpl
                         {
-                            ScreenForeColor = screenForeColor,
-                            ScreenBackColor = screenBackColor,
-                            ExecutionMode = ExecutionMode,
-                            HealthCheckValidationMode = HealthCheckValidationMode,
+                            DeviceInformation = DeviceInformation,
+                            AppExecConfig = AppExecConfig,
                             SigningMethodActive = SigningMethodActive,
                             DeviceSectionConfig = deviceSectionConfig,
                             VipaVersions = VipaVersions,
@@ -542,6 +533,7 @@ namespace Devices.Verifone
                             Reboot24Hour = reboot24Hour,
                             EmvKernelInformation = emvKernelInformation
                         };
+                        healthStatusCheckImpl.DeviceEventOccured += DeviceEventOccured;
                         healthStatusCheckImpl.ProcessHealthFromExectutionMode();
                     }
 

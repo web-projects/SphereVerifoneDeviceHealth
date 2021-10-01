@@ -1,9 +1,9 @@
 ﻿using Common.XO.Requests;
 using Common.XO.Responses;
 using Devices.Common.AppConfig;
+using Execution;
 using System;
 using System.Collections.Generic;
-using static Common.Execution.Modes;
 using static Common.XO.Responses.LinkEventResponse;
 
 namespace Devices.Common.Interfaces
@@ -22,13 +22,13 @@ namespace Devices.Common.Interfaces
 
         int SortOrder { get; set; }
 
-        Execution ExecutionMode { get; set; }
+        AppExecConfig AppExecConfig { get; set; }
 
         DeviceInformation DeviceInformation { get; }
 
         bool IsConnected(object request);
 
-        void SetDeviceSectionConfig(DeviceSection config, Execution executionMode, string healthCheckValidationMode, ConsoleColor fore, ConsoleColor back);
+        void SetDeviceSectionConfig(DeviceSection config, AppExecConfig appConfig);
 
         List<DeviceInformation> DiscoverDevices();
 

@@ -4,7 +4,6 @@ using Common.Execution;
 using Common.Helpers;
 using Common.XO.Device;
 using Common.XO.Requests;
-using Devices.Sdk;
 using Devices.Common;
 using Devices.Common.AppConfig;
 using Devices.Common.Helpers;
@@ -20,6 +19,8 @@ using Devices.Core.State.Interfaces;
 using Devices.Core.State.Providers;
 using Devices.Core.State.SubWorkflows;
 using Devices.Core.State.SubWorkflows.Management;
+using Devices.Sdk;
+using Execution;
 using Newtonsoft.Json;
 using Ninject;
 using System;
@@ -30,7 +31,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using static Common.Execution.Modes;
 
 namespace Devices.Core.State.Management
 {
@@ -74,9 +74,7 @@ namespace Devices.Core.State.Management
 
         public List<ICardDevice> AvailableCardDevices { get; private set; } = new List<ICardDevice>();
 
-        public Execution ExecutionMode { get; private set; }
-
-        public string HealthCheckValidationMode { get; private set; }
+        public AppExecConfig AppExecConfig { get; private set; }
 
         public string PluginPath { get; private set; }
 
@@ -108,10 +106,7 @@ namespace Devices.Core.State.Management
         public event OnWorkflowStopped WorkflowStopped;
         public event OnRequestReceived RequestReceived;
 
-        private ConsoleColor screenForeColor = Console.ForegroundColor;
-        private ConsoleColor screenBackColor = Console.BackgroundColor;
-
-        private ProgressBar DeviceProgressBar = new ProgressBar();
+        private ProgressBar DeviceProgressBar = null;
 
         public DeviceStateManagerImpl()
         {
@@ -140,22 +135,30 @@ namespace Devices.Core.State.Management
             InitializeConnectorEvents();
         }
 
-        public void StartProgressReporting()
+        public bool ProgressBarIsActive()
         {
-            // display progress bar
-            Task.Run(async () =>
-            {
-                while (DeviceProgressBar != null)
-                {
-                    DeviceProgressBar.UpdateBar();
-                    await Task.Delay(100);
-                }
-            });
+            return (DeviceProgressBar != null);
         }
 
-        public void SetExecutionMode(Execution mode) => (ExecutionMode) = (mode);
+        public void StartProgressReporting()
+        {
+            if (AppExecConfig.DisplayProgressBar)
+            {
+                DeviceProgressBar = new ProgressBar();
 
-        public void SetHealthCheckMode(string healthCheckValidationMode) => (HealthCheckValidationMode) = (healthCheckValidationMode);
+                // display progress bar
+                Task.Run(async () =>
+                {
+                    while (DeviceProgressBar != null)
+                    {
+                        DeviceProgressBar.UpdateBar();
+                        await Task.Delay(100);
+                    }
+                });
+            }
+        }
+
+        public void SetAppConfig(AppExecConfig appConfig) => (AppExecConfig) = (appConfig);
 
         public void SetPluginPath(string pluginPath) => (PluginPath) = (pluginPath);
 
@@ -174,7 +177,7 @@ namespace Devices.Core.State.Management
             {
                 foreach (var device in targetDevices)
                 {
-                    device.SetDeviceSectionConfig(Configuration, ExecutionMode, HealthCheckValidationMode, screenForeColor, screenBackColor);
+                    device.SetDeviceSectionConfig(Configuration, AppExecConfig);
                 }
             }
         }
@@ -231,16 +234,18 @@ namespace Devices.Core.State.Management
 
         protected void RaiseOnWorkflowStopped(DeviceWorkflowStopReason reason) => WorkflowStopped?.Invoke(reason);
 
-        private void OnDeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation)
+        private object OnDeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation)
         {
             if (currentStateAction.WorkflowStateType == DeviceWorkflowState.SubWorkflowIdleState)
             {
                 if (subStateController != null)
                 {
                     IDeviceSubStateManager subStateManager = subStateController as IDeviceSubStateManager;
-                    subStateManager.DeviceEventReceived(deviceEvent, deviceInformation);
+                    return subStateManager.DeviceEventReceived(deviceEvent, deviceInformation);
                 }
             }
+
+            return false;
         }
 
         private bool DisconnectAllDevices(PortEventType comPortEvent, string portNumber)
@@ -263,7 +268,7 @@ namespace Devices.Core.State.Management
                         {
                             if (device == deviceDisconnected)
                             {
-                                if (ExecutionMode == Execution.Console)
+                                if (AppExecConfig.ExecutionMode == Modes.Execution.Console)
                                 {
                                     Console.WriteLine($"Comport unplugged: '{portNumber}', " +
                                         $"DeviceType '{device.ManufacturerConfigID}', SerialNumber '{device.DeviceInformation?.SerialNumber}'");
@@ -311,7 +316,7 @@ namespace Devices.Core.State.Management
             {
                 Debug.WriteLine($"Comport Plugged. ComportNumber '{portNumber}'. Detecting a new connection...");
 
-                if (ExecutionMode == Execution.Console)
+                if (AppExecConfig.ExecutionMode == Modes.Execution.Console)
                 {
                     Console.WriteLine($"Comport Plugged. ComportNumber '{portNumber}'. Detecting a new connection...");
                 }
@@ -334,7 +339,7 @@ namespace Devices.Core.State.Management
                 {
                     Debug.WriteLine($"Device discovery in progress...");
 
-                    if (ExecutionMode == Execution.Console)
+                    if (AppExecConfig.ExecutionMode == Modes.Execution.Console)
                     {
                         Console.WriteLine($"Device discovery in progress...");
                     }
@@ -519,7 +524,7 @@ namespace Devices.Core.State.Management
                     DeviceProgressBar = null;
                 }
 
-                if (ExecutionMode == Execution.StandAlone)
+                if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
                 {
                     Console.WriteLine($"connectevent_{TargetDevices[0]?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}");
 
@@ -560,25 +565,28 @@ namespace Devices.Core.State.Management
         {
             if (device != null)
             {
-                if (ExecutionMode == Execution.StandAlone)
+                if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
                 {
                     Console.WriteLine($"disconnectevent_{TargetDevices[0]?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}\r\n");
                 }
 
-                if (DeviceProgressBar is null)
+                if (AppExecConfig.DisplayProgressBar)
                 {
-                    DeviceProgressBar = new ProgressBar();
-                }
-
-                // display progress bar
-                Task.Run(async () =>
-                {
-                    while (DeviceProgressBar != null)
+                    if (DeviceProgressBar is null)
                     {
-                        DeviceProgressBar.UpdateBar();
-                        await Task.Delay(100);
+                        DeviceProgressBar = new ProgressBar();
                     }
-                });
+
+                    // display progress bar
+                    Task.Run(async () =>
+                    {
+                        while (DeviceProgressBar != null)
+                        {
+                            DeviceProgressBar.UpdateBar();
+                            await Task.Delay(100);
+                        }
+                    });
+                }
 
                 //string message = $"Comport unplugged: '{portNumber}', DeviceType: '{device.ManufacturerConfigID}', Model: '{device.DeviceInformation?.Model}', SerialNumber: '{device.DeviceInformation?.SerialNumber}'";
                 //LinkDeviceResponse deviceInfo = new LinkDeviceResponse()
@@ -701,7 +709,7 @@ namespace Devices.Core.State.Management
             }
             else
             {
-                if (ExecutionMode == Execution.Console)
+                if (AppExecConfig.ExecutionMode == Modes.Execution.Console)
                 {
                     Console.WriteLine($"SERIAL: ON PORT={TargetDevices[0].DeviceInformation?.ComPort} - CONNECTION OPEN");
                     Console.WriteLine($"DEVICE FOUND: name='{TargetDevices[0]?.Name}', model='{TargetDevices[0]?.DeviceInformation?.Model}', " +
@@ -892,7 +900,11 @@ namespace Devices.Core.State.Management
                 messageReceived.Dispose();
                 messageReceived = null;
             }
-            DeviceProgressBar.Dispose();
+
+            if (DeviceProgressBar != null)
+            {
+                DeviceProgressBar.Dispose();
+            }
         }
 
         #endregion --- state machine management ---

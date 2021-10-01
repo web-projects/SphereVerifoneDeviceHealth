@@ -31,7 +31,9 @@ namespace Devices.Common.Helpers
         [StringValue("Request timeout")]
         RequestTimeout,
         [StringValue("Cancellation request")]
-        CancellationRequest
+        CancellationRequest,
+        [StringValue("ProgressBarActive")]
+        ProgressBarActive,
     }
 
     public enum DeviceDiscovery

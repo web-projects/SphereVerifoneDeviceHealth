@@ -1,10 +1,11 @@
-﻿using Common.XO.Requests;
+﻿using Common.Execution;
+using Common.XO.Requests;
 using Devices.Core.State.Enums;
 using Devices.Core.State.Management;
+using Execution;
 using Ninject;
 using System;
 using System.Threading.Tasks;
-using static Common.Execution.Modes;
 
 namespace DEVICE_CORE
 {
@@ -13,7 +14,7 @@ namespace DEVICE_CORE
         [Inject]
         internal IDeviceStateManager DeviceStateManager { get; set; }
 
-        private Execution ExecutionMode;
+        private AppExecConfig appExecConfig;
         private string pluginPath;
 
         public void Initialize(string pluginPath) => (this.pluginPath) = (pluginPath);
@@ -43,21 +44,20 @@ namespace DEVICE_CORE
             }
         }
 
-        public async Task Run(Execution executionMode, string healthCheckValidationMode)
+        public async Task Run(AppExecConfig appConfig)
         {
-            ExecutionMode = executionMode;
+            appExecConfig = appConfig;
             DeviceStateManager.SetPluginPath(pluginPath);
-            DeviceStateManager.SetExecutionMode(ExecutionMode);
-            DeviceStateManager.SetHealthCheckMode(healthCheckValidationMode);
+            DeviceStateManager.SetAppConfig(appConfig);
             DeviceStateManager.StartProgressReporting();
             _ = Task.Run(() => DeviceStateManager.LaunchWorkflow());
-            await WaitForManageWorkflow(ExecutionMode == Execution.Console);
+            await WaitForManageWorkflow(appExecConfig.ExecutionMode == Modes.Execution.Console);
             DeviceStateManager.DisplayDeviceStatus();
         }
 
         public async Task Command(LinkDeviceActionType action)
         {
-            if (ExecutionMode == Execution.Console)
+            if (appExecConfig.ExecutionMode == Modes.Execution.Console)
             {
                 Console.WriteLine($"\n==========================================================================================");
                 Console.WriteLine($"DAL COMMAND: {action}");
@@ -67,6 +67,10 @@ namespace DEVICE_CORE
             await WaitForManageWorkflow();
         }
 
+        public bool ProgressBarIsActive()
+        {
+            return DeviceStateManager.ProgressBarIsActive();
+        }
         public void Shutdown()
         {
             if (DeviceStateManager != null)

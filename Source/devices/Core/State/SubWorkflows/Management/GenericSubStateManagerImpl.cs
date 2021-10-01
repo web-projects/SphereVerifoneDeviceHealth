@@ -289,7 +289,7 @@ namespace Devices.Core.State.SubWorkflows.Management
 
         }
 
-        public void DeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation)
+        public object DeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation)
         {
             DeviceEvent = deviceEvent;
 
@@ -300,27 +300,33 @@ namespace Devices.Core.State.SubWorkflows.Management
             else
             {
                 // TODO: where to handle events via a Preprocessing - most likely in main controller OnDeviceEventReceived().
-                /*PriorityEventType eventType = PriorityEventType.Undefined;
+                //PriorityEventType eventType = PriorityEventType.Undefined;
 
                 switch (deviceEvent)
                 {
                     //case DeviceEvent.DevicePlugged:
                     //case DeviceEvent.DeviceUnplugged:
-                    case DeviceEvent.CancelKeyPressed:
+                    //case DeviceEvent.CancelKeyPressed:
+                    //{
+                    //   eventType = PriorityEventType.UserCancel;
+                    //   break;
+                    //}
+                    case DeviceEvent.ProgressBarActive:
                     {
-                        eventType = PriorityEventType.UserCancel;
-                        break;
+                        return (DeviceProgressBar != null);
                     }
                 }
 
-                if (eventType != PriorityEventType.Undefined)
+                /*if (eventType != PriorityEventType.Undefined)
                 {
                     PriorityQueueDeviceEvents deviceQueueItem = new PriorityQueueDeviceEvents(eventType, (double)eventType);
                     context?.PriorityQueue.Enqueue(deviceQueueItem);
                 }*/
 
-                RequestCancellationIfNecessary();
+                //RequestCancellationIfNecessary();
             }
+
+            return false;
         }
 
         public async Task ComportEventReceived(PortEventType comPortEvent, string portNumber)

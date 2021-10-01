@@ -66,7 +66,10 @@ namespace Common.Execution
         {
             lock (timer)
             {
-                if (disposed) return;
+                if (disposed)
+                {
+                    return;
+                }
 
                 int progressBlockCount = (int)(currentProgress * blockCount);
                 int percent = (int)(currentProgress * 100);
@@ -92,7 +95,11 @@ namespace Common.Execution
             int cursorTop = Console.CursorTop;
             int cursorLeft = Console.CursorLeft;
 
-            Console.SetCursorPosition(1, Console.WindowHeight - 1);
+            // locate progress bar at top of window
+            //Console.SetCursorPosition(1, 0);
+
+            // locate progress bar at bottom of window
+            Console.SetCursorPosition(1, Math.Max(Console.WindowHeight - 1, cursorTop));
 
             // Get length of common portion
             int commonPrefixLength = 0;
@@ -122,6 +129,7 @@ namespace Common.Execution
 
             currentText = text;
 
+            // restore cursor position
             Console.SetCursorPosition(cursorLeft, cursorTop);
         }
 
@@ -134,7 +142,8 @@ namespace Common.Execution
         {
             Console.BackgroundColor = backColor;
             Console.ForegroundColor = foreColor;
-            UpdateText(new string(' ', Console.WindowWidth));
+
+            UpdateText(new string(' ', Console.WindowWidth - 1));
 
             lock (timer)
             {

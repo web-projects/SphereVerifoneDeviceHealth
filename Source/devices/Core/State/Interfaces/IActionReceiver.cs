@@ -8,7 +8,7 @@ namespace Devices.Core.State.Interfaces
     internal interface IActionReceiver
     {
         void RequestReceived(LinkRequest request);
-        void DeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation);
+        object DeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation);
         Task ComportEventReceived(PortEventType comPortEvent, string portNumber);
     }
 }

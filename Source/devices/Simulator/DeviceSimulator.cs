@@ -5,12 +5,12 @@ using Devices.Common.AppConfig;
 using Devices.Common.Helpers;
 using Devices.Common.Interfaces;
 using Devices.Simulator.Connection;
+using Execution;
 using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Composition;
 using System.Linq;
-using static Common.Execution.Modes;
 
 namespace Devices.Simulator
 {
@@ -53,7 +53,7 @@ namespace Devices.Simulator
 
         public DeviceInformation DeviceInformation { get; private set; }
 
-        public Execution ExecutionMode { get; set; } = Execution.Console;
+        public AppExecConfig AppExecConfig { get; set; }
 
         public DeviceSimulator()
         {
@@ -98,7 +98,7 @@ namespace Devices.Simulator
 
         }
 
-        public void SetDeviceSectionConfig(DeviceSection config, Execution exectutionMode, string healthCheckValidationMode, ConsoleColor fore, ConsoleColor back)
+        public void SetDeviceSectionConfig(DeviceSection config, AppExecConfig appConfig)
         {
 
         }

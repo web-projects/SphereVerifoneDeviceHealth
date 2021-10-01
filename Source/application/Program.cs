@@ -1,6 +1,8 @@
 ﻿using Common.Config.Config;
+using Common.Execution;
 using Common.LoggerManager;
 using Common.XO.Requests;
+using Execution;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
@@ -8,7 +10,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using static Common.Execution.Modes;
 
 namespace DEVICE_CORE
 {
@@ -56,39 +57,56 @@ namespace DEVICE_CORE
             "  "
         };
 
+
+        static bool applicationIsExiting = false;
         static async Task Main(string[] args)
         {
             SetupWindow();
 
             // setup working environment
-            (DirectoryInfo di, bool allowDebugCommands, Execution executionMode, string healthCheckValidationMode) = SetupEnvironment();
+            (DirectoryInfo di, bool allowDebugCommands, Modes.Execution executionMode,
+                string healthCheckValidationMode, bool displayProgressBar) = SetupEnvironment();
 
-            if (executionMode == Execution.Undefined)
+            if (executionMode == Modes.Execution.Undefined)
             {
                 ParseArguments(args);
                 executionMode = ParseArguments(args);
             }
 
+            // save current colors
+            ConsoleColor foreGroundColor = Console.ForegroundColor;
+            ConsoleColor backGroundColor = Console.BackgroundColor;
+
             // Device discovery
             string pluginPath = Path.Combine(Environment.CurrentDirectory, "DevicePlugins");
 
             IDeviceApplication application = activator.Start(pluginPath);
-            await application.Run(executionMode, healthCheckValidationMode).ConfigureAwait(false);
+
+            await application.Run(new AppExecConfig
+            {
+                DisplayProgressBar = displayProgressBar,
+                ForeGroundColor = foreGroundColor,
+                BackGroundColor = backGroundColor,
+                ExecutionMode = executionMode,
+                HealthCheckValidationMode = healthCheckValidationMode
+            }).ConfigureAwait(false);
 
             switch (executionMode)
             {
-                case Execution.Console:
+                case Modes.Execution.Console:
                 {
                     await ConsoleModeOperation(application, allowDebugCommands);
                     break;
                 }
 
-                case Execution.StandAlone:
+                case Modes.Execution.StandAlone:
                 {
-                    StandAloneOperation(application);
+                    StandAloneOperation(application, Modes.Execution.StandAlone);
                     break;
                 }
             }
+
+            applicationIsExiting = true;
 
             application.Shutdown();
 
@@ -96,7 +114,7 @@ namespace DEVICE_CORE
             DeleteWorkingDirectory(di);
         }
 
-        static private (DirectoryInfo, bool, Execution, string) SetupEnvironment()
+        static private (DirectoryInfo, bool, Modes.Execution, string, bool) SetupEnvironment()
         {
             DirectoryInfo di = null;
 
@@ -122,20 +140,25 @@ namespace DEVICE_CORE
             Console.WriteLine($"{Assembly.GetEntryAssembly().GetName().Name} - Version {Assembly.GetEntryAssembly().GetName().Version}");
             Console.WriteLine($"==========================================================================================\r\n");
 
-
-            Execution executionMode = GetApplicationExecutionMode(configuration);
+            Modes.Execution executionMode = GetApplicationExecutionMode(configuration);
             string healthCheckValidationMode = null;
 
-            if (executionMode == Execution.StandAlone)
+            if (executionMode == Modes.Execution.StandAlone)
             {
                 healthCheckValidationMode = GetHealthCheckStatusSetup(configuration);
             }
 
-            return (di, AllowDebugCommands(configuration, 0), executionMode, healthCheckValidationMode);
+            bool displayProgressBar = GetApplicationDisplayProgressBar(configuration);
+
+            return (di, AllowDebugCommands(configuration, 0), executionMode, healthCheckValidationMode, displayProgressBar);
         }
 
         static private void SetupWindow()
         {
+            Console.BufferHeight = Int16.MaxValue - 1;
+            //Console.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
+            Console.CursorVisible = false;
+
             IntPtr handle = GetConsoleWindow();
             IntPtr sysMenu = GetSystemMenu(handle, false);
 
@@ -147,9 +170,32 @@ namespace DEVICE_CORE
             }
         }
 
-        static Execution ParseArguments(string[] args)
+        static void ScrollWindowAsNeeded(IDeviceApplication application, Modes.Execution executionMode)
         {
-            Execution mode = Execution.Console;
+            if (executionMode == Modes.Execution.StandAlone)
+            {
+                Task.Run(async () =>
+                {
+                    while (!applicationIsExiting)
+                    {
+                        await Task.Delay(1000);
+
+                        if (!application.ProgressBarIsActive())
+                        {
+                            if (Console.CursorTop >= Console.WindowHeight)
+                            {
+                                // Scoll one line:
+                                Console.MoveBufferArea(0, 2, Console.WindowWidth, Console.WindowHeight - 2, 0, 1);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        static Modes.Execution ParseArguments(string[] args)
+        {
+            Modes.Execution mode = Modes.Execution.Console;
 
             foreach (string arg in args)
             {
@@ -157,13 +203,13 @@ namespace DEVICE_CORE
                 {
                     case "/C":
                     {
-                        mode = Execution.Console;
+                        mode = Modes.Execution.Console;
                         break;
                     }
 
                     case "/S":
                     {
-                        mode = Execution.StandAlone;
+                        mode = Modes.Execution.StandAlone;
                         break;
                     }
                 }
@@ -321,8 +367,11 @@ namespace DEVICE_CORE
             Console.WriteLine("\r\nCOMMAND: [QUIT]\r\n");
         }
 
-        static void StandAloneOperation(IDeviceApplication application)
+        static void StandAloneOperation(IDeviceApplication application, Modes.Execution executionMode)
         {
+            // setup automatic scrolling
+            //ScrollWindowAsNeeded(application, executionMode);
+
             ConsoleKeyInfo keypressed = new ConsoleKeyInfo();
 
             while (keypressed.Key != ConsoleKey.Q)
@@ -439,7 +488,11 @@ namespace DEVICE_CORE
             }
         }
 
-        static Execution GetApplicationExecutionMode(IConfiguration configuration)
+        static bool GetApplicationDisplayProgressBar(IConfiguration configuration)
+        {
+            return configuration.GetValue<bool>("Application:DisplayProgressBar");
+        }
+        static Modes.Execution GetApplicationExecutionMode(IConfiguration configuration)
         {
             return GetExecutionMode(configuration.GetValue<string>("Application:ExecutionMode"));
         }
@@ -470,11 +523,11 @@ namespace DEVICE_CORE
             _ => throw new Exception($"Invalid color identifier '{color}'.")
         };
 
-        static Execution GetExecutionMode(string mode) => mode switch
+        static Modes.Execution GetExecutionMode(string mode) => mode switch
         {
-            "StandAlone" => Execution.StandAlone,
-            "Console" => Execution.Console,
-            _ => Execution.Undefined
+            "StandAlone" => Modes.Execution.StandAlone,
+            "Console" => Modes.Execution.Console,
+            _ => Modes.Execution.Undefined
         };
     }
 }

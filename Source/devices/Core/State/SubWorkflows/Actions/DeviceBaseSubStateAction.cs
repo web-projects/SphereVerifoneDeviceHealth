@@ -55,13 +55,15 @@ namespace Devices.Core.State.SubWorkflows.Actions
 
         }
 
-        public virtual void DeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation)
+        public virtual object DeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation)
         {
             if (deviceEvent == DeviceEvent.CancelKeyPressed)
             {
                 //_ = Controller.LoggingClient.LogInfoAsync($"device event received: {deviceEvent} from SN: {deviceInformation.SerialNumber}");
                 Console.WriteLine($"device event received: {deviceEvent} from SN: {deviceInformation.SerialNumber}");
             }
+
+            return false;
         }
 
         public virtual Task ComportEventReceived(PortEventType comPortEvent, string portNumber)

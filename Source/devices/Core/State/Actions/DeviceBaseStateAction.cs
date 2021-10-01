@@ -61,10 +61,11 @@ namespace Devices.Core.State.Actions
 
         }
 
-        public virtual void DeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation)
+        public virtual object DeviceEventReceived(DeviceEvent deviceEvent, DeviceInformation deviceInformation)
         {
             // TODO: currently the workflow supports a single TargetDevice - we need to enhance the code to support 
             // multiple devices
+            return false;
         }
 
         public Task ComportEventReceived(PortEventType comPortEvent, string portNumber)
