@@ -50,6 +50,9 @@ namespace Devices.Verifone.Helpers
         public (KernelConfigurationObject kernelConfigurationObject, int VipaResponse) EmvKernelInformation { get; set; }
         #endregion --- attributes ---
 
+        private void DeviceLogger(string message) =>
+            Logger.info($"{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Manufacturer}[{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Port}]: {{{message}}}");
+
         private void DeviceErrorLogger(string message) =>
             Logger.error($"{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Manufacturer}[{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Port}]: {{{message}}}");
 
@@ -267,10 +270,12 @@ namespace Devices.Verifone.Helpers
                 if (EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET).Equals(IsEngageDevice ? BinaryStatusObject.ENGAGE_EMV_KERNEL_CHECKSUM : BinaryStatusObject.UX301_EMV_KERNEL_CHECKSUM,
                     StringComparison.CurrentCultureIgnoreCase))
                 {
+                    EmvKernelInformation.kernelConfigurationObject.KernelIsValid = true;
                     Console.WriteLine("DEVICE: EMV KERNEL STATUS _: VALID");
                 }
                 else
                 {
+                    EmvKernelInformation.kernelConfigurationObject.KernelIsValid = false;
                     Console.WriteLine("DEVICE: EMV KERNEL STATUS _: INVALID");
                 }
             }
@@ -337,12 +342,24 @@ namespace Devices.Verifone.Helpers
             return healthStatus;
         }
 
+        /// <summary>
+        /// VALIDATION STEPS
+        /// 1. PROD KEYS, DEBIT PIN KEYS
+        /// 2. PACKAGE VERSION TAGS
+        /// 3. UTC TERMINAL TIME CHECK
+        /// 4. 24 HOUR REBOOT SET TO 07:00:00
+        /// 5. EMV KERNEL CHECKSUM VALIDATION
+        /// </summary>
+        /// <returns></returns>
         private int StandAloneModeOutput()
         {
+            DeviceHealthStatus deviceHealthStatus = new DeviceHealthStatus();
+
             // VALIDATION STEP 1: PROD-KEYS + DEBIT PIN KEYS
-            bool configIsValid = SetHealthCheckValidation();
+            deviceHealthStatus.PaymentKeysAreValid = SetHealthCheckValidation();
 
             // VALIDATION STEP 2: package version tags [VIPA, EMV, IDLE]
+            deviceHealthStatus.PackagesAreValid = true;
             if (string.IsNullOrEmpty(VipaVersions.DALCdbData.VIPAVersion.DateCode) ||
                 string.IsNullOrEmpty(VipaVersions.DALCdbData.EMVVersion.DateCode) ||
                 string.IsNullOrEmpty(VipaVersions.DALCdbData.IdleVersion.DateCode))
@@ -350,25 +367,26 @@ namespace Devices.Verifone.Helpers
                 if (string.IsNullOrEmpty(VipaVersions.DALCdbData.VIPAVersion.DateCode))
                 {
                     DeviceErrorLogger($"BUNDLE VIPA_VER DATECODE: IS-EMPTY");
-                    configIsValid = false;
+                    deviceHealthStatus.PackagesAreValid = false;
                 }
                 if (string.IsNullOrEmpty(VipaVersions.DALCdbData.EMVVersion.DateCode))
                 {
                     DeviceErrorLogger($"BUNDLE EMV_VER DATECODE: IS-EMPTY");
-                    configIsValid = false;
+                    deviceHealthStatus.PackagesAreValid = false;
                 }
                 if (string.IsNullOrEmpty(VipaVersions.DALCdbData.IdleVersion.DateCode))
                 {
                     DeviceErrorLogger($"BUNDLE IDLE_VER DATECODE: IS-EMPTY");
-                    configIsValid = false;
+                    deviceHealthStatus.PackagesAreValid = false;
                 }
             }
 
             // VALIDATION STEP 3: time injection (UTC)
+            deviceHealthStatus.TerminalTimeStampIsValid = true;
             if (string.IsNullOrEmpty(TerminalDateTime.Timestamp))
             {
                 DeviceErrorLogger($"TERMINAL TIMESTAMP: IS-EMPTY");
-                configIsValid = false;
+                deviceHealthStatus.TerminalTimeStampIsValid = false;
             }
             else
             {
@@ -377,30 +395,49 @@ namespace Devices.Verifone.Helpers
                     TerminalDateTime.Timestamp.Substring(8, 2), TerminalDateTime.Timestamp.Substring(10, 2));
                 string utcDateTimeStamp = Utils.GetUTCTimeStampToMinutes();
 
+                Logger.info(string.Format("DEVICE: WORKSTATION UTC TIME _______ : [{0}]", utcDateTimeStamp));
+                Logger.info(string.Format("DEVICE: REPORTED TERMINAL TIME STAMP : [{0}]", terminalDateTimeStamp));
+
                 // avoid clock drift in timestamp comparison
-                configIsValid = terminalDateTimeStamp.Substring(0, terminalDateTimeStamp.Length - 1).Equals(utcDateTimeStamp.Substring(0, utcDateTimeStamp.Length - 1));
-                if (!configIsValid)
+                deviceHealthStatus.TerminalTimeStampIsValid = terminalDateTimeStamp.Substring(0, terminalDateTimeStamp.Length - 1).Equals(utcDateTimeStamp.Substring(0, utcDateTimeStamp.Length - 1));
+
+                if (!deviceHealthStatus.TerminalTimeStampIsValid)
                 {
                     DeviceErrorLogger($"TERMINAL TIMESTAMP {terminalDateTimeStamp}: DOES NOT MATCH UTC TIME={utcDateTimeStamp}");
                 }
             }
 
             // VALIDATION STEP 4: 24 hour reboot set to 07:00
+            deviceHealthStatus.Terminal24HoureRebootIsValid = true;
             if (string.IsNullOrEmpty(Reboot24Hour.Timestamp))
             {
-                configIsValid = false;
+                deviceHealthStatus.Terminal24HoureRebootIsValid = false;
                 DeviceErrorLogger($"TERMINAL 24-HOUR REBOOT: IS-EMPTY");
             }
             else
             {
                 string rebootDateTimeStamp = string.Format("{0}:{1}:{2}",
                             Reboot24Hour.Timestamp.Substring(0, 2), Reboot24Hour.Timestamp.Substring(2, 2), Reboot24Hour.Timestamp.Substring(4, 2));
-                configIsValid = rebootDateTimeStamp.Equals(HealthStatusCheckImpl.Device24HourReboot);
-                if (!configIsValid)
+                deviceHealthStatus.Terminal24HoureRebootIsValid = rebootDateTimeStamp.Equals(HealthStatusCheckImpl.Device24HourReboot);
+                if (!deviceHealthStatus.Terminal24HoureRebootIsValid)
                 {
                     DeviceErrorLogger($"TERMINAL 24-HOUR REBOOT {rebootDateTimeStamp}: DOES NOT MATCH EXPECTED TIME={HealthStatusCheckImpl.Device24HourReboot}");
                 }
             }
+
+            bool IsEngageDevice = BinaryStatusObject.ENGAGE_DEVICES.Any(x => x.Contains(DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model.Substring(0, 4)));
+
+            // VALIDATION STEP 5: EMV Kernel Validation
+            if (EmvKernelInformation.VipaResponse == (int)VipaSW1SW2Codes.Success)
+            {
+                EmvKernelInformation.kernelConfigurationObject.KernelIsValid = EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET).Equals(IsEngageDevice ? BinaryStatusObject.ENGAGE_EMV_KERNEL_CHECKSUM : BinaryStatusObject.UX301_EMV_KERNEL_CHECKSUM,
+                    StringComparison.CurrentCultureIgnoreCase);
+            }
+            
+            deviceHealthStatus.EmvKernelConfigurationIsValid = EmvKernelInformation.kernelConfigurationObject.KernelIsValid;
+
+            bool configIsValid = deviceHealthStatus.PaymentKeysAreValid && deviceHealthStatus.PackagesAreValid && deviceHealthStatus.TerminalTimeStampIsValid &
+                deviceHealthStatus.Terminal24HoureRebootIsValid && deviceHealthStatus.EmvKernelConfigurationIsValid;
 
             // output status to console window
             StringBuilder healthStatus = DisplayHealthStatus(configIsValid);
@@ -413,13 +450,13 @@ namespace Devices.Verifone.Helpers
             }
             string filePath = Path.Combine(fileDir, fileName);
 
-            // save to file
+            // save to device specifc file
             using (StreamWriter streamWriter = new StreamWriter(filePath, append: true))
             {
                 bool prodADEKeyFound = false;
                 bool testADEKeyFound = false;
 
-                // ADE PROD KEY
+                // VALIDATION STEP 1: ADE PROD KEY
                 if (ConfigProd.VipaResponse == (int)VipaSW1SW2Codes.Success)
                 {
                     bool activeSigningMethodIsSphere = SigningMethodActive.Equals("SPHERE");
@@ -434,6 +471,10 @@ namespace Devices.Verifone.Helpers
                         streamWriter.WriteLine($"DEVICE: ADE-{ConfigProd.securityConfigurationObject.KeySlotNumber ?? "??"} BDK KEY_ID _: {ConfigProd.securityConfigurationObject.SRedCardKSN?.Substring(4, 6)}");
                         streamWriter.WriteLine($"DEVICE: ADE-{ConfigProd.securityConfigurationObject.KeySlotNumber ?? "??"} BDK TRSM ID : {ConfigProd.securityConfigurationObject.SRedCardKSN?.Substring(10, 5)}");
                     }
+                }
+                else
+                {
+                    streamWriter.WriteLine("DEVICE: PAYMENT PROD KEYS _: [ *** NOT FOUND *** ]");
                 }
 
                 // ADE TEST KEY
@@ -466,8 +507,12 @@ namespace Devices.Verifone.Helpers
                     streamWriter.WriteLine($"DEVICE: DEBIT PIN KEY SLOT : 0x0{(DeviceSectionConfig.Verifone?.OnlinePinKeySetId)} - DUKPT{DeviceSectionConfig.Verifone?.OnlinePinKeySetId - 1}");
                     streamWriter.WriteLine($"DEVICE: DEBIT PIN KSN _____: {ConfigDebitPin.securityConfigurationObject.OnlinePinKSN ?? "[ *** NOT FOUND *** ]"}");
                 }
+                else
+                {
+                    streamWriter.WriteLine("DEVICE: DEBIT PIN KEY _____: [ *** NOT FOUND *** ]");
+                }
 
-                // TERMINAL TIMESTAMP
+                // VALIDATION STEP 2: TERMINAL TIMESTAMP
                 if (TerminalDateTime.VipaResponse == (int)VipaSW1SW2Codes.Success)
                 {
                     if (string.IsNullOrEmpty(TerminalDateTime.Timestamp))
@@ -483,7 +528,12 @@ namespace Devices.Verifone.Helpers
                     }
                 }
 
-                // TERMINAL 24 HOUR REBOOT
+                if (!deviceHealthStatus.TerminalTimeStampIsValid)
+                {
+                    streamWriter.WriteLine("DEVICE: TERMINAL DATETIME _: [ *** FAILED VALIDATION *** ]");
+                }
+
+                // VALIDATION STEP 3: TERMINAL 24 HOUR REBOOT
                 if (Reboot24Hour.VipaResponse == (int)VipaSW1SW2Codes.Success)
                 {
                     if (string.IsNullOrEmpty(TerminalDateTime.Timestamp))
@@ -505,7 +555,12 @@ namespace Devices.Verifone.Helpers
                     }
                 }
 
-                // EMV KERNEL CHECKSUM
+                if (!deviceHealthStatus.Terminal24HoureRebootIsValid)
+                {
+                    streamWriter.WriteLine("DEVICE: 24 HOUR REBOOT ____: [ *** FAILED VALIDATION *** ]");
+                }
+
+                // VALIDATION STEP 4: EMV KERNEL CHECKSUM
                 if (EmvKernelInformation.VipaResponse == (int)VipaSW1SW2Codes.Success)
                 {
                     streamWriter.WriteLine($"DEVICE: EMV CONFIGURATION _: VALID");
@@ -523,8 +578,6 @@ namespace Devices.Verifone.Helpers
                             EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation));
                     }
 
-                    bool IsEngageDevice = BinaryStatusObject.ENGAGE_DEVICES.Any(x => x.Contains(DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model.Substring(0, 4)));
-
                     if (EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET).Equals(IsEngageDevice ? BinaryStatusObject.ENGAGE_EMV_KERNEL_CHECKSUM : BinaryStatusObject.UX301_EMV_KERNEL_CHECKSUM,
                         StringComparison.CurrentCultureIgnoreCase))
                     {
@@ -541,7 +594,7 @@ namespace Devices.Verifone.Helpers
                     streamWriter.WriteLine(string.Format("DEVICE KERNEL CHECKSUM ____: REQUEST FAILED WITH ERROR=0x{0:X4}", EmvKernelInformation.VipaResponse));
                 }
 
-                // PACKAGE TAGS
+                // VALIDATION STEP 5: PACKAGE TAGS
                 if (VipaVersions.DALCdbData is { })
                 {
                     string signature = VipaVersions.DALCdbData.VIPAVersion.Signature?.ToUpper() ?? "MISSING";
@@ -563,6 +616,23 @@ namespace Devices.Verifone.Helpers
                     {
                         streamWriter.WriteLine($"DEVICE: {signature} BUNDLE(S) __: VIPA{vipaDateCode}, EMV{emvDateCode}, IDLE{idleDateCode}");
                     }
+
+                    if (vipaDateCode.Equals("_NONE"))
+                    {
+                        streamWriter.WriteLine("DEVICE: VIPA CONFIG BUNDLE : [ *** FAILED VALIDATION *** ]");
+                    }
+                    if (emvDateCode.Equals("_NONE"))
+                    {
+                        streamWriter.WriteLine("DEVICE: EMV CONFIG BUNDLE _: [ *** FAILED VALIDATION *** ]");
+                    }
+                    if (idleDateCode.Equals("_NONE"))
+                    {
+                        streamWriter.WriteLine("DEVICE: IDLE CONFIG BUNDLE : [ *** FAILED VALIDATION *** ]");
+                    }
+                }
+                else
+                {
+                    streamWriter.WriteLine("DEVICE: CONFIG BUNDLE(S) __: [ *** FAILED VALIDATION *** ]");
                 }
 
                 streamWriter.WriteLine($"DEVICE: HEALTH VALIDATION _: {(configIsValid ? "PASS" : "FAIL")}");
