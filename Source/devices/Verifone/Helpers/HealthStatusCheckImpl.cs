@@ -353,6 +353,8 @@ namespace Devices.Verifone.Helpers
         /// <returns></returns>
         private int StandAloneModeOutput()
         {
+            bool IsEngageDevice = BinaryStatusObject.ENGAGE_DEVICES.Any(x => x.Contains(DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model.Substring(0, 4)));
+
             DeviceHealthStatus deviceHealthStatus = new DeviceHealthStatus();
 
             // VALIDATION STEP 1: PROD-KEYS + DEBIT PIN KEYS
@@ -374,7 +376,7 @@ namespace Devices.Verifone.Helpers
                     DeviceErrorLogger($"BUNDLE EMV_VER DATECODE: IS-EMPTY");
                     deviceHealthStatus.PackagesAreValid = false;
                 }
-                if (string.IsNullOrEmpty(VipaVersions.DALCdbData.IdleVersion.DateCode))
+                if (IsEngageDevice && string.IsNullOrEmpty(VipaVersions.DALCdbData.IdleVersion.DateCode))
                 {
                     DeviceErrorLogger($"BUNDLE IDLE_VER DATECODE: IS-EMPTY");
                     deviceHealthStatus.PackagesAreValid = false;
@@ -424,8 +426,6 @@ namespace Devices.Verifone.Helpers
                     DeviceErrorLogger($"TERMINAL 24-HOUR REBOOT {rebootDateTimeStamp}: DOES NOT MATCH EXPECTED TIME={HealthStatusCheckImpl.Device24HourReboot}");
                 }
             }
-
-            bool IsEngageDevice = BinaryStatusObject.ENGAGE_DEVICES.Any(x => x.Contains(DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model.Substring(0, 4)));
 
             // VALIDATION STEP 5: EMV Kernel Validation
             if (EmvKernelInformation.VipaResponse == (int)VipaSW1SW2Codes.Success)
@@ -625,7 +625,7 @@ namespace Devices.Verifone.Helpers
                     {
                         streamWriter.WriteLine("DEVICE: EMV CONFIG BUNDLE _: [ *** FAILED VALIDATION *** ]");
                     }
-                    if (idleDateCode.Equals("_NONE"))
+                    if (IsEngageDevice && idleDateCode.Equals("_NONE"))
                     {
                         streamWriter.WriteLine("DEVICE: IDLE CONFIG BUNDLE : [ *** FAILED VALIDATION *** ]");
                     }
