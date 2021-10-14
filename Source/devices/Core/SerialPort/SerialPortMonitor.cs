@@ -12,49 +12,65 @@ namespace Devices.Core.SerialPort
         public event ComPortEventHandler ComportEventOccured;
 
         private string[] serialPorts;
-        private ManagementEventWatcher arrival;
-        private ManagementEventWatcher removal;
+
+        private ManagementEventWatcher usbHubArrival;
+        private ManagementEventWatcher usbHubRemoval;
+
+        private ManagementEventWatcher usbDeviceArrival;
+        private ManagementEventWatcher usbDeviceRemoval;
 
         public void StartMonitoring()
         {
             serialPorts = GetAvailableSerialPorts();
-            MonitorDeviceChanges();
+
+            // USB Port devices
+            MonitorUSBDevicesPortChanges();
+
+            // USB HUB devices
+            MonitorUsbHubDeviceChanges();
         }
 
         public void StopMonitoring() => Dispose();
 
         public void Dispose()
         {
-            arrival?.Stop();
-            removal?.Stop();
-            arrival?.Dispose();
-            removal?.Dispose();
+            usbDeviceArrival?.Stop();
+            usbDeviceRemoval?.Stop();
+            usbDeviceArrival?.Dispose();
+            usbDeviceRemoval?.Dispose();
+            usbDeviceArrival = null;
+            usbDeviceRemoval = null;
 
-            arrival = null;
-            removal = null;
+            usbHubArrival?.Stop();
+            usbHubRemoval?.Stop();
+            usbHubArrival?.Dispose();
+            usbHubRemoval?.Dispose();
+
+            usbHubArrival = null;
+            usbHubRemoval = null;
         }
 
-        private static string[] GetAvailableSerialPorts() => System.IO.Ports.SerialPort.GetPortNames();
+        private static string[] GetAvailableSerialPorts()
+            => System.IO.Ports.SerialPort.GetPortNames();
 
-        private void MonitorDeviceChanges()
+        #region --- USB PORT DEVICES ----
+        private void MonitorUSBDevicesPortChanges()
         {
             try
             {
-                //Detect insertion/removal of all USB devices
-                WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_USBHub'");   //Query every 1 second for device remove/insert
-                WqlEventQuery deviceRemovalQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 1 WHERE TargetInstance ISA 'Win32_USBHub'");
-                //WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT* FROM Win32_DeviceChangeEvent WHERE EventType = 2");
-                //WqlEventQuery deviceRemovalQuery = new WqlEventQuery("SELECT* FROM Win32_DeviceChangeEvent WHERE EventType = 3");
+                // Detect insertion of all USB devices - Query every 1 second for device remove/insert
+                WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 2");
+                usbDeviceArrival = new ManagementEventWatcher(deviceArrivalQuery);
+                usbDeviceArrival.EventArrived += (sender, eventArgs) => RaisePortsChangedIfNecessary(PortEventType.Insertion, eventArgs);
+                // Start listening for USB device Arrival events
+                usbDeviceArrival.Start();
 
-                arrival = new ManagementEventWatcher(deviceArrivalQuery);
-                removal = new ManagementEventWatcher(deviceRemovalQuery);
-
-                arrival.EventArrived += (sender, eventArgs) => RaisePortsChangedIfNecessary(PortEventType.Insertion, eventArgs);
-                removal.EventArrived += (sender, eventArgs) => RaisePortsChangedIfNecessary(PortEventType.Removal, eventArgs);
-
-                // Start listening for events
-                arrival.Start();
-                removal.Start();
+                // Detect removal of all USB devices
+                WqlEventQuery deviceRemovalQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 3"); 
+                usbDeviceRemoval = new ManagementEventWatcher(deviceRemovalQuery);
+                usbDeviceRemoval.EventArrived += (sender, eventArgs) => RaisePortsChangedIfNecessary(PortEventType.Removal, eventArgs);
+                // Start listening for USB Removal events
+                usbDeviceRemoval.Start();
             }
             catch (ManagementException e)
             {
@@ -67,16 +83,10 @@ namespace Devices.Core.SerialPort
             lock (serialPorts)
             {
                 string[] availableSerialPorts = GetAvailableSerialPorts();
-                var targetObject = eventArgs.NewEvent["TargetInstance"] as ManagementBaseObject;
-                string targetDeviceID = targetObject["DeviceID"]?.ToString() ?? string.Empty;
-                if (targetDeviceID.Contains("vid_0801", StringComparison.OrdinalIgnoreCase))        //hardcode value for Magtek
-                {
-                    ComportEventOccured?.Invoke(eventType, targetDeviceID);
-                    return;
-                }
+
                 if (eventType == PortEventType.Insertion)
                 {
-                    if (!serialPorts?.SequenceEqual(availableSerialPorts) ?? false)     //COM ports devices only
+                    if (!serialPorts?.SequenceEqual(availableSerialPorts) ?? false)
                     {
                         var added = availableSerialPorts.Except(serialPorts).ToArray();
                         if (added.Length > 0)
@@ -99,5 +109,47 @@ namespace Devices.Core.SerialPort
                 }
             }
         }
+        #endregion --- USB PORT DEVICES
+
+        #region --- USB HUB DEVICES ----
+        private void MonitorUsbHubDeviceChanges()
+        {
+            try
+            {
+                // Detect insertion of all USB devices - Query every 1 second for device remove/insert
+                WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
+                usbHubArrival = new ManagementEventWatcher(deviceArrivalQuery);
+                usbHubArrival.EventArrived += (sender, eventArgs) => RaiseUsbHubPortsChangedIfNecessary(PortEventType.Insertion, eventArgs);
+                // Start listening for events
+                usbHubArrival.Start();
+
+                // Detect removal of all USB devices
+                WqlEventQuery deviceRemovalQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
+                usbHubRemoval = new ManagementEventWatcher(deviceRemovalQuery);
+                usbHubRemoval.EventArrived += (sender, eventArgs) => RaiseUsbHubPortsChangedIfNecessary(PortEventType.Removal, eventArgs);
+                // Start listening for events
+                usbHubRemoval.Start();
+            }
+            catch (ManagementException e)
+            {
+                Console.WriteLine($"serial: COMM exception={e.Message}");
+            }
+        }
+
+        private void RaiseUsbHubPortsChangedIfNecessary(PortEventType eventType, EventArrivedEventArgs eventArgs)
+        {
+            lock (serialPorts)
+            {
+                string[] availableSerialPorts = GetAvailableSerialPorts();
+                ManagementBaseObject targetObject = eventArgs.NewEvent["TargetInstance"] as ManagementBaseObject;
+                string targetDeviceID = targetObject["DeviceID"]?.ToString() ?? string.Empty;
+                if (targetDeviceID.Contains("vid_0801", StringComparison.OrdinalIgnoreCase))        //hardcode value for Magtek
+                {
+                    ComportEventOccured?.Invoke(eventType, targetDeviceID);
+                    return;
+                }
+            }
+        }
+        #endregion --- MAGTEK DEVICES
     }
 }
