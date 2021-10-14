@@ -16,30 +16,30 @@ namespace Devices.Core.SerialPort
         private ManagementEventWatcher usbHubArrival;
         private ManagementEventWatcher usbHubRemoval;
 
-        private ManagementEventWatcher usbDeviceArrival;
-        private ManagementEventWatcher usbDeviceRemoval;
+        private ManagementEventWatcher usbSerialArrival;
+        private ManagementEventWatcher usbSerialRemoval;
 
         public void StartMonitoring()
         {
             serialPorts = GetAvailableSerialPorts();
 
             // USB Port devices
-            MonitorUSBDevicesPortChanges();
+            MonitorUSBSerialDevicesPortChanges();
 
             // USB HUB devices
-            MonitorUsbHubDeviceChanges();
+            MonitorUsbHubDevicesChanges();
         }
 
         public void StopMonitoring() => Dispose();
 
         public void Dispose()
         {
-            usbDeviceArrival?.Stop();
-            usbDeviceRemoval?.Stop();
-            usbDeviceArrival?.Dispose();
-            usbDeviceRemoval?.Dispose();
-            usbDeviceArrival = null;
-            usbDeviceRemoval = null;
+            usbSerialArrival?.Stop();
+            usbSerialRemoval?.Stop();
+            usbSerialArrival?.Dispose();
+            usbSerialRemoval?.Dispose();
+            usbSerialArrival = null;
+            usbSerialRemoval = null;
 
             usbHubArrival?.Stop();
             usbHubRemoval?.Stop();
@@ -54,23 +54,23 @@ namespace Devices.Core.SerialPort
             => System.IO.Ports.SerialPort.GetPortNames();
 
         #region --- USB PORT DEVICES ----
-        private void MonitorUSBDevicesPortChanges()
+        private void MonitorUSBSerialDevicesPortChanges()
         {
             try
             {
-                // Detect insertion of all USB devices - Query every 1 second for device remove/insert
+                // Detect insertion of all USBSerial devices - Query every 1 second for device remove/insert
                 WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 2");
-                usbDeviceArrival = new ManagementEventWatcher(deviceArrivalQuery);
-                usbDeviceArrival.EventArrived += (sender, eventArgs) => RaisePortsChangedIfNecessary(PortEventType.Insertion, eventArgs);
+                usbSerialArrival = new ManagementEventWatcher(deviceArrivalQuery);
+                usbSerialArrival.EventArrived += (sender, eventArgs) => RaiseUsbSerialPortsChangedIfNecessary(PortEventType.Insertion, eventArgs);
                 // Start listening for USB device Arrival events
-                usbDeviceArrival.Start();
+                usbSerialArrival.Start();
 
-                // Detect removal of all USB devices
-                WqlEventQuery deviceRemovalQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 3"); 
-                usbDeviceRemoval = new ManagementEventWatcher(deviceRemovalQuery);
-                usbDeviceRemoval.EventArrived += (sender, eventArgs) => RaisePortsChangedIfNecessary(PortEventType.Removal, eventArgs);
+                // Detect removal of all USBSerial devices
+                WqlEventQuery deviceRemovalQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 3");
+                usbSerialRemoval = new ManagementEventWatcher(deviceRemovalQuery);
+                usbSerialRemoval.EventArrived += (sender, eventArgs) => RaiseUsbSerialPortsChangedIfNecessary(PortEventType.Removal, eventArgs);
                 // Start listening for USB Removal events
-                usbDeviceRemoval.Start();
+                usbSerialRemoval.Start();
             }
             catch (ManagementException e)
             {
@@ -78,7 +78,7 @@ namespace Devices.Core.SerialPort
             }
         }
 
-        private void RaisePortsChangedIfNecessary(PortEventType eventType, EventArrivedEventArgs eventArgs)
+        private void RaiseUsbSerialPortsChangedIfNecessary(PortEventType eventType, EventArrivedEventArgs eventArgs)
         {
             lock (serialPorts)
             {
@@ -112,18 +112,18 @@ namespace Devices.Core.SerialPort
         #endregion --- USB PORT DEVICES
 
         #region --- USB HUB DEVICES ----
-        private void MonitorUsbHubDeviceChanges()
+        private void MonitorUsbHubDevicesChanges()
         {
             try
             {
-                // Detect insertion of all USB devices - Query every 1 second for device remove/insert
+                // Detect insertion of all USBHub devices - Query every 1 second for device remove/insert
                 WqlEventQuery deviceArrivalQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
                 usbHubArrival = new ManagementEventWatcher(deviceArrivalQuery);
                 usbHubArrival.EventArrived += (sender, eventArgs) => RaiseUsbHubPortsChangedIfNecessary(PortEventType.Insertion, eventArgs);
                 // Start listening for events
                 usbHubArrival.Start();
 
-                // Detect removal of all USB devices
+                // Detect removal of all USBHub devices
                 WqlEventQuery deviceRemovalQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
                 usbHubRemoval = new ManagementEventWatcher(deviceRemovalQuery);
                 usbHubRemoval.EventArrived += (sender, eventArgs) => RaiseUsbHubPortsChangedIfNecessary(PortEventType.Removal, eventArgs);
