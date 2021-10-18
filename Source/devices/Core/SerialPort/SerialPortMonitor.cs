@@ -34,20 +34,31 @@ namespace Devices.Core.SerialPort
 
         public void Dispose()
         {
-            usbSerialArrival?.Stop();
-            usbSerialRemoval?.Stop();
-            usbSerialArrival?.Dispose();
-            usbSerialRemoval?.Dispose();
-            usbSerialArrival = null;
-            usbSerialRemoval = null;
+            if (usbSerialArrival != null)
+            {
+                usbSerialArrival?.Stop();
+                usbSerialArrival?.Dispose();
+                usbSerialArrival = null;
+            }
+            if (usbSerialRemoval != null)
+            {
+                usbSerialRemoval?.Stop();
+                usbSerialRemoval?.Dispose();
+                usbSerialRemoval = null;
+            }
 
-            usbHubArrival?.Stop();
-            usbHubRemoval?.Stop();
-            usbHubArrival?.Dispose();
-            usbHubRemoval?.Dispose();
-
-            usbHubArrival = null;
-            usbHubRemoval = null;
+            if (usbHubArrival != null)
+            {
+                usbHubArrival?.Stop();
+                usbHubArrival?.Dispose();
+                usbHubArrival = null;
+            }
+            if (usbHubRemoval != null)
+            {
+                usbHubRemoval?.Stop();
+                usbHubRemoval?.Dispose();
+                usbHubRemoval = null;
+            }
         }
 
         private static string[] GetAvailableSerialPorts()
