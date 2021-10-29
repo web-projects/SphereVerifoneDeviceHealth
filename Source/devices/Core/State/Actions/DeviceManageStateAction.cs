@@ -66,6 +66,7 @@ namespace Devices.Core.State.Actions
 
         public override Task DoWork()
         {
+            System.Diagnostics.Debug.WriteLine("DEV-WORFLOW: MANAGE --------------------------------------------------------------------------------------------------------");
             //if (!hasStatus)
             //{ 
             //    hasStatus = true;

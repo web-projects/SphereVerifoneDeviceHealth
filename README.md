@@ -21,10 +21,11 @@ This an application to query a Verifone device for its health status.
 
 ### Build self-contained executable ###
 * dotnet publish -r win10-x64 -c "Release" --self-contained true
-   
+
 ### HISTORY ###
 
 * 20210928 - Initial repository
 * 20210930 - GA_RELEASE_1_00_0_53_001
 * 20211001 - GA_RELEASE_1_00_0_53_002
 * 20211014 - GA_RELEASE_1_00_0_55_000
+* 20211020 - GA_RELEASE_1_00_0_56_00

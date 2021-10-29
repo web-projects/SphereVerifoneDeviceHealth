@@ -509,21 +509,24 @@ namespace Devices.Core.State.Management
 
                 if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
                 {
-                    Console.WriteLine($"connectevent_{TargetDevices[0]?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}");
+                    Console.WriteLine($"connectevent_{device?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}");
 
-                    // request device health report
-                    PriorityQueueDeviceEvents add = new PriorityQueueDeviceEvents(PriorityEventType.DeviceReport, (int)PriorityEventType.DeviceReport);
-                    PriorityQueue.Enqueue(add);
-
-                    Task.Run(async () =>
+                    // request device health report: check for existing q'd event in multi-device scenarios
+                    if (PriorityQueue.Count() == 0)
                     {
+                        PriorityQueueDeviceEvents add = new PriorityQueueDeviceEvents(PriorityEventType.DeviceReport, (int)PriorityEventType.DeviceReport);
+                        PriorityQueue.Enqueue(add);
+
+                        Task.Run(async () =>
+                        {
                         // Wait for transition to Manage State
                         while (currentStateAction.WorkflowStateType != DeviceWorkflowState.Manage)
-                        {
-                            await Task.Delay(100);
-                        }
-                        QueueEventReceived?.Invoke();
-                    });
+                            {
+                                await Task.Delay(100);
+                            }
+                            QueueEventReceived?.Invoke();
+                        });
+                    }
                 }
 
                 //string message = $"Comport plugged: '{portNumber}', DeviceType: '{device.ManufacturerConfigID}', Model: '{device.DeviceInformation?.Model}', SerialNumber: '{device.DeviceInformation?.SerialNumber}'";
@@ -550,7 +553,7 @@ namespace Devices.Core.State.Management
             {
                 if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
                 {
-                    Console.WriteLine($"disconnectevent_{TargetDevices[0]?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}\r\n");
+                    Console.WriteLine($"disconnectevent_{device?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}\r\n");
                 }
 
                 StartProgressBar();

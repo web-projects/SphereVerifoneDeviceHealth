@@ -69,6 +69,8 @@ namespace Devices.Core.State.Actions
             List<ICardDevice> discoveredCardDevices = null;
             List<ICardDevice> validatedCardDevices = null;
 
+            System.Diagnostics.Debug.WriteLine("DEV-WORFLOW: initialization ------------------------------------------------------------------------------------");
+
             try
             {
                 availableCardDevices = Controller.DevicePluginLoader.FindAvailableDevices(pluginPath);

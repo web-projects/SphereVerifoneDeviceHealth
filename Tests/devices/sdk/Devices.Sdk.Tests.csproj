@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Source\devices\common\Devices.Common.csproj" />
-    <ProjectReference Include="..\..\..\Source\devices\sdk\Devices.SDK.csproj" />
     <ProjectReference Include="..\..\..\Source\devices\Simulator\SimulatorDevice.csproj" />
   </ItemGroup>
 
