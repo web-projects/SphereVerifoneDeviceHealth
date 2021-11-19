@@ -1,4 +1,6 @@
-﻿using Devices.Common;
+﻿using Common.Execution;
+using Common.XO.Requests;
+using Devices.Common;
 using Devices.Common.AppConfig;
 using Devices.Common.Helpers;
 using Devices.Common.Interfaces;
@@ -14,8 +16,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.XO.Requests;
-using Common.Execution;
 
 namespace Devices.Core.State.SubWorkflows.Management
 {
@@ -270,17 +270,20 @@ namespace Devices.Core.State.SubWorkflows.Management
 
         private void StartProgressBar()
         {
-            DeviceProgressBar = new ProgressBar();
-
-            // display progress bar
-            Task.Run(async () =>
+            if (context.AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
             {
-                while (DeviceProgressBar != null)
+                DeviceProgressBar = new ProgressBar();
+
+                // display progress bar
+                Task.Run(async () =>
                 {
-                    DeviceProgressBar.UpdateBar();
-                    await Task.Delay(ProgressBar.TimeDelay);
-                }
-            });
+                    while (DeviceProgressBar != null)
+                    {
+                        DeviceProgressBar.UpdateBar();
+                        await Task.Delay(ProgressBar.TimeDelay);
+                    }
+                });
+            }
         }
 
         private void StopProgressBar()

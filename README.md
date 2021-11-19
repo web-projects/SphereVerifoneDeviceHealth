@@ -6,6 +6,7 @@ This an application to query a Verifone device for its health status.
 
 * VerifoneDeviceHealth APPLICATION
 * 1.00.0.53
+* git remote add origin https://github.com/web-projects/SphereVerifoneDeviceHealth.git
 
 ### VALIDATE DEVICE ITEMS ###
 

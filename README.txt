@@ -3,6 +3,12 @@ DEVICE CONFIGURATION TOOL REVISON HISTORY
 ===============================================================================
 
 -------------------------------------------------------------------------------
+VERSION.056.00 (11/19/2021)
+
+1. Update configuration bundles for TransLimit DISABLED
+2. Multi-device connection
+
+-------------------------------------------------------------------------------
 VERSION.055.00 (10/14/2021)
 
 1. UX301 validation support

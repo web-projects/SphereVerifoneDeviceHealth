@@ -8,6 +8,7 @@ using Devices.Core.State.Actions;
 using Devices.Core.State.Actions.Preprocessing;
 using Devices.Core.State.Providers;
 using System.Collections.Generic;
+using Execution;
 
 namespace Devices.Core.State.Interfaces
 {
@@ -15,6 +16,7 @@ namespace Devices.Core.State.Interfaces
     {
         string PluginPath { get; }
         DeviceSection Configuration { get; }
+        AppExecConfig AppExecConfig { get; }
         IDevicePluginLoader DevicePluginLoader { get; set; }
         List<ICardDevice> TargetDevices { get; }
         ISerialPortMonitor SerialPortMonitor { get; }

@@ -519,8 +519,8 @@ namespace Devices.Core.State.Management
 
                         Task.Run(async () =>
                         {
-                        // Wait for transition to Manage State
-                        while (currentStateAction.WorkflowStateType != DeviceWorkflowState.Manage)
+                            // Wait for transition to Manage State
+                            while (currentStateAction.WorkflowStateType != DeviceWorkflowState.Manage)
                             {
                                 await Task.Delay(100);
                             }
@@ -681,9 +681,12 @@ namespace Devices.Core.State.Management
             {
                 if (AppExecConfig.ExecutionMode == Modes.Execution.Console)
                 {
-                    Console.WriteLine($"SERIAL: ON PORT={TargetDevices[0].DeviceInformation?.ComPort} - CONNECTION OPEN");
-                    Console.WriteLine($"DEVICE FOUND: name='{TargetDevices[0]?.Name}', model='{TargetDevices[0]?.DeviceInformation?.Model}', " +
-                    $"serial='{TargetDevices[0]?.DeviceInformation?.SerialNumber}'\n");
+                    foreach (ICardDevice device in TargetDevices)
+                    {
+                        Console.WriteLine($"SERIAL: ON PORT={device.DeviceInformation?.ComPort} - CONNECTION OPEN");
+                        Console.WriteLine($"DEVICE FOUND: name='{device?.Name}', model='{device?.DeviceInformation?.Model}', " +
+                        $"serial='{device?.DeviceInformation?.SerialNumber}'\n");
+                    }
                 }
             }
         }
@@ -877,19 +880,22 @@ namespace Devices.Core.State.Management
 
         private void StartProgressBar()
         {
-            if (AppExecConfig.DisplayProgressBar)
+            if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
             {
-                DeviceProgressBar = new ProgressBar();
-
-                // display progress bar
-                Task.Run(async () =>
+                if (AppExecConfig.DisplayProgressBar)
                 {
-                    while (DeviceProgressBar != null)
+                    DeviceProgressBar = new ProgressBar();
+
+                    // display progress bar
+                    Task.Run(async () =>
                     {
-                        DeviceProgressBar.UpdateBar();
-                        await Task.Delay(ProgressBar.TimeDelay);
-                    }
-                });
+                        while (DeviceProgressBar != null)
+                        {
+                            DeviceProgressBar.UpdateBar();
+                            await Task.Delay(ProgressBar.TimeDelay);
+                        }
+                    });
+                }
             }
         }
 

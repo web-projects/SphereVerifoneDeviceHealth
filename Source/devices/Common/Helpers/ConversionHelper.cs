@@ -53,6 +53,22 @@ namespace Devices.Common.Helpers
         }
 
         /// <summary>
+        /// Expects the first array to equal or smaller than the second array
+        /// </summary>
+        /// <param name="array1"></param>
+        /// <param name="array2"></param>
+        /// <returns></returns>
+        public static byte[] XORArrays(byte[] array1, byte[] array2)
+        {
+            byte[] result = new byte[array1.Length];
+            for (int i = 0; i < array1.Length; i++)
+            {
+                result[i] = (byte)(array1[i] ^ array2[i]);
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Splits a string into sized chunks
         /// </summary>
         /// <param name="text"></param>
@@ -98,22 +114,6 @@ namespace Devices.Common.Helpers
             }
 
             return result.ToString();
-        }
-
-        /// <summary>
-        /// Expects the first array to equal or smaller than the second array
-        /// </summary>
-        /// <param name="array1"></param>
-        /// <param name="array2"></param>
-        /// <returns></returns>
-        public static byte[] XORArrays(byte[] array1, byte[] array2)
-        {
-            byte[] result = new byte[array1.Length];
-            for (int i = 0; i < array1.Length; i++)
-            {
-                result[i] = (byte)(array1[i] ^ array2[i]);
-            }
-            return result;
         }
 
         /// <summary>

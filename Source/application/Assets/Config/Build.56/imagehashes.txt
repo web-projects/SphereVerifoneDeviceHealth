@@ -1,0 +1,19 @@
+[EMVConfigs]
+
+=====================================================================================================
+--------------------------- SLOT SWITCH PROD/TEST ---------------------------------------------------
+=====================================================================================================
+
+[Epic]
+
+
+[NJT]
+sphere.njt.emv.attended.FD...6_8_2_11.211117.tgz       1F3CB123A144D0B738660F96E3C5C728   67538  0x000107D2
+sphere.njt.emv.attended.FD...6_8_2_11.211117_S8.tgz    21C09AB9603DB58F5786DB51034A138D   67311  0x000106EF
+sphere.njt.emv.unattended.FD...6_8_2_11.211117.tgz     25EAA9B55C1352634D2E0E00514E5220   67403  0x0001074B
+sphere.njt.emv.unattended.FD...6_8_2_11.211117_S8.tgz  5823EA997BC0FE3DEE7E2880953303B1   67415  0x00010757
+
+sphere.njt.emv.attended.FD...6_8_2_21.211117.tgz       D05B5FA1B7486FCF05371CC1E7B8AB27   67542  0x000107D6
+sphere.njt.emv.attended.FD...6_8_2_21.211117_S8.tgz    F5EFF38F067801B1668E4865BCA71FC7   67552  0x000107E0
+sphere.njt.emv.unattended.FD...6_8_2_21.211117.tgz     8A444EC45173A2D4822439A22556EE4B   67002  0x000105BA
+sphere.njt.emv.unattended.FD...6_8_2_21.211117_S8.tgz  35458F3AB4F2BE8FA605F027CF8BE671   67504  0x000107B0
