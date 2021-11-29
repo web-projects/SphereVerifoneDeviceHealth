@@ -3,10 +3,11 @@ DEVICE CONFIGURATION TOOL REVISON HISTORY
 ===============================================================================
 
 -------------------------------------------------------------------------------
-VERSION.056.00 (11/19/2021)
+VERSION.056.00 (11/29/2021)
 
 1. Update configuration bundles for TransLimit DISABLED
-2. Multi-device connection
+2. Added EPIC EMV bundles
+3. Multi-device connection
 
 -------------------------------------------------------------------------------
 VERSION.055.00 (10/14/2021)
@@ -64,7 +65,7 @@ VERSION.047.00 (05/25/2021)
 1. Device signing option: Sphere or Verifone-DEV.
 2. Attended configurations: 05/25/2021
 3. Slot change 0,8 for both Sphere and NJT.
-4. Idle images CustId: 199, 250. 
+4. Idle images CustId: 199, 250.
 5. 24 hour reboot
 
 -------------------------------------------------------------------------------
@@ -115,7 +116,7 @@ VERSION.034.01 (07/17/2020)
 
 1. CONTLEMV.CFG
    - ATTENDED/UNATTENDED RAISED CONTACTLESS LIMITS
-   
+
 -------------------------------------------------------------------------------
 VERSION.034 (07/10/2020)
 
@@ -124,23 +125,23 @@ VERSION.034 (07/10/2020)
      GREATER THAN $10.00
 2. TDOL.CFG
    - ALL DEVICES TO REPORT TAG 5F20 (CARDHOLDER NAME)
-   
+
 -------------------------------------------------------------------------------
 VERSION.033 (06/25/2020)
 
 1. CONTLEMV.CFG
    - ENGAGE/UX301 SPECIFIC CONFIGURATIONS TO ALLOW FOR CONTACTLESS ONLINE PIN
      REQUEST
-     
+
 2. ICCDATA.DAT
    - ENGAGE/UX301 SPECIFIC CONFIGURATIONS TO ALLOW FOR CONTACTLESS ONLINE PIN
      REQUEST
-     
+
 -------------------------------------------------------------------------------
 VERSION.032 (06/10/2020)
 
 I. Unattended using the Ux 301/401/100 (EMV L2 Version 7.0.3l)
-   Terminal 25 – Config 8C - CHECKSUM=D196BA9D 
+   Terminal 25 – Config 8C - CHECKSUM=D196BA9D
 
 II. Attended using the Engage P200 (EMV L2 Version 7.0.3r)
     Terminal 22 – Config 1C - CHECKSUM=96369E1F
@@ -148,13 +149,13 @@ II. Attended using the Engage P200 (EMV L2 Version 7.0.3r)
 
 1. CONTLEMV.CFG
    - ENGAGE/UX301 SPECIFIC CONFIGURATIONS
-   
+
 2. ICCDATA.DAT
    - ENGAGE/UX301 SPECIFIC CONFIGURATIONS
 
 3. ICCKEYS.KEY
    - ENGAGE/UX301 SPECIFIC CONFIGURATIONS
-    
+
 4. Added EMV Kernel checksum validation
    - ENGAGE/UX301 SPECIFIC CONFIGURATIONS
 
@@ -166,7 +167,7 @@ VERSION.031 (06/05/2020)
 1. CONTLEMV.CFG
    - Changed TAG 9F35 from '22' to '25'
    - Changed TAG 9F33 from '60 08 08' to 'E0 48 C8'
-   
+
 2. ICCDATA.DAT
    - Changed TAG 9F35 from '22' to '25'
    - Changed TAG 9F33 from 'E048C8' to 'E0B8C8'
@@ -174,7 +175,7 @@ VERSION.031 (06/05/2020)
 3. ICCKEYS.KEY
    - Changed TAG 9F35 from '22' to '25'
    - Changed TAG 9F33 from 'E048C8' to 'E0B8C8'
-    
+
 4. Added EMV Kernel checksum validation
 
 5. Added CONFIGURATION check for STATUS selection
