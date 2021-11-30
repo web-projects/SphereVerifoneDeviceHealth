@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using Common.XO.Device;
+using Common.XO.Requests;
 using Devices.Core.Cancellation;
 using Devices.Core.Helpers;
 using Devices.Core.State.Enums;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.XO.Requests;
 
 namespace Devices.Core.State.SubWorkflows.Actions
 {
@@ -38,6 +39,15 @@ namespace Devices.Core.State.SubWorkflows.Actions
 
                 foreach (var device in Controller.TargetDevices)
                 {
+                    // Update device information
+                    linkRequest.Actions[0].DeviceRequest.DeviceIdentifier
+                        = new LinkDeviceIdentifier()
+                        {
+                            Manufacturer = device.DeviceInformation?.Manufacturer,
+                            Model = device.DeviceInformation?.Model,
+                            SerialNumber = device.DeviceInformation?.SerialNumber
+                        };
+
                     devicesRequest.Add(JsonConvert.DeserializeObject<LinkRequest>(JsonConvert.SerializeObject(linkRequest)));
 
                     var timeoutPolicy = await cancellationBroker.ExecuteWithTimeoutAsync<LinkRequest>(

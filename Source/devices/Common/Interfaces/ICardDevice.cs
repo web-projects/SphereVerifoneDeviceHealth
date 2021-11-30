@@ -65,6 +65,6 @@ namespace Devices.Common.Interfaces
         LinkRequest DisplayCustomScreen(LinkRequest linkRequest);
         LinkRequest Reboot24Hour(LinkRequest linkRequest);
         LinkRequest SetTerminalDateTime(LinkRequest linkRequest);
-        LinkRequest VIPAVersions(LinkRequest linkRequest);
+        LinkActionRequest VIPAVersions(LinkActionRequest linkRequest);
     }
 }

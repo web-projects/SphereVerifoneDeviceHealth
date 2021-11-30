@@ -39,9 +39,9 @@ namespace Devices.Verifone.VIPA.Interfaces
 
         int FeatureEnablementToken();
 
-        int LockDeviceConfiguration0(bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere);
+        int LockDeviceConfiguration0(string deviceModel, bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere);
 
-        int LockDeviceConfiguration8(bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere);
+        int LockDeviceConfiguration8(string deviceModel, bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere);
 
         int UnlockDeviceConfiguration();
 

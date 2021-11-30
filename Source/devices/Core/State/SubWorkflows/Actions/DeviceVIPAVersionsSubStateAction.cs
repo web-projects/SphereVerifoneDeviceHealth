@@ -33,27 +33,31 @@ namespace Devices.Core.State.SubWorkflows.Actions
             else
             {
                 LinkRequest linkRequest = StateObject as LinkRequest;
-                LinkDeviceIdentifier deviceIdentifier = linkRequest.GetDeviceIdentifier();
-                IDeviceCancellationBroker cancellationBroker = Controller.GetDeviceCancellationBroker();
 
-                ICardDevice cardDevice = FindTargetDevice(deviceIdentifier);
-                if (cardDevice != null)
+                foreach (LinkActionRequest request in linkRequest.Actions)
                 {
-                    var timeoutPolicy = await cancellationBroker.ExecuteWithTimeoutAsync<LinkRequest>(
-                        _ => cardDevice.VIPAVersions(linkRequest),
-                        DeviceConstants.CardCaptureTimeout,
-                        this.CancellationToken);
+                    LinkDeviceIdentifier deviceIdentifier = request.DALRequest.DeviceIdentifier;
+                    IDeviceCancellationBroker cancellationBroker = Controller.GetDeviceCancellationBroker();
 
-                    if (timeoutPolicy.Outcome == Polly.OutcomeType.Failure)
+                    ICardDevice cardDevice = FindTargetDevice(deviceIdentifier);
+                    if (cardDevice != null)
                     {
-                        //_ = Controller.LoggingClient.LogErrorAsync($"Unable to process VIPA versions request from device - '{Controller.DeviceEvent}'.");
-                        Console.WriteLine($"Unable to process VIPA versions request from device - '{Controller.DeviceEvent}'.");
-                        BuildSubworkflowErrorResponse(linkRequest, cardDevice.DeviceInformation, Controller.DeviceEvent);
+                        var timeoutPolicy = await cancellationBroker.ExecuteWithTimeoutAsync<LinkActionRequest>(
+                            _ => cardDevice.VIPAVersions(request),
+                            DeviceConstants.CardCaptureTimeout,
+                            this.CancellationToken);
+
+                        if (timeoutPolicy.Outcome == Polly.OutcomeType.Failure)
+                        {
+                            //_ = Controller.LoggingClient.LogErrorAsync($"Unable to process VIPA versions request from device - '{Controller.DeviceEvent}'.");
+                            Console.WriteLine($"Unable to process VIPA versions request from device - '{Controller.DeviceEvent}'.");
+                            BuildSubworkflowErrorResponse(linkRequest, cardDevice.DeviceInformation, Controller.DeviceEvent);
+                        }
                     }
-                }
-                else
-                {
-                    UpdateRequestDeviceNotFound(linkRequest, deviceIdentifier);
+                    else
+                    {
+                        UpdateRequestDeviceNotFound(linkRequest, deviceIdentifier);
+                    }
                 }
 
                 Controller.SaveState(linkRequest);

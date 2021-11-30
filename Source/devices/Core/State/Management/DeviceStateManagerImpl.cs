@@ -4,6 +4,7 @@ using Common.Execution;
 using Common.Helpers;
 using Common.XO.Device;
 using Common.XO.Requests;
+using Common.XO.Requests.DAL;
 using Devices.Common;
 using Devices.Common.AppConfig;
 using Devices.Common.Helpers;
@@ -713,26 +714,37 @@ namespace Devices.Core.State.Management
                 {
                     MessageID = RandomGenerator.BuildRandomString(12),
                     Actions = new List<LinkActionRequest>()
+                };
+
+                foreach(ICardDevice device in TargetDevices)
+                {
+                    linkRequest.Actions.Add(new LinkActionRequest()
                     {
-                        new LinkActionRequest()
+                        Action = LinkAction.DALAction,
+                        DeviceActionRequest = new LinkDeviceActionRequest()
                         {
-                            Action = LinkAction.DALAction,
-                            DeviceActionRequest = new LinkDeviceActionRequest()
+                            DeviceAction = action
+                        },
+                        DeviceRequest = new LinkDeviceRequest()
+                        {
+                            DeviceIdentifier = new LinkDeviceIdentifier()
                             {
-                                DeviceAction = action
-                            },
-                            DeviceRequest = new LinkDeviceRequest()
+                                Manufacturer = device.DeviceInformation?.Manufacturer,
+                                Model = device.DeviceInformation?.Model,
+                                SerialNumber = device.DeviceInformation?.SerialNumber
+                            }
+                        },
+                        DALRequest = new LinkDALRequest()
+                        {
+                            DeviceIdentifier = new LinkDeviceIdentifier()
                             {
-                                DeviceIdentifier = new LinkDeviceIdentifier()
-                                {
-                                    Manufacturer = TargetDevices[0].DeviceInformation?.Manufacturer,
-                                    Model = TargetDevices[0].DeviceInformation?.Model,
-                                    SerialNumber = TargetDevices[0].DeviceInformation?.SerialNumber
-                                }
+                                Manufacturer = device.DeviceInformation?.Manufacturer,
+                                Model = device.DeviceInformation?.Model,
+                                SerialNumber = device.DeviceInformation?.SerialNumber
                             }
                         }
-                    }
-                };
+                    });
+                }
 
                 if (action == LinkDeviceActionType.Reboot24Hour)
                 {

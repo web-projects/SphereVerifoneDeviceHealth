@@ -575,7 +575,8 @@ namespace Devices.Verifone
                         //TODO: REFACTOR
                         if (activePackageIsEpic || activePackageIsNJT)
                         {
-                            vipaResponse = VipaDevice.LockDeviceConfiguration0(activePackageIsEpic, activeSigningMethodIsSphere);
+                            vipaResponse = VipaDevice.LockDeviceConfiguration0(deviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model,
+                                activePackageIsEpic, activeSigningMethodIsSphere);
                         }
                         // TTQ MSD ONLY
                         //else if (activePackageIsNJT)
@@ -691,7 +692,8 @@ namespace Devices.Verifone
                         bool activeSigningMethodIsSphere = SigningMethodActive.Equals("SPHERE");
                         bool activeSigningMethodIsVerifone = SigningMethodActive.Equals("VERIFONE");
 
-                        int vipaResponse = VipaDevice.LockDeviceConfiguration0(activePackageIsEpic, activeSigningMethodIsSphere);
+                        int vipaResponse = VipaDevice.LockDeviceConfiguration0(deviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model,
+                            activePackageIsEpic, activeSigningMethodIsSphere);
 
                         if (vipaResponse == (int)VipaSW1SW2Codes.Success)
                         {
@@ -746,7 +748,8 @@ namespace Devices.Verifone
                         bool activeSigningMethodIsSphere = SigningMethodActive.Equals("SPHERE");
                         bool activeSigningMethodIsVerifone = SigningMethodActive.Equals("VERIFONE");
 
-                        int vipaResponse = VipaDevice.LockDeviceConfiguration8(activePackageIsEpic, activeSigningMethodIsSphere);
+                        int vipaResponse = VipaDevice.LockDeviceConfiguration8(deviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model,
+                            activePackageIsEpic, activeSigningMethodIsSphere);
 
                         if (vipaResponse == (int)VipaSW1SW2Codes.Success)
                         {
@@ -1267,9 +1270,8 @@ namespace Devices.Verifone
             return linkRequest;
         }
 
-        public LinkRequest VIPAVersions(LinkRequest linkRequest)
+        public LinkActionRequest VIPAVersions(LinkActionRequest linkActionRequest)
         {
-            LinkActionRequest linkActionRequest = linkRequest?.Actions?.First();
             Console.WriteLine($"DEVICE[{DeviceInformation.ComPort}]: VIPA VERSIONS with SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
 
             if (VipaDevice != null)
@@ -1323,7 +1325,7 @@ namespace Devices.Verifone
                 }
             }
 
-            return linkRequest;
+            return linkActionRequest;
         }
 
         #endregion --- subworkflow mapping

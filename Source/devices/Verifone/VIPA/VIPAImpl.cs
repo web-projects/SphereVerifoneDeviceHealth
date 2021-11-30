@@ -770,9 +770,10 @@ namespace Devices.Verifone.VIPA
         }
 
         private int LockDeviceConfiguration(Dictionary<string, (string configType, string[] deviceTypes, string fileName, string fileHash, int fileSize)> configurationBundle,
-            bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere)
+            bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere, bool IsUXDevice)
         {
             (BinaryStatusObject binaryStatusObject, int VipaResponse) fileStatus = (null, (int)VipaSW1SW2Codes.Failure);
+
             foreach (var configFile in configurationBundle)
             {
                 bool configurationBundleMatches = activeConfigurationIsEpic ? configFile.Key.Contains("EPIC") : configFile.Key.Contains("NJT");
@@ -812,6 +813,12 @@ namespace Devices.Verifone.VIPA
                                 continue;
                             }
                         }
+                    }
+
+                    // UX devices require "unattended" bundles
+                    if (IsUXDevice && !configFile.Value.fileName.Contains("unattended"))
+                    {
+                        continue;
                     }
 
                     string fileName = configFile.Value.fileName;
@@ -867,14 +874,16 @@ namespace Devices.Verifone.VIPA
             return fileStatus.VipaResponse;
         }
 
-        public int LockDeviceConfiguration0(bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere)
+        public int LockDeviceConfiguration0(string deviceModel, bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere)
         {
-            return LockDeviceConfiguration(BinaryStatusObject.configBundlesSlot0, activeConfigurationIsEpic, activeSigningMethodIsSphere);
+            return LockDeviceConfiguration(BinaryStatusObject.configBundlesSlot0, activeConfigurationIsEpic, activeSigningMethodIsSphere,
+                BinaryStatusObject.UX_DEVICES.Any(x => x.Contains(deviceModel.Substring(0, 4))));
         }
 
-        public int LockDeviceConfiguration8(bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere)
+        public int LockDeviceConfiguration8(string deviceModel, bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere)
         {
-            return LockDeviceConfiguration(BinaryStatusObject.configBundlesSlot8, activeConfigurationIsEpic, activeSigningMethodIsSphere);
+            return LockDeviceConfiguration(BinaryStatusObject.configBundlesSlot8, activeConfigurationIsEpic, activeSigningMethodIsSphere,
+                BinaryStatusObject.UX_DEVICES.Any(x => x.Contains(deviceModel.Substring(0, 4))));
         }
 
         public int UnlockDeviceConfiguration()
