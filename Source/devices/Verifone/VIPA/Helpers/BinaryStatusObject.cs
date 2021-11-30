@@ -32,6 +32,9 @@ namespace Devices.Verifone.VIPA.Helpers
         public const string UNLOCK_CONFIG_HASH = "457EB4980E801C1D7883608B0A8CB492";
         public const int UNLOCK_CONFIG_SIZE = 0x5000;
 
+        public const string SPHERE_DEVICEHEALTH_FILENAME = "SphereDeviceHealth.txt";
+        public const int BINARY_READ_MAXLEN = 0xF8;
+
         // RAW CONFIGURATION FILES
         #region --- raw config files ---
 

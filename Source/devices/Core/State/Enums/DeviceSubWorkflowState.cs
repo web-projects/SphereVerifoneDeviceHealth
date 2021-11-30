@@ -120,6 +120,11 @@ namespace Devices.Core.State.Enums
         VIPAVersions,
 
         /// <summary>
+        /// Represents a state when DAL queries the device for Sphere Device Health file
+        /// </summary>
+        GetSphereHealthFile,
+
+        /// <summary>
         /// Represents a state where a sanity check is performed to ensure that the DAL
         /// is in an operational state ready to receive the next command before a response
         /// is sent back to the caller.

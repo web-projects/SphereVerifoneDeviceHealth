@@ -36,6 +36,7 @@ namespace Devices.Verifone.Helpers
 
         public event DeviceEventHandler DeviceEventOccured;
 
+        public string DeviceHealthFile { get; set; }
         public DeviceInformation DeviceInformation { get; set; }
         public AppExecConfig AppExecConfig { get; set; }
         public string SigningMethodActive { get; set; }
@@ -462,6 +463,9 @@ namespace Devices.Verifone.Helpers
                     bool activeSigningMethodIsSphere = SigningMethodActive.Equals("SPHERE");
                     bool activeSigningMethodIsVerifone = SigningMethodActive.Equals("VERIFONE");
 
+                    streamWriter.WriteLine($"DEVICE: SERIAL NUMBER _____: {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}");
+                    streamWriter.WriteLine($"DEVICE: VALIDATOR TIMESTAMP: {fileName.Split('_').GetValue(3).ToString().TrimEnd(new char[] { '.', 't', 'x', 't' })}");
+
                     streamWriter.WriteLine($"DEVICE: FIRMARE VERSION ___: {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.FirmwareVersion}");
                     streamWriter.WriteLine($"DEVICE: ADE-{ConfigProd.securityConfigurationObject.KeySlotNumber ?? "??"} KEY KSN ____: {ConfigProd.securityConfigurationObject.SRedCardKSN ?? "[ *** NOT FOUND *** ]"}");
 
@@ -638,6 +642,9 @@ namespace Devices.Verifone.Helpers
                 streamWriter.WriteLine($"DEVICE: HEALTH VALIDATION _: {(configIsValid ? "PASS" : "FAIL")}");
 
                 streamWriter.Close();
+
+                // Store device health file just created
+                DeviceHealthFile = filePath;
             }
 
             return 0;

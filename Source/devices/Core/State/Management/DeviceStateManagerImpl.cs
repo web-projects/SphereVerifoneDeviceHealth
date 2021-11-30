@@ -331,6 +331,10 @@ namespace Devices.Core.State.Management
                     {
                         Console.WriteLine($"Device discovery in progress...");
                     }
+                    else if (comPortEvent == PortEventType.Insertion && DeviceProgressBar is null)
+                    {
+                        StartProgressBar();
+                    }
 
                     // wait for USB driver to detach/reattach device
                     await Task.Delay(Configuration.DeviceDiscoveryDelay * 1024);
@@ -554,10 +558,9 @@ namespace Devices.Core.State.Management
             {
                 if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
                 {
-                    Console.WriteLine($"disconnectevent_{device?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}\r\n");
+                    Console.WriteLine($"\r\ndisconnectevent_{device?.DeviceInformation?.SerialNumber}_{Utils.GetTimeStampToSeconds()}\r\n");
+                    StartProgressBar();
                 }
-
-                StartProgressBar();
 
                 //string message = $"Comport unplugged: '{portNumber}', DeviceType: '{device.ManufacturerConfigID}', Model: '{device.DeviceInformation?.Model}', SerialNumber: '{device.DeviceInformation?.SerialNumber}'";
                 //LinkDeviceResponse deviceInfo = new LinkDeviceResponse()
@@ -716,7 +719,7 @@ namespace Devices.Core.State.Management
                     Actions = new List<LinkActionRequest>()
                 };
 
-                foreach(ICardDevice device in TargetDevices)
+                foreach (ICardDevice device in TargetDevices)
                 {
                     linkRequest.Actions.Add(new LinkActionRequest()
                     {

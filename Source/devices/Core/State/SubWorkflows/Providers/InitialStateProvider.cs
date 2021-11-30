@@ -38,6 +38,7 @@ namespace Devices.Core.State.SubWorkflows.Providers
                 LinkDeviceActionType.Reboot24Hour => DeviceSubWorkflowState.Reboot24Hour,
                 LinkDeviceActionType.SetTerminalDateTime => DeviceSubWorkflowState.SetTerminalDateTime,
                 LinkDeviceActionType.VIPAVersions => DeviceSubWorkflowState.VIPAVersions,
+                LinkDeviceActionType.GetSphereHealthFile => DeviceSubWorkflowState.GetSphereHealthFile,
                 _ => DeviceSubWorkflowState.Undefined
             });
 

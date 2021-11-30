@@ -250,6 +250,7 @@ namespace DEVICE_CORE
                             }
                             case ConsoleKey.F:
                             {
+                                await application.Command(LinkDeviceActionType.GetSphereHealthFile).ConfigureAwait(false);
                                 break;
                             }
                             case ConsoleKey.V:
@@ -492,6 +493,7 @@ namespace DEVICE_CORE
         {
             return configuration.GetValue<bool>("Application:DisplayProgressBar");
         }
+        
         static Modes.Execution GetApplicationExecutionMode(IConfiguration configuration)
         {
             return GetExecutionMode(configuration.GetValue<string>("Application:ExecutionMode"));
@@ -527,7 +529,7 @@ namespace DEVICE_CORE
         {
             "StandAlone" => Modes.Execution.StandAlone,
             "Console" => Modes.Execution.Console,
-            _ => Modes.Execution.Undefined
+            _ => Modes.Execution.StandAlone
         };
     }
 }

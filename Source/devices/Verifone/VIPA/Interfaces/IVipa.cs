@@ -67,5 +67,8 @@ namespace Devices.Verifone.VIPA.Interfaces
 
         (string Timestamp, int VipaResponse) SetTerminalDateTime(string timestamp);
 
+        void SaveDeviceHealthFile(string deviceSerialNumber, string deviceHealthFile);
+
+        int GetSphereHealthFile(string deviceSerialNumber);
     }
 }

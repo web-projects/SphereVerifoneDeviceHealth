@@ -34,6 +34,7 @@ namespace Common.XO.Requests
         DisplayCustomScreen,
         Reboot24Hour,
         SetTerminalDateTime,
-        VIPAVersions
+        VIPAVersions,
+        GetSphereHealthFile
     }
 }

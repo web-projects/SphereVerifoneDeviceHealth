@@ -66,5 +66,6 @@ namespace Devices.Common.Interfaces
         LinkRequest Reboot24Hour(LinkRequest linkRequest);
         LinkRequest SetTerminalDateTime(LinkRequest linkRequest);
         LinkActionRequest VIPAVersions(LinkActionRequest linkRequest);
+        LinkRequest GetSphereHealthFile(LinkRequest linkRequest);
     }
 }

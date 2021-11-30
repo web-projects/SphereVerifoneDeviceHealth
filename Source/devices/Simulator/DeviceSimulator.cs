@@ -292,11 +292,18 @@ namespace Devices.Simulator
             return linkRequest;
         }
 
-        public LinkRequest VIPAVersions(LinkRequest linkRequest)
+        public LinkActionRequest VIPAVersions(LinkActionRequest linkActionRequest)
+        {
+            Console.WriteLine("----------------------------------------------------------------------------------------------------");
+            Console.WriteLine($"simulator: VIPA VERSIONS for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
+            return linkActionRequest;
+        }
+
+        public LinkRequest GetSphereHealthFile(LinkRequest linkRequest)
         {
             LinkActionRequest linkActionRequest = linkRequest?.Actions?.First();
             Console.WriteLine("----------------------------------------------------------------------------------------------------");
-            Console.WriteLine($"simulator: VIPA VERSIONS for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
+            Console.WriteLine($"simulator: GET SPHERE DEVICE HEALTH FILE for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
             return linkRequest;
         }
 

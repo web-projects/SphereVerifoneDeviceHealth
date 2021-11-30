@@ -1358,6 +1358,76 @@ namespace Devices.Verifone.VIPA
             return terminalDateTimeInformationObject;
         }
 
+        public void SaveDeviceHealthFile(string deviceSerialNumber, string deviceHealthFile)
+        {
+            PutDeviceHealthFile(deviceSerialNumber, deviceHealthFile, Path.GetFileName(deviceHealthFile));
+        }
+
+        public int GetSphereHealthFile(string deviceSerialNumber)
+        {
+            string targetFile = $"{deviceSerialNumber}_{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILENAME}";
+
+            // check for access to the file
+            (BinaryStatusObject binaryStatusObject, int VipaResponse) fileStatus = GetBinaryStatus(targetFile);
+
+            // When the file cannot be accessed, VIPA returns SW1SW2 equal to 9F13
+            if (fileStatus.VipaResponse != (int)VipaSW1SW2Codes.Success)
+            {
+                Console.WriteLine(string.Format("VIPA {0} ACCESS ERROR=0x{1:X4} - '{2}'",
+                    BinaryStatusObject.MAPP_SRED_CONFIG, fileStatus.VipaResponse, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
+                return fileStatus.VipaResponse;
+            }
+
+            // Setup for FILE OPERATIONS
+            fileStatus = SelectFileForOps(targetFile);
+
+            if (fileStatus.VipaResponse != (int)VipaSW1SW2Codes.Success)
+            {
+                Console.WriteLine(string.Format("VIPA {0} ACCESS ERROR=0x{1:X4} - '{2}'",
+                    BinaryStatusObject.MAPP_SRED_CONFIG, fileStatus.VipaResponse, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
+                return fileStatus.VipaResponse;
+            }
+
+            // setup for targer file
+            string fileDir = Directory.GetCurrentDirectory() + "\\logs";
+            if (!Directory.Exists(fileDir))
+            {
+                Directory.CreateDirectory(fileDir);
+            }
+            string filePath = Path.Combine(fileDir, targetFile);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            // ReadBinary: read file contents
+            int fileSize = fileStatus.binaryStatusObject.FileSize;
+            int offset = 0;
+
+            while (offset < fileSize)
+            {
+                byte P1 = (byte)(((offset & 0xFF0000) >> 16) & 0xFF);
+                P1 |= 0x80;
+                byte P2 = (byte)(((offset & 0xFF00) >> 8) & 0xFF);
+                byte lenOffset = (byte)(offset & 0xFF);
+
+                fileStatus = ReadAllBinaryDataFromSelectedFile(P1, P2, lenOffset, BinaryStatusObject.BINARY_READ_MAXLEN);
+
+                offset += (fileStatus.binaryStatusObject.ReadResponseBytes.Length > BinaryStatusObject.BINARY_READ_MAXLEN) ? BinaryStatusObject.BINARY_READ_MAXLEN : fileStatus.binaryStatusObject.ReadResponseBytes.Length;
+
+                // write to disk
+                if (fileStatus.VipaResponse == (int)VipaSW1SW2Codes.Success)
+                {
+                    using (StreamWriter streamWriter = new StreamWriter(filePath, append: true))
+                    {
+                        streamWriter.Write(Encoding.UTF8.GetString(fileStatus.binaryStatusObject.ReadResponseBytes).Replace("\0", string.Empty));
+                    }
+                }
+            }
+
+            return fileStatus.VipaResponse;
+        }
+
         private (int vipaResponse, int vipaData) VerifyAmountScreen(string displayMessage)
         {
             CancelResponseHandlers();
@@ -1692,6 +1762,77 @@ namespace Devices.Verifone.VIPA
             return deviceBinaryStatus;
         }
 
+        private (BinaryStatusObject binaryStatusObject, int VipaResponse) PutDeviceHealthFile(string deviceSerialNumber, string sourceFile, string targetFile)
+        {
+            if (string.IsNullOrEmpty(sourceFile))
+            {
+                return (null, (int)VipaSW1SW2Codes.Failure);
+            }
+
+            (BinaryStatusObject binaryStatusObject, int VipaResponse) deviceBinaryStatus = (null, (int)VipaSW1SW2Codes.Failure);
+
+            if (File.Exists(sourceFile))
+            {
+                ResponseTagsHandlerSubscribed++;
+                ResponseTagsHandler += GetBinaryStatusResponseHandler;
+
+                FileInfo fileInfo = new FileInfo(sourceFile);
+                long fileLength = fileInfo.Length;
+                byte[] streamSize = new byte[4];
+                Array.Copy(BitConverter.GetBytes(fileLength), 0, streamSize, 0, streamSize.Length);
+                Array.Reverse(streamSize);
+
+                // File information
+                var fileInformation = new TLV
+                {
+                    Tag = _6FTemplate._6fTemplateTag,
+                    InnerTags = new List<TLV>()
+                    {
+                        new TLV(_6FTemplate.FileNameTag, Encoding.UTF8.GetBytes($"{deviceSerialNumber}_{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILENAME}")),
+                        new TLV(_6FTemplate.FileSizeTag, streamSize),
+                    }
+                };
+                byte[] fileInformationData = TLV.Encode(fileInformation);
+
+                DeviceBinaryStatusInformation = new TaskCompletionSource<(BinaryStatusObject binaryStatusObject, int VipaResponse)>();
+
+                // Stream Upload [00, A5]
+                SendVipaCommand(VIPACommandType.StreamUpload, 0x05, 0x81, fileInformationData);
+
+                // Tag 6F with size and checksum is returned on success
+                deviceBinaryStatus = DeviceBinaryStatusInformation.Task.Result;
+
+                //if (vipaResponse == (int)VipaSW1SW2Codes.Success)
+                if (deviceBinaryStatus.VipaResponse == (int)VipaSW1SW2Codes.Success)
+                {
+                    using (FileStream fs = File.OpenRead(sourceFile))
+                    {
+                        int numBytesToRead = (int)fs.Length;
+
+                        while (numBytesToRead > 0)
+                        {
+                            byte[] readBytes = new byte[PACKET_SIZE];
+                            int bytesRead = fs.Read(readBytes, 0, PACKET_SIZE);
+                            WriteRawBytes(readBytes);
+                            numBytesToRead -= bytesRead;
+                        }
+
+                        // save original filename
+                        WriteRawBytes(Encoding.ASCII.GetBytes($"DEVICE: ORIGINAL SIGNATURE : {targetFile}"));
+                    }
+
+                    // wait for device reponse
+                    DeviceBinaryStatusInformation = new TaskCompletionSource<(BinaryStatusObject binaryStatusObject, int VipaResponse)>();
+                    deviceBinaryStatus = DeviceBinaryStatusInformation.Task.Result;
+                }
+
+                ResponseTagsHandler -= GetBinaryStatusResponseHandler;
+                ResponseTagsHandlerSubscribed--;
+            }
+
+            return deviceBinaryStatus;
+        }
+
         private (BinaryStatusObject binaryStatusObject, int VipaResponse) GetBinaryStatus(string fileName)
         {
             CancelResponseHandlers();
@@ -1756,6 +1897,31 @@ namespace Devices.Verifone.VIPA
             //command.includeLE = true;
             //command.le = bytesToRead;
             VIPACommand command = new VIPACommand(VIPACommandType.ReadBinary) { nad = 0x1, pcb = 0x00, p1 = 0x00, p2 = readOffset, includeLE = true, le = bytesToRead };
+            // Read Binary [00, B0]
+            WriteSingleCmd(command);
+
+            var deviceBinaryStatus = DeviceBinaryStatusInformation.Task.Result;
+
+            ResponseTaglessHandler -= GetBinaryDataResponseHandler;
+            ResponseTagsHandlerSubscribed--;
+
+            return deviceBinaryStatus;
+        }
+
+        private (BinaryStatusObject binaryStatusObject, int VipaResponse) ReadAllBinaryDataFromSelectedFile(byte P1, byte P2, byte offset, byte bytesToRead)
+        {
+            CancelResponseHandlers();
+
+            ResponseTagsHandlerSubscribed++;
+            ResponseTaglessHandler += GetBinaryDataResponseHandler;
+
+            // When the file cannot be accessed, VIPA returns SW1SW2 equal to 9F13
+            DeviceBinaryStatusInformation = new TaskCompletionSource<(BinaryStatusObject binaryStatusObject, int VipaResponse)>();
+
+            // P1 bit 8 = 0: P1 and P2 are the offset at which to read the data from (15-bit addressing)
+            // P1 bit 8 = 1: data size 2 bytes, first byte is low-order offset byte, 2nd byte is number of bytes to read
+            // DATA - If P1 bit 8 = 0, data size 1 byte, contains the number of bytes to read
+            VIPACommand command = new VIPACommand(VIPACommandType.ReadBinary) { nad = 0x1, pcb = 0x00, p1 = P1, p2 = P2, includeLE = true, le = bytesToRead, data = new byte[] { offset } };
             // Read Binary [00, B0]
             WriteSingleCmd(command);
 

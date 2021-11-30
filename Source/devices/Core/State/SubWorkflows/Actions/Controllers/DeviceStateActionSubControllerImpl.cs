@@ -36,6 +36,7 @@ namespace Devices.Core.State.SubWorkflows.Actions.Controllers
                     [Reboot24Hour] = (IDeviceSubStateController _) => new DeviceReboot24HourSubStateAction(_),
                     [SetTerminalDateTime] = (IDeviceSubStateController _) => new DeviceSetTerminalDateTimeSubStateAction(_),
                     [VIPAVersions] = (IDeviceSubStateController _) => new DeviceVIPAVersionsSubStateAction(_),
+                    [GetSphereHealthFile] = (IDeviceSubStateController _) => new DeviceGetSphereHealthFileSubStateAction(_),
                     [SanityCheck] = (IDeviceSubStateController _) => new DeviceSanityCheckSubStateAction(_),
                     [RequestComplete] = (IDeviceSubStateController _) => new DeviceRequestCompleteSubStateAction(_)
                 }

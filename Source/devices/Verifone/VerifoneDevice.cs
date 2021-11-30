@@ -20,6 +20,7 @@ using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Composition;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using StringValueAttribute = Devices.Common.Helpers.StringValueAttribute;
@@ -292,7 +293,10 @@ namespace Devices.Verifone
 
         public bool DeviceRecovery()
         {
-            Console.WriteLine($"DEVICE: ON PORT={DeviceInformation.ComPort} - DEVICE-RECOVERY");
+            if (AppExecConfig.ExecutionMode == Modes.Execution.Console)
+            {
+                Console.WriteLine($"DEVICE: ON PORT={DeviceInformation.ComPort} - DEVICE-RECOVERY");
+            }
             return false;
         }
 
@@ -535,6 +539,15 @@ namespace Devices.Verifone
                         };
                         healthStatusCheckImpl.DeviceEventOccured += DeviceEventOccured;
                         healthStatusCheckImpl.ProcessHealthFromExectutionMode();
+
+                        // Save file to device
+                        if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
+                        {
+                            if (!string.IsNullOrEmpty(healthStatusCheckImpl.DeviceHealthFile) && File.Exists(healthStatusCheckImpl.DeviceHealthFile))
+                            {
+                                VipaDevice.SaveDeviceHealthFile(DeviceInformation.SerialNumber, healthStatusCheckImpl.DeviceHealthFile);
+                            }
+                        }
                     }
 
                     // Set device to idle
@@ -1326,6 +1339,39 @@ namespace Devices.Verifone
             }
 
             return linkActionRequest;
+        }
+
+        public LinkRequest GetSphereHealthFile(LinkRequest linkRequest)
+        {
+            LinkActionRequest linkActionRequest = linkRequest?.Actions?.First();
+            Console.WriteLine($"DEVICE[{DeviceInformation.ComPort}]: GET SPHERE HEALTH FILE for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
+
+            if (VipaDevice != null)
+            {
+                if (!IsConnected)
+                {
+                    VipaDevice.Dispose();
+                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
+                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                }
+
+                if (IsConnected)
+                {
+                    (DeviceInfoObject deviceInfoObject, int VipaResponse) deviceIdentifier = VipaDevice.DeviceCommandReset();
+
+                    if (deviceIdentifier.VipaResponse == (int)VipaSW1SW2Codes.Success)
+                    {
+                        int vipaResponse = VipaDevice.GetSphereHealthFile(deviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber);
+                        if (vipaResponse == (int)VipaSW1SW2Codes.Success)
+                        {
+                            Console.WriteLine("DEVICE: GET SPHERE HEALTH FILE SUCCESS\n");
+                        }
+                        DeviceSetIdle();
+                    }
+                }
+            }
+
+            return linkRequest;
         }
 
         #endregion --- subworkflow mapping
