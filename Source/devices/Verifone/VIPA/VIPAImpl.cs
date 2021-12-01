@@ -1365,7 +1365,8 @@ namespace Devices.Verifone.VIPA
 
         public int GetSphereHealthFile(string deviceSerialNumber)
         {
-            string targetFile = $"{deviceSerialNumber}_{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILENAME}";
+            string targetFilename = $"{deviceSerialNumber}_{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILENAME}";
+            string targetFile = $"{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILEDIR}/{targetFilename}";
 
             // check for access to the file
             (BinaryStatusObject binaryStatusObject, int VipaResponse) fileStatus = GetBinaryStatus(targetFile);
@@ -1374,7 +1375,7 @@ namespace Devices.Verifone.VIPA
             if (fileStatus.VipaResponse != (int)VipaSW1SW2Codes.Success)
             {
                 Console.WriteLine(string.Format("VIPA {0} ACCESS ERROR=0x{1:X4} - '{2}'",
-                    BinaryStatusObject.MAPP_SRED_CONFIG, fileStatus.VipaResponse, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
+                    targetFilename, fileStatus.VipaResponse, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
                 return fileStatus.VipaResponse;
             }
 
@@ -1384,7 +1385,7 @@ namespace Devices.Verifone.VIPA
             if (fileStatus.VipaResponse != (int)VipaSW1SW2Codes.Success)
             {
                 Console.WriteLine(string.Format("VIPA {0} ACCESS ERROR=0x{1:X4} - '{2}'",
-                    BinaryStatusObject.MAPP_SRED_CONFIG, fileStatus.VipaResponse, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
+                    targetFilename, fileStatus.VipaResponse, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
                 return fileStatus.VipaResponse;
             }
 
@@ -1394,7 +1395,7 @@ namespace Devices.Verifone.VIPA
             {
                 Directory.CreateDirectory(fileDir);
             }
-            string filePath = Path.Combine(fileDir, targetFile);
+            string filePath = Path.Combine(fileDir, targetFilename);
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
@@ -1782,13 +1783,16 @@ namespace Devices.Verifone.VIPA
                 Array.Copy(BitConverter.GetBytes(fileLength), 0, streamSize, 0, streamSize.Length);
                 Array.Reverse(streamSize);
 
+                string targetFilename = $"{deviceSerialNumber}_{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILENAME}";
+                string targetFileOut = $"{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILEDIR}/{targetFilename}";
+
                 // File information
                 var fileInformation = new TLV
                 {
                     Tag = _6FTemplate._6fTemplateTag,
                     InnerTags = new List<TLV>()
                     {
-                        new TLV(_6FTemplate.FileNameTag, Encoding.UTF8.GetBytes($"{deviceSerialNumber}_{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILENAME}")),
+                        new TLV(_6FTemplate.FileNameTag, Encoding.UTF8.GetBytes(targetFileOut)),
                         new TLV(_6FTemplate.FileSizeTag, streamSize),
                     }
                 };

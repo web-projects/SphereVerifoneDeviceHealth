@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static System.ExtensionMethods;
@@ -463,6 +464,7 @@ namespace Devices.Verifone.Helpers
                     bool activeSigningMethodIsSphere = SigningMethodActive.Equals("SPHERE");
                     bool activeSigningMethodIsVerifone = SigningMethodActive.Equals("VERIFONE");
 
+                    streamWriter.WriteLine($"DEVICE: HEALTH TOOL VERSION: {Assembly.GetEntryAssembly().GetName().Version}");
                     streamWriter.WriteLine($"DEVICE: SERIAL NUMBER _____: {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}");
                     streamWriter.WriteLine($"DEVICE: VALIDATOR TIMESTAMP: {fileName.Split('_').GetValue(3).ToString().TrimEnd(new char[] { '.', 't', 'x', 't' })}");
 
