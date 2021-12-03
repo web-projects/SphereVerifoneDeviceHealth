@@ -37,7 +37,7 @@ namespace Devices.Core.State.SubWorkflows.Actions
 
                 List<LinkRequest> devicesRequest = new List<LinkRequest>();
 
-                foreach (var device in Controller.TargetDevices)
+                foreach (Common.Interfaces.ICardDevice device in Controller.TargetDevices)
                 {
                     // Update device information
                     linkRequest.Actions[0].DeviceRequest.DeviceIdentifier

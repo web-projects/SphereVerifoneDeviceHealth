@@ -34,16 +34,16 @@ namespace Devices.Core.State.SubWorkflows.Actions
             {
                 LinkRequest linkRequest = StateObject as LinkRequest;
 
-                foreach (LinkActionRequest request in linkRequest.Actions)
+                foreach (LinkActionRequest linkActionRequest in linkRequest.Actions)
                 {
-                    LinkDeviceIdentifier deviceIdentifier = request.DALRequest.DeviceIdentifier;
+                    LinkDeviceIdentifier deviceIdentifier = linkActionRequest.DALRequest.DeviceIdentifier;
                     IDeviceCancellationBroker cancellationBroker = Controller.GetDeviceCancellationBroker();
 
                     ICardDevice cardDevice = FindTargetDevice(deviceIdentifier);
                     if (cardDevice != null)
                     {
                         var timeoutPolicy = await cancellationBroker.ExecuteWithTimeoutAsync<LinkActionRequest>(
-                            _ => cardDevice.VIPAVersions(request),
+                            _ => cardDevice.VIPAVersions(linkActionRequest),
                             DeviceConstants.CardCaptureTimeout,
                             this.CancellationToken);
 

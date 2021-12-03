@@ -65,7 +65,7 @@ namespace DEVICE_CORE
 
             // setup working environment
             (DirectoryInfo di, bool allowDebugCommands, Modes.Execution executionMode,
-                string healthCheckValidationMode, bool displayProgressBar) = SetupEnvironment();
+                string healthCheckValidationMode, bool displayProgressBar, bool terminalBypassHealthRecord) = SetupEnvironment();
 
             if (executionMode == Modes.Execution.Undefined)
             {
@@ -84,6 +84,7 @@ namespace DEVICE_CORE
 
             await application.Run(new AppExecConfig
             {
+                TerminalBypassHealthRecord = terminalBypassHealthRecord,
                 DisplayProgressBar = displayProgressBar,
                 ForeGroundColor = foreGroundColor,
                 BackGroundColor = backGroundColor,
@@ -114,7 +115,7 @@ namespace DEVICE_CORE
             DeleteWorkingDirectory(di);
         }
 
-        static private (DirectoryInfo, bool, Modes.Execution, string, bool) SetupEnvironment()
+        static private (DirectoryInfo, bool, Modes.Execution, string, bool, bool) SetupEnvironment()
         {
             DirectoryInfo di = null;
 
@@ -149,8 +150,9 @@ namespace DEVICE_CORE
             }
 
             bool displayProgressBar = GetApplicationDisplayProgressBar(configuration);
+            bool terminalBypassHealthRecord = GetApplicationTerminalBypassHealthRecord(configuration);
 
-            return (di, AllowDebugCommands(configuration, 0), executionMode, healthCheckValidationMode, displayProgressBar);
+            return (di, AllowDebugCommands(configuration, 0), executionMode, healthCheckValidationMode, displayProgressBar, terminalBypassHealthRecord);
         }
 
         static private void SetupWindow()
@@ -493,7 +495,12 @@ namespace DEVICE_CORE
         {
             return configuration.GetValue<bool>("Application:DisplayProgressBar");
         }
-        
+
+        static bool GetApplicationTerminalBypassHealthRecord(IConfiguration configuration)
+        {
+            return configuration.GetValue<bool>("Application:TerminalBypassHealthRecord");
+        }
+
         static Modes.Execution GetApplicationExecutionMode(IConfiguration configuration)
         {
             return GetExecutionMode(configuration.GetValue<string>("Application:ExecutionMode"));

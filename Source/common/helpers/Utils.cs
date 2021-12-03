@@ -38,6 +38,12 @@ namespace Common.Helpers
             return value.ToString("MMddyyyyHHmm");
         }
 
+        public static string GetTimeStampToMinutes()
+        {
+            DateTime value = DateTime.Now;
+            return value.ToString("MMddyyyyHHmm");
+        }
+
         public static string GetTimeStampToSeconds()
         {
             DateTime value = DateTime.Now;

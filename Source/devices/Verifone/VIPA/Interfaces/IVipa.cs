@@ -1,4 +1,5 @@
-﻿using Common.XO.Private;
+﻿using Common.Execution;
+using Common.XO.Private;
 using Devices.Common;
 using Devices.Common.AppConfig;
 using Devices.Verifone.Connection;
@@ -69,6 +70,8 @@ namespace Devices.Verifone.VIPA.Interfaces
 
         void SaveDeviceHealthFile(string deviceSerialNumber, string deviceHealthFile);
 
-        int GetSphereHealthFile(string deviceSerialNumber);
+        (int, byte[]) GetSphereHealthFile(Modes.Execution executionMode, string deviceSerialNumber, bool writeToFile = true);
+
+        string GetDeviceHealthTimeZone(Modes.Execution executionMode, string deviceSerialNumber);
     }
 }

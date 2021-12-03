@@ -1,4 +1,5 @@
 ﻿using Common.Config.Config;
+using Common.Execution;
 using Common.LoggerManager;
 using Common.XO.Device;
 using Common.XO.Private;
@@ -1363,7 +1364,7 @@ namespace Devices.Verifone.VIPA
             PutDeviceHealthFile(deviceSerialNumber, deviceHealthFile, Path.GetFileName(deviceHealthFile));
         }
 
-        public int GetSphereHealthFile(string deviceSerialNumber)
+        public (int, byte[]) GetSphereHealthFile(Modes.Execution executionMode, string deviceSerialNumber, bool writeToFile = true)
         {
             string targetFilename = $"{deviceSerialNumber}_{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILENAME}";
             string targetFile = $"{BinaryStatusObject.SPHERE_DEVICEHEALTH_FILEDIR}/{targetFilename}";
@@ -1374,9 +1375,12 @@ namespace Devices.Verifone.VIPA
             // When the file cannot be accessed, VIPA returns SW1SW2 equal to 9F13
             if (fileStatus.VipaResponse != (int)VipaSW1SW2Codes.Success)
             {
-                Console.WriteLine(string.Format("VIPA {0} ACCESS ERROR=0x{1:X4} - '{2}'",
+                if (executionMode == Modes.Execution.Console)
+                {
+                    Console.WriteLine(string.Format("VIPA {0} ACCESS ERROR=0x{1:X4} - '{2}'",
                     targetFilename, fileStatus.VipaResponse, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
-                return fileStatus.VipaResponse;
+                }
+                return (fileStatus.VipaResponse, null);
             }
 
             // Setup for FILE OPERATIONS
@@ -1384,9 +1388,12 @@ namespace Devices.Verifone.VIPA
 
             if (fileStatus.VipaResponse != (int)VipaSW1SW2Codes.Success)
             {
-                Console.WriteLine(string.Format("VIPA {0} ACCESS ERROR=0x{1:X4} - '{2}'",
+                if (executionMode == Modes.Execution.Console)
+                {
+                    Console.WriteLine(string.Format("VIPA {0} ACCESS ERROR=0x{1:X4} - '{2}'",
                     targetFilename, fileStatus.VipaResponse, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
-                return fileStatus.VipaResponse;
+                }
+                return (fileStatus.VipaResponse, null);
             }
 
             // setup for targer file
@@ -1405,6 +1412,8 @@ namespace Devices.Verifone.VIPA
             int fileSize = fileStatus.binaryStatusObject.FileSize;
             int offset = 0;
 
+            using MemoryStream memoryStream = new MemoryStream();
+
             while (offset < fileSize)
             {
                 byte P1 = (byte)(((offset & 0xFF0000) >> 16) & 0xFF);
@@ -1417,16 +1426,58 @@ namespace Devices.Verifone.VIPA
                 offset += (fileStatus.binaryStatusObject.ReadResponseBytes.Length > BinaryStatusObject.BINARY_READ_MAXLEN) ? BinaryStatusObject.BINARY_READ_MAXLEN : fileStatus.binaryStatusObject.ReadResponseBytes.Length;
 
                 // write to disk
-                if (fileStatus.VipaResponse == (int)VipaSW1SW2Codes.Success)
+                if (writeToFile)
                 {
-                    using (StreamWriter streamWriter = new StreamWriter(filePath, append: true))
+                    if (fileStatus.VipaResponse == (int)VipaSW1SW2Codes.Success)
                     {
-                        streamWriter.Write(Encoding.UTF8.GetString(fileStatus.binaryStatusObject.ReadResponseBytes).Replace("\0", string.Empty));
+                        using (StreamWriter streamWriter = new StreamWriter(filePath, append: true))
+                        {
+                            streamWriter.Write(Encoding.UTF8.GetString(fileStatus.binaryStatusObject.ReadResponseBytes).Replace("\0", string.Empty));
+                        }
+                    }
+                }
+                else
+                {
+                    memoryStream.Write(fileStatus.binaryStatusObject.ReadResponseBytes);
+                }
+            }
+
+            if (!writeToFile)
+            {
+                memoryStream.Flush();
+            }
+
+            return (fileStatus.VipaResponse, writeToFile ? null : memoryStream.ToArray());
+        }
+
+        public string GetDeviceHealthTimeZone(Modes.Execution executionMode, string deviceSerialNumber)
+        {
+            (int vipaResponse, byte[] byteArray) = GetSphereHealthFile(executionMode, deviceSerialNumber, false);
+
+            if (vipaResponse == (int)VipaSW1SW2Codes.Success)
+            {
+                if (byteArray != null && byteArray.Length > 0)
+                {
+                    string targetString = "WORKSTATION TIMEZONE";
+                    string payload = Encoding.UTF8.GetString(byteArray).Replace("\0", string.Empty);
+                    if (payload.Length > 0 && payload.Contains(targetString))
+                    {
+                        int offset = payload.IndexOf(targetString, StringComparison.OrdinalIgnoreCase);
+                        if (offset != -1)
+                        {
+                            string workstationTimeZone = payload.Substring(offset + targetString.Length + 3, 11);
+                            // string looks like "(UTC-00:00)"
+                            if (workstationTimeZone.Contains("(UTC-"))
+                            {
+                                // only need "(UTC-00:00)" part
+                                return workstationTimeZone.Substring(0, 11);
+                            }
+                        }
                     }
                 }
             }
 
-            return fileStatus.VipaResponse;
+            return string.Empty;
         }
 
         private (int vipaResponse, int vipaData) VerifyAmountScreen(string displayMessage)

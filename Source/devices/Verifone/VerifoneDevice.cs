@@ -166,6 +166,22 @@ namespace Devices.Verifone
 
         }
 
+        private string GetWorkstationTimeZone()
+        {
+            TimeZoneInfo curTimeZone = TimeZoneInfo.Local;
+            return curTimeZone.DisplayName;
+        }
+
+        private string GetKIFTimeZoneFromDeviceHealthFile(string deviceSerialNumber)
+        {
+            if (VipaDevice != null)
+            {
+                return VipaDevice.GetDeviceHealthTimeZone(AppExecConfig.ExecutionMode, deviceSerialNumber);
+            }
+
+            return string.Empty;
+        }
+
         public void SetDeviceSectionConfig(DeviceSection config, AppExecConfig appConfig)
         {
             deviceSectionConfig = config;
@@ -192,6 +208,7 @@ namespace Devices.Verifone
                     string onlinePINSource = deviceSectionConfig.Verifone?.ConfigurationHostId == VerifoneSettingsSecurityConfiguration.DUKPTEngineIPP ? "IPP" : "VSS";
                     Console.WriteLine($"ONLINE DEBIT PIN STORE: {onlinePINSource}");
                     Console.WriteLine($"HMAC ENABLEMENT ACTIVE: {EnableHMAC.ToString().ToUpper()}");
+                    Console.WriteLine($"WORKSTATION TIMEZONE _: \"{GetWorkstationTimeZone()}\"");
                     Console.WriteLine("");
                 }
                 VipaConnection.LoadDeviceSectionConfig(deviceSectionConfig);
@@ -524,6 +541,8 @@ namespace Devices.Verifone
                         // REPORT IT
                         HealthStatusCheckImpl healthStatusCheckImpl = new HealthStatusCheckImpl
                         {
+                            WorkstationTimeZone = TimeZoneInfo.Local,
+                            KIFTerminalTimeZone = GetKIFTimeZoneFromDeviceHealthFile(DeviceInformation.SerialNumber),
                             DeviceInformation = DeviceInformation,
                             AppExecConfig = AppExecConfig,
                             SigningMethodActive = SigningMethodActive,
@@ -541,7 +560,7 @@ namespace Devices.Verifone
                         healthStatusCheckImpl.ProcessHealthFromExectutionMode();
 
                         // Save file to device
-                        if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone)
+                        if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone && !AppExecConfig.TerminalBypassHealthRecord)
                         {
                             if (!string.IsNullOrEmpty(healthStatusCheckImpl.DeviceHealthFile) && File.Exists(healthStatusCheckImpl.DeviceHealthFile))
                             {
@@ -1361,7 +1380,7 @@ namespace Devices.Verifone
 
                     if (deviceIdentifier.VipaResponse == (int)VipaSW1SW2Codes.Success)
                     {
-                        int vipaResponse = VipaDevice.GetSphereHealthFile(deviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber);
+                        (int vipaResponse, _) = VipaDevice.GetSphereHealthFile(AppExecConfig.ExecutionMode, deviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber);
                         if (vipaResponse == (int)VipaSW1SW2Codes.Success)
                         {
                             Console.WriteLine("DEVICE: GET SPHERE HEALTH FILE SUCCESS\n");
