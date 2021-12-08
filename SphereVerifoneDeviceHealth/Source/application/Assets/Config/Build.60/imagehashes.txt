@@ -1,0 +1,39 @@
+[EMVConfigs]
+
+=====================================================================================================
+--------------------------- SLOT SWITCH PROD/TEST ---------------------------------------------------
+=====================================================================================================
+
+[Epic]
+// VIPA 6.8.2.11
+sphere.sphere.emv.attended.FD...6_8_2_11.211119.tgz       E650812049D15F9EDD4C18CF89A8EDCD  66661  0x00010465
+sphere.sphere.emv.attended.FD...6_8_2_11.211119_S8.tgz    21F7679642B1908D1DA05CB4FBCEB537  66782  0x000104DE
+sphere.sphere.emv.unattended.FD...6_8_2_11.211119.tgz     ACA52FF02DD0574577DE0146D25568CB  66511  0x000103CF
+sphere.sphere.emv.unattended.FD...6_8_2_11.211119_S8.tgz  B5333F256DA34DDA243BA03EBA316D92  66444  0x0001038C
+// VIPA 6.8.2.21
+sphere.sphere.emv.attended.FD...6_8_2_21.211119.tgz       148EF8900A5D9019CD9E88B8FA0836FC  66663  0x00010467
+sphere.sphere.emv.attended.FD...6_8_2_21.211119_S8.tgz    71909C1D2E8DF67F29B428B523B53656  66666  0x0001046A
+sphere.sphere.emv.unattended.FD...6_8_2_21.211119.tgz     FDD62239570EB283817C04C61D2746E9  66757  0x000104C5
+sphere.sphere.emv.unattended.FD...6_8_2_21.211119_S8.tgz  FB4C8F346DB6757D2F8F62B3F7202B86  66469  0x000103A5
+// VIPA 6.8.2.23
+sphere.sphere.emv.attended.FD...6_8_2_23.211203.tgz       DB124299C4AFF9FC98FBBAB718A5D083  66725  0x000104A5
+sphere.sphere.emv.attended.FD...6_8_2_23.211203_S8.tgz    1356CB53E8C769017BD38D97FC19A145  66727  0x000104A7
+sphere.sphere.emv.unattended.FD...6_8_2_23.211203.tgz     B27CBC496AEA1FC195C71B64600C96F0  66995  0x000105B3
+sphere.sphere.emv.unattended.FD...6_8_2_23.211203_S8.tgz  FC421ABD3132593F3642A389F3C62E16  66976  0x000105A0
+
+[NJT]
+// VIPA 6.8.2.11
+sphere.njt.emv.attended.FD...6_8_2_11.211117.tgz       1F3CB123A144D0B738660F96E3C5C728   67538  0x000107D2
+sphere.njt.emv.attended.FD...6_8_2_11.211117_S8.tgz    21C09AB9603DB58F5786DB51034A138D   67311  0x000106EF
+sphere.njt.emv.unattended.FD...6_8_2_11.211117.tgz     25EAA9B55C1352634D2E0E00514E5220   67403  0x0001074B
+sphere.njt.emv.unattended.FD...6_8_2_11.211117_S8.tgz  5823EA997BC0FE3DEE7E2880953303B1   67415  0x00010757
+// VIPA 6.8.2.21
+sphere.njt.emv.attended.FD...6_8_2_21.211117.tgz       D05B5FA1B7486FCF05371CC1E7B8AB27   67542  0x000107D6
+sphere.njt.emv.attended.FD...6_8_2_21.211117_S8.tgz    F5EFF38F067801B1668E4865BCA71FC7   67552  0x000107E0
+sphere.njt.emv.unattended.FD...6_8_2_21.211117.tgz     8A444EC45173A2D4822439A22556EE4B   67002  0x000105BA
+sphere.njt.emv.unattended.FD...6_8_2_21.211117_S8.tgz  35458F3AB4F2BE8FA605F027CF8BE671   67504  0x000107B0
+// VIPA 6.8.2.23
+sphere.njt.emv.attended.FD...6_8_2_23.211129.tgz       A0ECB2AE5F7AB125F5BE971E675D0BAB   67528  0x000107C8
+sphere.njt.emv.attended.FD...6_8_2_23.211129_S8.tgz    B8CE6B8D14C1EF47AD218CE228496808   67373  0x0001072D
+sphere.njt.emv.unattended.FD...6_8_2_23.211129.tgz     AC27463899B30A09FB345136617B3CC2   67500  0x000107AC
+sphere.njt.emv.unattended.FD...6_8_2_23.211129_S8.tgz  376FF61FFD3C171E8C9DA1A4D07851A4   67584  0x00010800

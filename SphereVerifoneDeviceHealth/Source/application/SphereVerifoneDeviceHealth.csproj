@@ -1,0 +1,292 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>SphereVerifoneDeviceHealth</AssemblyName>
+    <AssemblyVersion>1.0.60.0</AssemblyVersion>
+    <FileVersion>1.0.60.0</FileVersion>
+    <PackageReleaseNotes>IPA5 Build 5.0.42 Compatible</PackageReleaseNotes>
+    <Version>1.0.60.0</Version>
+    <RuntimeIdentifier Condition=" '$(OS)' == 'Windows_NT' ">win10-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition=" '$(OS)' == 'Unix' ">linux-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Assets\Config\Build.42\NJT\ENGAGE\**" />
+    <Compile Remove="Assets\Config\Build.52\**" />
+    <Compile Remove="Common\**" />
+    <Compile Remove="SerialPort\**" />
+    <EmbeddedResource Remove="Assets\Config\Build.42\NJT\ENGAGE\**" />
+    <EmbeddedResource Remove="Assets\Config\Build.52\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <EmbeddedResource Remove="SerialPort\**" />
+    <None Remove="Assets\Config\Build.42\NJT\ENGAGE\**" />
+    <None Remove="Assets\Config\Build.52\**" />
+    <None Remove="Common\**" />
+    <None Remove="SerialPort\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\1a.dl.zADE-Enablement-VfiDev.tar" />
+    <None Remove="Assets\Attended_emv_configuration_VIPA_6.8.2.11_V1.tgz" />
+    <None Remove="Assets\Attended_emv_configuration_VIPA_6.8.2.11_V2.tgz" />
+    <None Remove="Assets\Attended_emv_configuration_VIPA_6.8.2.17_V1.tgz" />
+    <None Remove="Assets\Attended_emv_configuration_VIPA_6.8.2.17_V2.tgz" />
+    <None Remove="Assets\Config\#whitelist.dat" />
+    <None Remove="Assets\Config\a000000003.92" />
+    <None Remove="Assets\Config\a000000003.94" />
+    <None Remove="Assets\Config\a000000004.ef" />
+    <None Remove="Assets\Config\a000000004.f1" />
+    <None Remove="Assets\Config\a000000025.c8" />
+    <None Remove="Assets\Config\a000000025.c9" />
+    <None Remove="Assets\Config\a000000025.ca" />
+    <None Remove="Assets\Config\a000000065.11" />
+    <None Remove="Assets\Config\a000000065.13" />
+    <None Remove="Assets\Config\a000000152.5c" />
+    <None Remove="Assets\Config\a000000152.5d" />
+    <None Remove="Assets\Config\a000000384.c1" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\Sphere_FD_Attended_emv_configuration_68211.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\Sphere_FD_Attended_emv_configuration_68217.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\Sphere_FD_Attended_emv_configuration_VIPA_6.8.2.11.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\Sphere_FD_Attended_emv_configuration_VIPA_6.8.2.17.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\Sphere_FD_Unattended_emv_configuration_68211.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\Sphere_FD_Unattended_emv_configuration_68217.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\Sphere_FD_Unattended_emv_configuration_VIPA_6.8.2.11.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\Sphere_FD_Unattended_emv_configuration_VIPA_6.8.2.17.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\sphere_VIPA6.8.2.11_emv_FD_attended_210519.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\sphere_VIPA6.8.2.17_emv_FD_attended_210520.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\verifone_VIPA6.8.2.11_emv_FD_attended_210519.tgz" />
+    <None Remove="Assets\Config\Build.47\EMVConfigs\verifone_VIPA6.8.2.17_emv_FD_attended_210520.tgz" />
+    <None Remove="Assets\Config\Build.47\Epic\SphereEpicConfig.v3-Slot0_6.8.2.11.tgz" />
+    <None Remove="Assets\Config\Build.47\Epic\SphereEpicConfig.v3-Slot0_6.8.2.17.tgz" />
+    <None Remove="Assets\Config\Build.47\Epic\SphereEpicConfig.v3-Slot8_6.8.2.11.tgz" />
+    <None Remove="Assets\Config\Build.47\Epic\SphereEpicConfig.v3-Slot8_6.8.2.17.tgz" />
+    <None Remove="Assets\Config\Build.47\NJT\SphereNJTConfig.v7-Slot0_6.8.2.17.tgz" />
+    <None Remove="Assets\Config\Build.47\NJT\SphereNJTConfig.v7-Slot8_6.8.2.17.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere.njt.emv.attended.FD.6_2_8_11.210629.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere.njt.emv.attended.FD.6_2_8_17.210629.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere.sphere.emv.attended.FD...6_2_8_11.210625.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere.sphere.emv.attended.FD...6_2_8_17.210625.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere.sphere.emv.unattended.FD...6_2_8_11.210625.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere.sphere.emv.unattended.FD...6_2_8_17.210625.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere_VIPA6.8.2.11_emv_FD_attended_210611.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere_VIPA6.8.2.11_emv_FD_attended_test_210607.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere_VIPA6.8.2.11_emv_FD_unattended_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere_VIPA6.8.2.17_emv_FD_attended_210611.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere_VIPA6.8.2.17_emv_FD_attended_test_210607.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\sphere_VIPA6.8.2.17_emv_FD_unattended_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\verifone.njt.emv.attended.FD...6_2_8_11.210625.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\verifone.njt.emv.attended.FD...6_2_8_17.210625.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\verifone.njt.emv.unattended.FD...6_2_8_11.210625.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\verifone.njt.emv.unattended.FD...6_2_8_17.210625.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\verifone_VIPA6.8.2.11_emv_FD_attended_210610.tgz" />
+    <None Remove="Assets\Config\Build.48\EMVConfigs\verifone_VIPA6.8.2.17_emv_FD_attended_210610.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere.sphere.emv.attended.FD...6_2_8_11.210702.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere.sphere.emv.attended.FD...6_2_8_11.210702_S8.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere.sphere.emv.attended.FD...6_2_8_17.210702.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere.sphere.emv.attended.FD...6_2_8_17.210702_S8.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere_VIPA_cfg_68211_Epic_slot0_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere_VIPA_cfg_68211_Epic_slot8_210520.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere_VIPA_cfg_68211_Epic_slot8_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere_VIPA_cfg_68217_Epic_slot0_210520.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere_VIPA_cfg_68217_Epic_slot0_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere_VIPA_cfg_68217_Epic_slot8_210520.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\sphere_VIPA_cfg_68217_Epic_slot8_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\verifone_VIPA_cfg_68211_Epic_slot0_210519.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\verifone_VIPA_cfg_68211_Epic_slot8_210519.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\verifone_VIPA_cfg_68217_Epic_slot0_210519.tgz" />
+    <None Remove="Assets\Config\Build.48\Epic\verifone_VIPA_cfg_68217_Epic_slot8_210519.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere.njt.emv.unattended.FD...6_2_8_11.210702.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere.njt.emv.unattended.FD...6_2_8_11.210702_S8.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere.njt.emv.unattended.FD...6_2_8_17.210702.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere.njt.emv.unattended.FD...6_2_8_17.210702_S8.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere_VIPA_cfg_68211_NJT_slot0_210520.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere_VIPA_cfg_68211_NJT_slot0_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere_VIPA_cfg_68211_NJT_slot8_210520.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere_VIPA_cfg_68211_NJT_slot8_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere_VIPA_cfg_68217_NJT_slot0_210520.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere_VIPA_cfg_68217_NJT_slot0_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere_VIPA_cfg_68217_NJT_slot8_210520.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\sphere_VIPA_cfg_68217_NJT_slot8_210623.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\verifone.njt.emv.unattended.FD...6_2_8_11.210702.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\verifone.njt.emv.unattended.FD...6_2_8_11.210702_S8.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\verifone.njt.emv.unattended.FD...6_2_8_17.210702.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\verifone.njt.emv.unattended.FD...6_2_8_17.210702_S8.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\verifone_VIPA_cfg_68211_NJT_slot0_210519.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\verifone_VIPA_cfg_68211_NJT_slot8_210519.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\verifone_VIPA_cfg_68217_NJT_slot0_210519.tgz" />
+    <None Remove="Assets\Config\Build.48\NJT\verifone_VIPA_cfg_68217_NJT_slot8_210519.tgz" />
+    <None Remove="Assets\Config\Build.49\EMVConfigs\NJT\verifone.njt.emv.attended.FD...6_8_2_11.210714.tgz" />
+    <None Remove="Assets\Config\Build.49\EMVConfigs\NJT\verifone.njt.emv.attended.FD...6_8_2_11.210714_S8.tgz" />
+    <None Remove="Assets\Config\Build.49\EMVConfigs\NJT\verifone.njt.emv.attended.FD...6_8_2_17.210714.tgz" />
+    <None Remove="Assets\Config\Build.49\EMVConfigs\NJT\verifone.njt.emv.attended.FD...6_8_2_17.210714_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_11.211119.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_11.211119_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_21.211119.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_21.211119_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_23.211203.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_23.211203_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_11.211119.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_11.211119_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_21.211119.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_21.211119_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_23.211203.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_23.211203_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_11.211117.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_11.211117_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_21.211117.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_21.211117_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_23.211129.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_23.211129_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_11.211117.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_11.211117_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_21.211117.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_21.211117_S8.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_23.211129.tgz" />
+    <None Remove="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_23.211129_S8.tgz" />
+    <None Remove="Assets\Config\cicapp.cfg" />
+    <None Remove="Assets\Config\IdleScreen\M400\sphere.sphere.idle...199.m400.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\M400\sphere.sphere.idle...199.m400.1.210823.tgz" />
+    <None Remove="Assets\Config\IdleScreen\M400\sphere.sphere.idle...250.m400.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\M400\sphere.sphere.idle...250.m400.1.210823.tgz" />
+    <None Remove="Assets\Config\IdleScreen\M400\sphere_idlescreen_sphere_m400_199_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\M400\sphere_idlescreen_sphere_m400_250_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\M400\verifone.njt.idle...199.m400.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\M400\verifone.njt.idle...250.m400.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\M400\verifone_idlescreen_sphere_m400_199_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\M400\verifone_idlescreen_sphere_m400_250_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\dl.idlescreen_spherep200_DevSigned.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\sphere.sphere.idle...199.p200.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\sphere.sphere.idle...199.p200.1.210823.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\sphere.sphere.idle...250.p200.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\sphere.sphere.idle...250.p200.1.210823.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\sphere_idlescreen_sphere_p200_199_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\sphere_idlescreen_sphere_p200_250_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\verifone.njt.idle...199.p200.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\verifone.njt.idle...250.p200.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\verifone_idlescreen_sphere_p200_199_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P200\verifone_idlescreen_sphere_p200_250_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\dl.idlescreen_spherep400_DevSigned.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\sphere.sphere.idle...199.p400.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\sphere.sphere.idle...199.p400.1.210823.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\sphere.sphere.idle...250.p400.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\sphere.sphere.idle...250.p400.1.210823.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\sphere_idlescreen_sphere_p400_199_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\sphere_idlescreen_sphere_p400_250_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\verifone.njt.idle...199.p400.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\verifone.njt.idle...250.p400.1.210625.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\verifone_idlescreen_sphere_p400_199_210623.tgz" />
+    <None Remove="Assets\Config\IdleScreen\P400\verifone_idlescreen_sphere_p400_250_210623.tgz" />
+    <None Remove="Assets\Config\mapp.cfg" />
+    <None Remove="Assets\Config\tdol.cfg" />
+    <None Remove="Assets\dl.bundle.Sphere_Config5-s0.tar" />
+    <None Remove="Assets\dl.bundle.Sphere_Config5-s8.tar" />
+    <None Remove="Assets\dl.bundle.Sphere_Config_nokeysigning.tar" />
+    <None Remove="Assets\dl.bundle.Sphere_UpdKeyCmd_Enable.tar" />
+    <None Remove="Assets\dl.VIPA_cfg_emv_att_prodcapk_sphere_engage.tgz" />
+    <None Remove="Assets\SphereEpicConfig.v2-Slot0.tgz" />
+    <None Remove="Assets\SphereEpicConfig.v2-Slot8.tgz" />
+    <None Remove="Assets\SphereEpicConfig.v3-Slot0.tgz" />
+    <None Remove="Assets\SphereEpicConfig.v3-Slot0_6.8.2.11.tgz" />
+    <None Remove="Assets\SphereEpicConfig.v3-Slot0_6.8.2.17.tgz" />
+    <None Remove="Assets\SphereEpicConfig.v3-Slot8.tgz" />
+    <None Remove="Assets\SphereEpicConfig.v3-Slot8_6.8.2.11.tgz" />
+    <None Remove="Assets\SphereEpicConfig.v3-Slot8_6.8.2.17.tgz" />
+    <None Remove="Assets\SphereNJTConfig.v6-Slot0.tgz" />
+    <None Remove="Assets\SphereNJTConfig.v6-Slot0_6.8.2.11.tgz" />
+    <None Remove="Assets\SphereNJTConfig.v6-Slot8.tgz" />
+    <None Remove="Assets\SphereNJTConfig.v6-Slot8_6.8.2.11.tgz" />
+    <None Remove="Assets\SphereNJTConfig.v7-Slot0_6.8.2.17.tgz" />
+    <None Remove="Assets\SphereNJTConfig.v7-Slot8_6.8.2.17.tgz" />
+    <None Remove="Assets\Sphere_Attended_emv_configuration_VIPA_6.8.2.11_V2.tgz" />
+    <None Remove="Assets\Sphere_Attended_emv_configuration_VIPA_6.8.2.17_V2.tgz" />
+    <None Remove="Assets\Sphere_FD_Attended_emv_configuration_VIPA_6.8.2.11.tgz" />
+    <None Remove="Assets\Sphere_FD_Attended_emv_configuration_VIPA_6.8.2.17.tgz" />
+    <None Remove="Assets\Sphere_FD_Unattended_emv_configuration_VIPA_6.8.2.11.tgz" />
+    <None Remove="Assets\Sphere_FD_Unattended_emv_configuration_VIPA_6.8.2.17.tgz" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_11.211119.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_11.211119_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_21.211119.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_21.211119_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_23.211203.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.attended.FD...6_8_2_23.211203_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_11.211119.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_11.211119_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_21.211119.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_21.211119_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_23.211203.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\Epic\sphere.sphere.emv.unattended.FD...6_8_2_23.211203_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_11.211117.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_11.211117_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_21.211117.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_21.211117_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_23.211129.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.attended.FD...6_8_2_23.211129_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_11.211117.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_11.211117_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_21.211117.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_21.211117_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_23.211129.tgz" />
+    <EmbeddedResource Include="Assets\Config\Build.60\EMVConfigs\NJT\sphere.njt.emv.unattended.FD...6_8_2_23.211129_S8.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\M400\sphere.sphere.idle...199.m400.1.210823.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\M400\sphere.sphere.idle...250.m400.1.210823.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\M400\verifone.njt.idle...199.m400.1.210625.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\M400\verifone.njt.idle...250.m400.1.210625.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\P200\sphere.sphere.idle...199.p200.1.210823.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\P200\sphere.sphere.idle...250.p200.1.210823.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\P200\verifone.njt.idle...199.p200.1.210625.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\P200\verifone.njt.idle...250.p200.1.210625.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\P400\sphere.sphere.idle...199.p400.1.210823.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\P400\sphere.sphere.idle...250.p400.1.210823.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\P400\verifone.njt.idle...199.p400.1.210625.tgz" />
+    <EmbeddedResource Include="Assets\Config\IdleScreen\P400\verifone.njt.idle...250.p400.1.210625.tgz" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Ninject" Version="3.3.4" />
+    <PackageReference Include="Polly" Version="7.2.0" />
+    <PackageReference Include="SerialPortStream" Version="2.2.0" />
+    <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\common\core\Core.Patterns\Core.Patterns.csproj" />
+    <ProjectReference Include="..\common\helpers\Helpers.csproj" />
+    <ProjectReference Include="..\common\LoggerManager\LoggerManager.csproj" />
+    <ProjectReference Include="..\common\xo\XO.csproj" />
+    <ProjectReference Include="..\config\Config.csproj" />
+    <ProjectReference Include="..\devices\common\Devices.Common.csproj" />
+    <ProjectReference Include="..\devices\Core\Devices.Core.csproj" />
+    <ProjectReference Include="..\devices\Devices.Sdk\Devices.Sdk.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\dl.bundle.Sphere_Config4-s0.tar">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\dl.bundle.Sphere_Config4-s8.tar">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="%25WINDIR%25\System32\XCOPY /y /i /d &quot;$(SolutionDir)devices\Verifone\bin\$(ConfigurationName)\netcoreapp3.1\Devices.Verifone.dll&quot; &quot;$(TargetDir)DevicePlugins\&quot;" />
+    <Exec Command="%25WINDIR%25\System32\XCOPY /y /i /d &quot;$(SolutionDir)devices\Simulator\bin\$(ConfigurationName)\netcoreapp3.1\Devices.Simulator.dll&quot; &quot;$(TargetDir)DevicePlugins\&quot;" />
+  </Target>
+
+</Project>
