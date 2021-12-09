@@ -1,0 +1,29 @@
+[EMVConfigs]
+
+=====================================================================================================
+--------------------------- SLOT SWITCH PROD/TEST ---------------------------------------------------
+=====================================================================================================
+
+[Epic]
+// VIPA 6.8.2.11
+sphere.sphere.emv.attended.FD...6_8_2_11.211119.tgz       E650812049D15F9EDD4C18CF89A8EDCD  66661  0x00010465
+sphere.sphere.emv.attended.FD...6_8_2_11.211119_S8.tgz    21F7679642B1908D1DA05CB4FBCEB537  66782  0x000104DE
+sphere.sphere.emv.unattended.FD...6_8_2_11.211119.tgz     ACA52FF02DD0574577DE0146D25568CB  66511  0x000103CF
+sphere.sphere.emv.unattended.FD...6_8_2_11.211119_S8.tgz  B5333F256DA34DDA243BA03EBA316D92  66444  0x0001038C
+// VIPA 6.8.2.23
+sphere.sphere.emv.attended.FD...6_8_2_23.211203.tgz       DB124299C4AFF9FC98FBBAB718A5D083  66725  0x000104A5
+sphere.sphere.emv.attended.FD...6_8_2_23.211203_S8.tgz    1356CB53E8C769017BD38D97FC19A145  66727  0x000104A7
+sphere.sphere.emv.unattended.FD...6_8_2_23.211203.tgz     B27CBC496AEA1FC195C71B64600C96F0  66995  0x000105B3
+sphere.sphere.emv.unattended.FD...6_8_2_23.211203_S8.tgz  FC421ABD3132593F3642A389F3C62E16  66976  0x000105A0
+
+[NJT]
+// VIPA 6.8.2.11
+sphere.njt.emv.attended.FD...6_8_2_11.211207.tgz       AD34B3A84D94B59538B8A71836DDC004  67620  0x00010824 
+sphere.njt.emv.attended.FD...6_8_2_11.211207_S8.tgz    3EEFD0E5EA80ECD55E9D63111F324F44  67626  0x0001082A 
+sphere.njt.emv.unattended.FD...6_8_2_11.211207.tgz     1BEF6E60DB60CC3FD361C77D2761AC20  67353  0x00010719 
+sphere.njt.emv.unattended.FD...6_8_2_11.211207_S8.tgz  E53E65A617FA89B6CFAA61FD0DCD52A9  67337  0x00010709 
+// VIPA 6.8.2.23
+sphere.njt.emv.attended.FD...6_8_2_23.211207.tgz       F56B24721C209D6A91BC46429549F703  67609  0x00010819 
+sphere.njt.emv.attended.FD...6_8_2_23.211207_S8.tgz    A87C62DCF7125A7FD51697AEE52B8685  67611  0x0001081B 
+sphere.njt.emv.unattended.FD...6_8_2_23.211207.tgz     3116315C83A9A8B95E1C8E6649D53B7C  67581  0x000107FD 
+sphere.njt.emv.unattended.FD...6_8_2_23.211207_S8.tgz  836B748F7298C7B9A750DF0CFD2383FF  67589  0x00010805 
