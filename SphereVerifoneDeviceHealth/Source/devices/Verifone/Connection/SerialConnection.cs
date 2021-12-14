@@ -26,6 +26,9 @@ namespace Devices.Verifone.Connection
         private const int unchainedResponseMessageSize = 1024;
         private const int chainedResponseMessageSize = unchainedResponseMessageSize * 10;
 
+        private const int chainedCommandMinimumLength = 0xFE;
+        private const int chainedCommandPayloadLength = 0xF8;
+
         private CancellationTokenSource cancellationTokenSource;
         private SerialPort serialPort;
         private readonly IVIPASerialParser serialParser;
@@ -161,6 +164,48 @@ namespace Devices.Verifone.Connection
             (VIPACommandType)(command.cla << 8 | command.ins) == VIPACommandType.DisplayHTML && command.data != null &&
             Encoding.UTF8.GetString(command.data).IndexOf(VIPACommand.ChainedResponseAnswerData, StringComparison.OrdinalIgnoreCase) >= 0;
 
+        /// <summary>
+        /// PCB for chained command: bit 0 set for all packets, except last packet
+        /// 2nd – nth packet : NAD PCB(bit 0 set) LEN Data… LRC
+        /// Last packet      : NAD PCB(bit 0 unset) LEN Data… LRC
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="pcb"></param>
+        /// <param name="packetOffset"></param>
+        /// <param name="packetLen"></param>
+        private void ProcessNextPacket(VIPACommand command, byte pcb, int packetOffset, byte packetLen)
+        {
+            byte[] cmdBytes = arrayPool.Rent(packetLen + 4 /*NAD, PCB, LEN, LRC*/);
+
+            int cmdIndex = 0;
+            byte lrc = 0;
+
+            cmdBytes[cmdIndex++] = command.nad;
+            lrc ^= command.nad;
+            cmdBytes[cmdIndex++] = pcb;
+            lrc ^= pcb;
+
+            // data processing: command length
+            cmdBytes[cmdIndex++] = packetLen;
+            lrc ^= packetLen;
+
+            // data LRC
+            byte[] packet = new byte[packetLen];
+            Array.Copy(command.data, packetOffset, packet, 0, packetLen);
+
+            foreach (byte byt in packet)
+            {
+                cmdBytes[cmdIndex++] = byt;
+                lrc ^= byt;
+            }
+
+            cmdBytes[cmdIndex++] = lrc;
+            int cmdLength = cmdIndex;
+
+            Debug.WriteLineIf(LogSerialBytes, $"VIPA-WRITE[{serialPort?.PortName}][LEN={cmdLength}]: {BitConverter.ToString(cmdBytes)}");
+            WriteBytes(cmdBytes, cmdLength);
+        }
+
         public void WriteSingleCmd(VIPAResponseHandlers responsehandlers, VIPACommand command)
         {
             if (command == null)
@@ -231,6 +276,107 @@ namespace Devices.Verifone.Connection
             WriteBytes(cmdBytes, cmdLength);
 
             arrayPool.Return(cmdBytes);
+        }
+
+        /// <summary>
+        /// Assemble the write request in 1...N packets
+        /// 1st. packet      : NAD PCB (bit 0 set) LEN CLA INS P1 P2 Lc Data… LRC 
+        /// 2nd – nth packet : NAD PCB(bit 0 set) LEN Data… LRC
+        /// Last packet      : NAD PCB(bit 0 unset) LEN Data… LRC
+        ///
+        /// Packet length (LEN) byte
+        /// The LEN byte is the length of the packet. It includes the CLA, INS, P1, P2 bytes (but not for subsequent
+        /// packets in Chained commands), includes the Lc and data field (if present) bytes, and includes the Le
+        /// byte(if present), includes the SW1 - SW2 bytes for responses, but excludes the LRC byte.
+        /// 
+        /// </summary>
+        /// 
+        /// <param name="responsehandlers"></param>
+        /// <param name="command"></param>
+        public void WriteChainedCmd(VIPAResponseHandlers responsehandlers, VIPACommand command)
+        {
+            if (command == null)
+            {
+                return;
+            }
+
+            int dataLen = command.data?.Length ?? 0;
+
+            // chained command must be of minimum length
+            if (dataLen < chainedCommandMinimumLength)
+            {
+                return;
+            }
+
+            ResponseTagsHandler = responsehandlers.responsetagshandler;
+            ResponseTaglessHandler = responsehandlers.responsetaglesshandler;
+            ResponseContactlessHandler = responsehandlers.responsecontactlesshandler;
+
+            // 1st. Packet - special handling
+            int cmdLength = chainedCommandMinimumLength;
+            byte[] cmdBytes = arrayPool.Rent(cmdLength + 4 /*CLA, INS, P1, P2*/);
+            int cmdIndex = 0;
+
+            // The Lc byte contains the length of the data field (excluding the Length Expected (Le) byte if present),
+            // capped at maximum of 0xFF. Commands without a data field contain no Lc byte
+            byte lrc = 0;
+
+            cmdBytes[cmdIndex++] = command.nad;
+            lrc ^= command.nad;
+            cmdBytes[cmdIndex++] = 0x01;    // PCB for chained command: bit 0 set for all packets, except last packet
+            lrc ^= 0x01;
+            cmdBytes[cmdIndex++] = chainedCommandMinimumLength;
+            lrc ^= chainedCommandMinimumLength;
+            cmdBytes[cmdIndex++] = command.cla;
+            lrc ^= command.cla;
+            cmdBytes[cmdIndex++] = command.ins;
+            lrc ^= command.ins;
+            cmdBytes[cmdIndex++] = command.p1;
+            lrc ^= command.p1;
+            cmdBytes[cmdIndex++] = command.p2;
+            lrc ^= command.p2;
+
+            // data processing: command length
+            cmdBytes[cmdIndex++] = chainedCommandMinimumLength + 1;
+            lrc ^= chainedCommandMinimumLength + 1;
+
+            // data LRC
+            int packetNumber = 1;
+            byte[] packet = new byte[chainedCommandPayloadLength + 1];
+            Array.Copy(command.data, 0, packet, 0, chainedCommandPayloadLength + 1);
+
+            foreach (byte byt in packet)
+            {
+                cmdBytes[cmdIndex++] = byt;
+                lrc ^= byt;
+            }
+
+            cmdBytes[cmdIndex++] = lrc;
+            cmdLength = cmdIndex;
+
+            // chained message response
+            IsChainedMessageResponse = IsChainedResponseCommand(command);
+
+            Debug.WriteLineIf(LogSerialBytes, $"VIPA-WRITE[{serialPort?.PortName}][LEN={cmdLength}]: {BitConverter.ToString(cmdBytes)}");
+            WriteBytes(cmdBytes, cmdLength);
+
+            arrayPool.Return(cmdBytes);
+
+            // process 2nd...nth packet
+            int packetOffset = (chainedCommandPayloadLength + 1) * packetNumber;
+            byte remaining = (byte)(command.data.Length - packetOffset);
+
+            // Packet payload is 258 bytes maximum
+            while (remaining > chainedCommandMinimumLength)
+            {
+                ProcessNextPacket(command, 0x01, packetOffset, remaining);
+                packetNumber++;
+                packetOffset = (chainedCommandPayloadLength + 1) * packetNumber;
+                remaining = (byte)(command.data.Length - packetOffset);
+            }
+
+            // process last packet
+            ProcessNextPacket(command, 0x00, packetOffset, remaining);
         }
 
         public void WriteRaw(byte[] buffer, int length)

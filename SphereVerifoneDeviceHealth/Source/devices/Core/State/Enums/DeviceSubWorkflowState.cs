@@ -125,6 +125,11 @@ namespace Devices.Core.State.Enums
         GetSphereHealthFile,
 
         /// <summary>
+        /// Represents a state when DAL queries the device for Manual Card Entry
+        /// </summary>
+        ManualCardEntry,
+
+        /// <summary>
         /// Represents a state where a sanity check is performed to ensure that the DAL
         /// is in an operational state ready to receive the next command before a response
         /// is sent back to the caller.

@@ -255,6 +255,11 @@ namespace DEVICE_CORE
                                 await application.Command(LinkDeviceActionType.GetSphereHealthFile).ConfigureAwait(false);
                                 break;
                             }
+                            case ConsoleKey.M:
+                            {
+                                await application.Command(LinkDeviceActionType.ManualCardEntry).ConfigureAwait(false);
+                                break;
+                            }
                             case ConsoleKey.V:
                             {
                                 //Console.WriteLine("\r\nCOMMAND: [VERSION]");

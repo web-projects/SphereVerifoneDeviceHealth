@@ -160,6 +160,13 @@ namespace Devices.Core.State.SubWorkflows
             false => SanityCheck
         };
 
+        private static DeviceSubWorkflowState ComputeManualCardEntryStateTransition(bool exception) =>
+        exception switch
+        {
+            true => SanityCheck,
+            false => SanityCheck
+        };
+
         private static DeviceSubWorkflowState ComputeSanityCheckStateTransition(bool exception) =>
             exception switch
             {
@@ -199,6 +206,7 @@ namespace Devices.Core.State.SubWorkflows
                 SetTerminalDateTime => ComputeSetTerminalDateTimeStateTransition(exception),
                 VIPAVersions => ComputeVIPAVersionsStateTransition(exception),
                 GetSphereHealthFile => ComputeGetSphereDeviceHealthStateTransition(exception),
+                ManualCardEntry => ComputeManualCardEntryStateTransition(exception),
                 SanityCheck => ComputeSanityCheckStateTransition(exception),
                 RequestComplete => ComputeRequestCompletedStateTransition(exception),
                 _ => throw new StateException($"Invalid state transition '{state}' requested.")

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Composition;
 using System.Linq;
+using System.Threading;
 
 namespace Devices.Simulator
 {
@@ -304,6 +305,14 @@ namespace Devices.Simulator
             LinkActionRequest linkActionRequest = linkRequest?.Actions?.First();
             Console.WriteLine("----------------------------------------------------------------------------------------------------");
             Console.WriteLine($"simulator: GET SPHERE DEVICE HEALTH FILE for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
+            return linkRequest;
+        }
+
+        public LinkRequest ManualCardEntry(LinkRequest linkRequest, CancellationToken cancellationToken)
+        {
+            LinkActionRequest linkActionRequest = linkRequest?.Actions?.First();
+            Console.WriteLine("----------------------------------------------------------------------------------------------------");
+            Console.WriteLine($"simulator: MANUAL CARD ENTRY for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
             return linkRequest;
         }
 

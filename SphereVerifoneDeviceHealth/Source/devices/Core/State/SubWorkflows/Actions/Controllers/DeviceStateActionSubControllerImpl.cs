@@ -37,6 +37,7 @@ namespace Devices.Core.State.SubWorkflows.Actions.Controllers
                     [SetTerminalDateTime] = (IDeviceSubStateController _) => new DeviceSetTerminalDateTimeSubStateAction(_),
                     [VIPAVersions] = (IDeviceSubStateController _) => new DeviceVIPAVersionsSubStateAction(_),
                     [GetSphereHealthFile] = (IDeviceSubStateController _) => new DeviceGetSphereHealthFileSubStateAction(_),
+                    [ManualCardEntry] = (IDeviceSubStateController _) => new DeviceManualCardEntrySubStateAction(_),
                     [SanityCheck] = (IDeviceSubStateController _) => new DeviceSanityCheckSubStateAction(_),
                     [RequestComplete] = (IDeviceSubStateController _) => new DeviceRequestCompleteSubStateAction(_)
                 }

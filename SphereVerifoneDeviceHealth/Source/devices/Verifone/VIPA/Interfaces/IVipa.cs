@@ -73,5 +73,8 @@ namespace Devices.Verifone.VIPA.Interfaces
         (int, byte[]) GetSphereHealthFile(string deviceSerialNumber, bool writeToFile = true);
 
         string GetDeviceHealthTimeZone(string deviceSerialNumber);
+
+        (LinkDALRequestIPA5Object linkActionRequestIPA5Object, int VipaResponse) ProcessManualPayment(bool requestCVV);
+        
     }
 }

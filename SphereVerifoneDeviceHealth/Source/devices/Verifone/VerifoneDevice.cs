@@ -1433,6 +1433,58 @@ namespace Devices.Verifone
             return linkRequest;
         }
 
+        public LinkRequest ManualCardEntry(LinkRequest linkRequest, CancellationToken cancellationToken)
+        {
+            LinkActionRequest linkActionRequest = linkRequest?.Actions?.First();
+            Console.WriteLine($"DEVICE[{DeviceInformation.ComPort}]: MANUAL CARD ENTRY for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
+
+            if (VipaDevice != null)
+            {
+                if (!IsConnected)
+                {
+                    VipaDevice.Dispose();
+                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
+                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                }
+
+                if (IsConnected)
+                {
+                    //bool requestCVV = linkActionRequest.PaymentRequest?.CardWorkflowControls?.CVVEnabled != false;  //This will default to true
+                    bool requestCVV = false;
+                    (LinkDALRequestIPA5Object LinkDALRequestIPA5Object, int VipaResponse) cardInfo = VipaDevice.ProcessManualPayment(requestCVV);
+
+                    // Check for transaction timeout
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        DeviceSetIdle();
+                        // Reset contactless reader to hide contactless status bar if device is unplugged and replugged during a payment workflow
+                        //_ = Task.Run(() => VipaDevice.CloseContactlessReader(true));
+                        //SetErrorResponse(linkActionRequest, EventCodeType.REQUEST_TIMEOUT, cardInfo.VipaResponse, StringValueAttribute.GetStringValue(DeviceEvent.RequestTimeout));
+                        return linkRequest;
+                    }
+
+                    if (cardInfo.VipaResponse == (int)VipaSW1SW2Codes.UserEntryCancelled)
+                    {
+                        DeviceSetIdle();
+                        //SetErrorResponse(linkActionRequest, EventCodeType.USER_CANCELED, cardInfo.VipaResponse, "Cancelled");
+                        return linkRequest;
+                    }
+
+                    // set card data
+                    linkActionRequest.DALRequest.LinkObjects = cardInfo.LinkDALRequestIPA5Object;
+
+                    //PopulateCapturedCardData(linkActionRequest, LinkCardPaymentResponseEntryMode.Manual);
+
+                    // complete CardData response format
+                    //CompleteCardDataResponse(request, linkActionRequest, deviceInfoResponse);
+                }
+            }
+
+            DeviceSetIdle();
+
+            return linkRequest;
+        }
+
         #endregion --- subworkflow mapping
     }
 }

@@ -25,6 +25,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using static Devices.Common.Constants.LogMessage;
 using static Devices.Verifone.Helpers.Messages;
 
 namespace Devices.Verifone.VIPA
@@ -43,7 +44,6 @@ namespace Devices.Verifone.VIPA
             RemoveCardWithBeeps = 0x0E,
             Processing = 0x0F
         }
-        #endregion --- enumerations ---
 
         private enum ResetDeviceCfg
         {
@@ -56,6 +56,21 @@ namespace Devices.Verifone.VIPA
             ReturnPinpadConfiguration = 1 << 6,
             AddVOSComponentsInformation = 1 << 7
         }
+
+        public enum ManualPANEntry
+        {
+            PANEntry = 1 << 0,
+            ExpiryDate = 1 << 1,
+            ApplicationExpirationDate = 1 << 2,
+            CVV2Entry = 1 << 3
+        }
+
+        public enum ManualPANEntryMisc
+        {
+            Backlight = 1 << 0,
+            Track2Format = 1 << 1
+        }
+        #endregion --- enumerations ---
 
         #region --- attributes ---
 
@@ -99,6 +114,13 @@ namespace Devices.Verifone.VIPA
         public TaskCompletionSource<(string Timestamp, int VipaResponse)> Reboot24HourInformation = null;
 
         public TaskCompletionSource<(string Timestamp, int VipaResponse)> TerminalDateTimeInformation = null;
+
+        // EMV Workflow
+        public TaskCompletionSource<(LinkDALRequestIPA5Object linkDALRequestIPA5Object, int VipaResponse)> DecisionRequiredInformation = null;
+
+        public event DeviceLogHandler DeviceLogHandler;
+
+        public event DeviceEventHandler DeviceEventHandler;
 
         #endregion --- attributes ---
 
@@ -181,7 +203,73 @@ namespace Devices.Verifone.VIPA
             WriteSingleCmd(command);
         }
 
+        private void WriteChainedCmd(VIPACommand command)
+        {
+            VerifoneConnection?.WriteChainedCmd(new VIPAResponseHandlers
+            {
+                responsetagshandler = ResponseTagsHandler,
+                responsetaglesshandler = ResponseTaglessHandler,
+                responsecontactlesshandler = ResponseCLessHandler
+            }, command);
+        }
+
+        private void SendVipaChainedCommand(VIPACommandType commandType, byte p1, byte p2, byte[] data = null, byte nad = 0x1, byte pcb = 0x0)
+        {
+            Debug.WriteLine($"Send VIPA {commandType}");
+            VIPACommand command = new VIPACommand(commandType) { nad = nad, pcb = pcb, p1 = p1, p2 = p2, data = data };
+            WriteChainedCmd(command);
+        }
+
         #region --- VIPA commands ---
+
+        #region --- Utilities ---
+        //private void DeviceLogger(LogLevel logLevel, string message) =>
+        //    DeviceLogHandler?.Invoke(logLevel, $"{StringValueAttribute.GetStringValue(DeviceType.Verifone)}[{DeviceInformation?.Model}, {DeviceInformation?.SerialNumber}, {DeviceInformation?.ComPort}]: {{{message}}}");
+        private void DeviceLogger(LogLevel logLevel, string message)
+        {
+
+        }
+
+        #endregion --- Utilities ---
+
+        #region --- Template Processing ---
+        private void E0TemplateManualPanProcessing(LinkDALRequestIPA5Object cardResponse, TLV tag)
+        {
+            string panData = string.Empty;
+            string cvvData = string.Empty;
+            string expiryData = string.Empty;
+
+            foreach (TLV dataTag in tag.InnerTags)
+            {
+                if (dataTag.Tag == E0Template.ManualPANData)
+                {
+                    panData = ConversionHelper.ByteArrayToHexString(dataTag.Data).Replace("A", "*");
+                }
+                else if (dataTag.Tag == E0Template.ManualCVVData)
+                {
+                    cvvData = ConversionHelper.ByteArrayToHexString(dataTag.Data).Replace("A", "*");
+                }
+                else if (dataTag.Tag == E0Template.ManualExpiryData)
+                {
+                    expiryData = ConversionHelper.ByteArrayToHexString(dataTag.Data);
+                }
+                //else if (dataTag.Tag == SREDTemplate.SREDTemplateTag)
+                //{
+                //    ProcessSREDTemplateTags(cardResponse, dataTag);
+                //}
+                //else if (dataTag.Tag == EmbeddedTokenization.TokenizationTemplateTag)
+                //{
+                //    cardResponse.CapturedEMVCardData ??= new DAL_EMVCardData();
+                //    ProcessEmbeddedTokenization(cardResponse, dataTag);
+                //}
+            }
+
+            //cardResponse.Track2 = string.Format(";{0}={1}{2}{3}", panData, expiryData, ServiceCodeManualInput, cvvData);
+            //TODO: soften this requirement for US only through configuration
+            //cardResponse.TerminalCountryCode = BitConverter.ToString(EETemplate.CountryCodeUS).Replace("-", "");
+        }
+        #endregion --- Template Processing ---
+
 
         private void ConsoleWriteLine(string output)
         {
@@ -1482,6 +1570,88 @@ namespace Devices.Verifone.VIPA
             }
 
             return string.Empty;
+        }
+
+        public (LinkDALRequestIPA5Object linkActionRequestIPA5Object, int VipaResponse) ProcessManualPayment(bool requestCVV)
+        {
+            CancelResponseHandlers();
+
+            // Clear device from any previous card data
+            (DeviceInfoObject deviceInfoObject, int VipaResponse) result = DeviceCommandReset();
+            Debug.WriteLine(string.Format("PAN ENTRY: reset device response=0x{0:X4}", result.VipaResponse));
+
+            // Manual PAN entry
+            // P1
+            // Bit 0 - PAN entry
+            // Bit 1 - Application Expiration Date entry
+            // Bit 2 - Application Effective Date entry
+            // Bit 3 - CVV2 / CID entry (up to 4 characters)
+            byte p1Byte = (byte)ManualPANEntry.PANEntry;
+
+            // Vipa Documentation indicates ExpiryDate is mandatory.
+            p1Byte |= (byte)ManualPANEntry.ExpiryDate;
+
+            //P2
+            //Bit 0 - Backlight
+            // Bit 1 - Generate track 2 of the following format:
+            //         ;PAN=expiryeffectivediscretionary?LRC
+            //p2 = BACKLIGHT | TRACK2_FORMAT
+            byte p2Byte = (byte)(ManualPANEntryMisc.Backlight);
+
+            List<TLV> manualPANEntryData = new List<TLV>
+            {
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("TEMPLATE_INPUT_TYPE")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("number")),
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("input_precision")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("0")),
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("max_len")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("16")),
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("entry_mode_visibility")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("hidden")),
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("timeout")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("60")),
+                // PAN Entry
+                new TLV(E0Template.HTMLResourceName, Encoding.ASCII.GetBytes("mapp/alphanumeric_entry.html")),
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("title_text")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("Enter Card Number")),
+                // Expiry Entry
+                new TLV(E0Template.HTMLResourceName, Encoding.ASCII.GetBytes("mapp/alphanumeric_entry.html")),
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("title_text")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("Enter Card Expiry")),
+                // PAN maximum length
+                new TLV(E0Template.ManualPANMaxLength, new byte[] { 0x10 })
+            };
+
+            //TLV manualPANEntryData = new TLV(E0Template.ManualPANMaxLength, new byte[] { 0x10 });
+
+            if (requestCVV)
+            {
+                p1Byte |= (byte)ManualPANEntry.CVV2Entry;
+                // CVV2 Entry
+                manualPANEntryData.Add(new TLV(E0Template.HTMLResourceName, Encoding.ASCII.GetBytes("mapp/alphanumeric_entry.html")));
+                manualPANEntryData.Add(new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("title_text")));
+                manualPANEntryData.Add(new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("Enter Card CVV2/CVC2/CID")));
+            }
+
+            byte[] manualPANEntryDataData = TLV.Encode(manualPANEntryData);
+            DecisionRequiredInformation = new TaskCompletionSource<(LinkDALRequestIPA5Object linkDALRequestIPA5Object, int VipaResponse)>();
+
+            ResponseTagsHandlerSubscribed++;
+            ResponseTagsHandler += ManualPanEntryStatusHandler;
+
+            // MANUAL PAN Entry [D2, 14]
+            SendVipaChainedCommand(VIPACommandType.ManualPANEntry, p1Byte, p2Byte, manualPANEntryDataData);
+
+            var cardInfo = DecisionRequiredInformation.Task.Result;
+
+            if (cardInfo.VipaResponse == (int)VipaSW1SW2Codes.UserEntryCancelled)       // keyboard input
+            {
+                DeviceEventHandler?.Invoke(DeviceEvent.CancelKeyPressed, DeviceInformation);
+            }
+
+            ResponseTagsHandler -= ManualPanEntryStatusHandler;
+            ResponseTagsHandlerSubscribed--;
+            return cardInfo;
         }
 
         private (int vipaResponse, int vipaData) VerifyAmountScreen(string displayMessage)
@@ -2789,6 +2959,55 @@ namespace Devices.Verifone.VIPA
 
             // command must always be processed
             TerminalDateTimeInformation?.TrySetResult((deviceResponse, responseCode));
+        }
+
+        public void ManualPanEntryStatusHandler(List<TLV> tags, int responseCode, bool cancelled = false)
+        {
+            if (cancelled)
+            {
+                int response = responseCode == (int)VipaSW1SW2Codes.Success ? (int)VipaSW1SW2Codes.UserEntryCancelled : responseCode;
+                DecisionRequiredInformation?.TrySetResult((null, response));
+                return;
+            }
+
+            var cardResponse = new LinkDALRequestIPA5Object();
+
+            if ((responseCode == (int)VipaSW1SW2Codes.CommandCancelled) || (responseCode == (int)VipaSW1SW2Codes.UserEntryCancelled))
+            {
+                bool userCancelled = (responseCode == (int)VipaSW1SW2Codes.CommandCancelled) || (responseCode == (int)VipaSW1SW2Codes.UserEntryCancelled);
+                // 9F41 - PIN Entry Timeout
+                // 9F43 - Cardholder cancellation
+                // Clear key <CORR> press needs to be ignored or it will end the selection: nothing was selected since tag DFA202 is not sent back.
+                cardResponse.DALResponseData = new LinkDALActionResponse
+                {
+                    Status = UserInteraction.UserKeyPressed.GetStringValue(),
+                    Value = Encoding.UTF8.GetString(new byte[] { 0x00, (byte)(userCancelled ? DeviceKeys.KEY_STOP : DeviceKeys.KEY_CORR) })
+                };
+                DecisionRequiredInformation?.TrySetResult((cardResponse, responseCode));
+                return;
+            }
+
+            if (responseCode == (int)VipaSW1SW2Codes.Success && tags != null)
+            {
+                foreach (TLV tag in tags)
+                {
+                    if (tag.Tag == E0Template.E0TemplateTag)
+                    {
+                        E0TemplateManualPanProcessing(cardResponse, tag);
+                        break;
+                    }
+                }
+            }
+
+            if (responseCode == (int)VipaSW1SW2Codes.Success && tags.Count > 0 && tags[0].InnerTags?.Count > 0)
+            {
+                DecisionRequiredInformation?.TrySetResult((cardResponse, responseCode));
+            }
+            else
+            {
+                // log error responses for device troubleshooting purposes
+                DeviceLogger(LogLevel.Error, string.Format("VIPA STATUS CODE=0x{0:X4}", responseCode));
+            }
         }
 
         #endregion --- response handlers ---

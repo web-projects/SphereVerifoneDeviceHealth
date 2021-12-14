@@ -234,13 +234,13 @@ namespace Devices.Verifone.VIPA.Helpers
 
         #region --- SPHERE-SIGNED ATTENDED EMV BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_11 = "sphere.sphere.emv.attended.FD...6_8_2_11.211119.tgz";
-        public const string SPHERE_EPIC_ATTENDED_CONFIG0_HASH_11 = "E650812049D15F9EDD4C18CF89A8EDCD";
-        public const int SPHERE_EPIC_ATTENDED_CONFIG0_SIZE_11 = 0x00010465;
+        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_11 = "sphere.sphere.emv.attended.FD...6_8_2_11.211207.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG0_HASH_11 = "54229FE29A6442C39C60BF1EC4686D51";
+        public const int SPHERE_EPIC_ATTENDED_CONFIG0_SIZE_11 = 0x0001046D;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_11 = "sphere.sphere.emv.attended.FD...6_8_2_11.211119_S8.tgz";
-        public const string SPHERE_EPIC_ATTENDED_CONFIG8_HASH_11 = "21F7679642B1908D1DA05CB4FBCEB537";
-        public const int SPHERE_EPIC_ATTENDED_CONFIG8_SIZE_11 = 0x000104DE;
+        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_11 = "sphere.sphere.emv.attended.FD...6_8_2_11.211207_S8.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG8_HASH_11 = "703E27D7F02AA391FDD875472646CA78";
+        public const int SPHERE_EPIC_ATTENDED_CONFIG8_SIZE_11 = 0x00010535;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
         public const string SPHERE_NJT_ATTENDED_CONFIG0_BUNDLE_11 = "sphere.njt.emv.attended.FD...6_8_2_11.211207.tgz";
         public const string SPHERE_NJT_ATTENDED_CONFIG0_HASH_11 = "AD34B3A84D94B59538B8A71836DDC004";
@@ -253,13 +253,13 @@ namespace Devices.Verifone.VIPA.Helpers
 
         #region --- SPHERE-SIGNED UNATTENDED BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_11 = "sphere.sphere.emv.unattended.FD...6_8_2_11.211119.tgz";
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_HASH_11 = "ACA52FF02DD0574577DE0146D25568CB";
-        public const int SPHERE_EPIC_UNATTENDED_CONFIG0_SIZE_11 = 0x000103CF;
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_11 = "sphere.sphere.emv.unattended.FD...6_8_2_11.211207.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_HASH_11 = "916FE0C8F19D42BF79FC587B21E32958";
+        public const int SPHERE_EPIC_UNATTENDED_CONFIG0_SIZE_11 = 0x000103E7;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_11 = "sphere.sphere.emv.unattended.FD...6_8_2_11.211119_S8.tgz";
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_11 = "B5333F256DA34DDA243BA03EBA316D92";
-        public const int SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_11 = 0x0001038C;
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_11 = "sphere.sphere.emv.unattended.FD...6_8_2_11.211207_S8.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_11 = "20CE841FCD6487074DEEDCE43946EBAF";
+        public const int SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_11 = 0x000103F3;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
         public const string SPHERE_NJT_UNATTENDED_CONFIG0_BUNDLE_11 = "sphere.njt.emv.unattended.FD...6_8_2_11.211207.tgz";
         public const string SPHERE_NJT_UNATTENDED_CONFIG0_HASH_11 = "25EAA9B55C1352634D2E0E00514E5220";
@@ -292,8 +292,9 @@ namespace Devices.Verifone.VIPA.Helpers
         #endregion --- VIPA 6.8.2.11 CONFIGURATIONS ---
 
         #region --- VIPA 6.8.2.17 CONFIGURATIONS ---
-        public const string VIPA_BUNDLES_17 = "6.8.2.17";
         /*
+        public const string VIPA_BUNDLES_17 = "6.8.2.17";
+        
         #region --- SPHERE-SIGNED ATTENDED EMV BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
         public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_17 = "sphere.sphere.emv.attended.FD...6_8_2_17.210714.tgz";
@@ -335,8 +336,9 @@ namespace Devices.Verifone.VIPA.Helpers
         #endregion --- VIPA 6.8.2.17 CONFIGURATIONS ---
 
         #region --- VIPA 6.8.2.19 CONFIGURATIONS ---
-        public const string VIPA_BUNDLES_19 = "6.8.2.19";
         /*
+        public const string VIPA_BUNDLES_19 = "6.8.2.19";
+        
         #region --- SPHERE-SIGNED ATTENDED EMV BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
         public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_19 = "sphere_VIPA_cfg_68217_Epic_slot0_210623.tgz";
@@ -416,15 +418,16 @@ namespace Devices.Verifone.VIPA.Helpers
         #endregion --- VIPA 6.8.2.19 CONFIGURATIONS ---
 
         #region --- VIPA 6.8.2.21 CONFIGURATIONS ---
+        /*
         public const string VIPA_BUNDLES_21 = "6.8.2.21";
 
         #region --- SPHERE-SIGNED ATTENDED EMV BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_21 = "sphere.sphere.emv.attended.FD...6_8_2_21.211119.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_21 = "sphere.sphere.emv.attended.FD...6_8_2_21.211207.tgz";
         public const string SPHERE_EPIC_ATTENDED_CONFIG0_HASH_21 = "148EF8900A5D9019CD9E88B8FA0836FC";
         public const int SPHERE_EPIC_ATTENDED_CONFIG0_SIZE_21 = 0x00010467;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_21 = "sphere.sphere.emv.attended.FD...6_8_2_21.211119_S8.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_21 = "sphere.sphere.emv.attended.FD...6_8_2_21.211207_S8.tgz";
         public const string SPHERE_EPIC_ATTENDED_CONFIG8_HASH_21 = "71909C1D2E8DF67F29B428B523B53656";
         public const int SPHERE_EPIC_ATTENDED_CONFIG8_SIZE_21 = 0x0001046A;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
@@ -439,11 +442,11 @@ namespace Devices.Verifone.VIPA.Helpers
 
         #region --- SPHERE-SIGNED UNATTENDED BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_21 = "sphere.sphere.emv.unattended.FD...6_8_2_21.211119.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_21 = "sphere.sphere.emv.unattended.FD...6_8_2_21.211207.tgz";
         public const string SPHERE_EPIC_UNATTENDED_CONFIG0_HASH_21 = "FDD62239570EB283817C04C61D2746E9";
         public const int SPHERE_EPIC_UNATTENDED_CONFIG0_SIZE_21 = 0x000104C5;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_21 = "sphere.sphere.emv.unattended.FD...6_8_2_21.211119_S8.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_21 = "sphere.sphere.emv.unattended.FD...6_8_2_21.211207_S8.tgz";
         public const string SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_21 = "FB4C8F346DB6757D2F8F62B3F7202B86";
         public const int SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_21 = 0x000103A5;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
@@ -454,6 +457,7 @@ namespace Devices.Verifone.VIPA.Helpers
         public const string SPHERE_NJT_UNATTENDED_CONFIG8_BUNDLE_21 = "sphere.njt.emv.unattended.FD...6_8_2_21.211117_S8.tgz";
         public const string SPHERE_NJT_UNATTENDED_CONFIG8_HASH_21 = "35458F3AB4F2BE8FA605F027CF8BE671";
         public const int SPHERE_NJT_UNATTENDED_CONFIG8_SIZE_21 = 0x000107B0;
+
         #endregion --- SPHERE-SIGNED ATTENDED CONFIGURATIONS ---
 
         #region --- VERIFONE-SIGNED ATTENDED BUNDLES ---
@@ -493,7 +497,7 @@ namespace Devices.Verifone.VIPA.Helpers
         public const string VERIFONE_NJT_UNATTENDED_CONFIG8_HASH_21 = "";
         public const int VERIFONE_NJT_UNATTENDED_CONFIG8_SIZE_21 = 0x00;
         #endregion --- VERIFONE-SIGNED ATTENDED CONFIGURATIONS ---
-
+        */
         #endregion --- VIPA 6.8.2.21 CONFIGURATIONS ---
 
         #region --- VIPA 6.8.2.23 CONFIGURATIONS ---
@@ -501,13 +505,13 @@ namespace Devices.Verifone.VIPA.Helpers
 
         #region --- SPHERE-SIGNED ATTENDED EMV BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_23 = "sphere.sphere.emv.attended.FD...6_8_2_23.211203.tgz";
-        public const string SPHERE_EPIC_ATTENDED_CONFIG0_HASH_23 = "DB124299C4AFF9FC98FBBAB718A5D083";
-        public const int SPHERE_EPIC_ATTENDED_CONFIG0_SIZE_23 = 0x000104A5;
+        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_23 = "sphere.sphere.emv.attended.FD...6_8_2_23.211207.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG0_HASH_23 = "A5D746F8DB54971DEAC797E082C16267";
+        public const int SPHERE_EPIC_ATTENDED_CONFIG0_SIZE_23 = 0x00010443;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_23 = "sphere.sphere.emv.attended.FD...6_8_2_23.211203_S8.tgz";
-        public const string SPHERE_EPIC_ATTENDED_CONFIG8_HASH_23 = "1356CB53E8C769017BD38D97FC19A145";
-        public const int SPHERE_EPIC_ATTENDED_CONFIG8_SIZE_23 = 0x000104A7;
+        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_23 = "sphere.sphere.emv.attended.FD...6_8_2_23.211207_S8.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG8_HASH_23 = "767A68D4605823D4750A1B88567AFEE5";
+        public const int SPHERE_EPIC_ATTENDED_CONFIG8_SIZE_23 = 0x000104C4;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
         public const string SPHERE_NJT_ATTENDED_CONFIG0_BUNDLE_23 = "sphere.njt.emv.attended.FD...6_8_2_23.211207.tgz";
         public const string SPHERE_NJT_ATTENDED_CONFIG0_HASH_23 = "F56B24721C209D6A91BC46429549F703";
@@ -520,13 +524,13 @@ namespace Devices.Verifone.VIPA.Helpers
 
         #region --- SPHERE-SIGNED UNATTENDED BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_23 = "sphere.sphere.emv.unattended.FD...6_8_2_23.211203.tgz";
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_HASH_23 = "B27CBC496AEA1FC195C71B64600C96F0";
-        public const int SPHERE_EPIC_UNATTENDED_CONFIG0_SIZE_23 = 0x000105B3;
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_23 = "sphere.sphere.emv.unattended.FD...6_8_2_23.211207.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_HASH_23 = "D37A17AF81CB6016281A6AD5A335F41D";
+        public const int SPHERE_EPIC_UNATTENDED_CONFIG0_SIZE_23 = 0x000104A9;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_23 = "sphere.sphere.emv.unattended.FD...6_8_2_23.211203_S8.tgz";
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_23 = "";
-        public const int SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_23 = 0x000103A5;
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_23 = "sphere.sphere.emv.unattended.FD...6_8_2_23.211207_S8.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_23 = "8682FF5E3773DB0D9523C1012266A40D";
+        public const int SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_23 = 0x000104A6;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
         public const string SPHERE_NJT_UNATTENDED_CONFIG0_BUNDLE_23 = "phere.njt.emv.unattended.FD...6_8_2_23.211207.tgz";
         public const string SPHERE_NJT_UNATTENDED_CONFIG0_HASH_23 = "3116315C83A9A8B95E1C8E6649D53B7C";
@@ -673,7 +677,7 @@ namespace Devices.Verifone.VIPA.Helpers
                 ["SPHERE_EPIC-UNA-23"] = (VIPA_BUNDLES_23, BinaryStatusObject.UX_DEVICES, SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_23, SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_23, SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_23),
                 ["SPHERE_NJT_-UNA-23"] = (VIPA_BUNDLES_23, BinaryStatusObject.UX_DEVICES, SPHERE_NJT_UNATTENDED_CONFIG8_BUNDLE_23, SPHERE_NJT_UNATTENDED_CONFIG8_HASH_23, SPHERE_NJT_UNATTENDED_CONFIG8_SIZE_23),
             };
-        #endregion --- ADE SLOT CONFIGURATION ---
+        #endregion --- EMV CONFIGURATION AND ADE SLOT LOCKING ---
 
         #region --- IDLE SCREEN PACKAGE ---
         /*public const string IDLE_MSG = "idle.msg";
@@ -800,36 +804,36 @@ namespace Devices.Verifone.VIPA.Helpers
         public const string VERIFONE_VIPA_VER_FW_HASH_UX301_11 = "";
         public const int VERIFONE_VIPA_VER_FW_FILESIZE_UX301_11 = 0x0000002A;
 
-        public const string VERIFONE_VIPA_VER_FW_HASH_M400_17 = "9C321FF8604AD8750F95953E9E66A2C2";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_M400_17 = 0x0000002A;
-        public const string VERIFONE_VIPA_VER_FW_HASH_P200_17 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_P200_17 = 0x0000002A;
-        public const string VERIFONE_VIPA_VER_FW_HASH_P400_17 = "6F4AD3D852051F96EE93A275BFAB4B49";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_P400_17 = 0x0000002A;
-        public const string VERIFONE_VIPA_VER_FW_HASH_UX301_17 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_UX301_17 = 0x0000002A;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_M400_17 = "9C321FF8604AD8750F95953E9E66A2C2";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_M400_17 = 0x0000002A;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_P200_17 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_P200_17 = 0x0000002A;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_P400_17 = "6F4AD3D852051F96EE93A275BFAB4B49";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_P400_17 = 0x0000002A;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_UX301_17 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_UX301_17 = 0x0000002A;
 
-        public const string VERIFONE_VIPA_BUNDLES_19 = "6.8.2.19";
-        public const string VERIFONE_VIPA_VER_FW_HASH_19 = "";
-        public const string VERIFONE_VIPA_VER_FW_HASH_M400_19 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_M400_19 = 0x00;
-        public const string VERIFONE_VIPA_VER_FW_HASH_P200_19 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_P200_19 = 0x00;
-        public const string VERIFONE_VIPA_VER_FW_HASH_P400_19 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_P400_19 = 0x00;
-        public const string VERIFONE_VIPA_VER_FW_HASH_UX301_19 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_UX301_19 = 0x00;
+        //public const string VERIFONE_VIPA_BUNDLES_19 = "6.8.2.19";
+        //public const string VERIFONE_VIPA_VER_FW_HASH_19 = "";
+        //public const string VERIFONE_VIPA_VER_FW_HASH_M400_19 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_M400_19 = 0x00;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_P200_19 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_P200_19 = 0x00;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_P400_19 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_P400_19 = 0x00;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_UX301_19 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_UX301_19 = 0x00;
 
-        public const string VERIFONE_VIPA_BUNDLES_21 = "6.8.2.21";
-        public const string VERIFONE_VIPA_VER_FW_HASH_21 = "";
-        public const string VERIFONE_VIPA_VER_FW_HASH_M400_21 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_M400_21 = 0x00;
-        public const string VERIFONE_VIPA_VER_FW_HASH_P200_21 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_P200_21 = 0x00;
-        public const string VERIFONE_VIPA_VER_FW_HASH_P400_21 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_P400_21 = 0x00;
-        public const string VERIFONE_VIPA_VER_FW_HASH_UX301_21 = "";
-        public const int VERIFONE_VIPA_VER_FW_FILESIZE_UX301_21 = 0x00;
+        //public const string VERIFONE_VIPA_BUNDLES_21 = "6.8.2.21";
+        //public const string VERIFONE_VIPA_VER_FW_HASH_21 = "";
+        //public const string VERIFONE_VIPA_VER_FW_HASH_M400_21 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_M400_21 = 0x00;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_P200_21 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_P200_21 = 0x00;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_P400_21 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_P400_21 = 0x00;
+        //public const string VERIFONE_VIPA_VER_FW_HASH_UX301_21 = "";
+        //public const int VERIFONE_VIPA_VER_FW_FILESIZE_UX301_21 = 0x00;
 
         public const string VERIFONE_VIPA_BUNDLES_23 = "6.8.2.23";
         public const string VERIFONE_VIPA_VER_FW_HASH_23 = "";
@@ -911,52 +915,52 @@ namespace Devices.Verifone.VIPA.Helpers
                 ["VERIFONE_IP4_250_11"] = (VIPA_BUNDLES_11, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_250),
 
                 // VIPA 6.8.2.17
-                ["VERIFONE_BSM4_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_M400_17, VERIFONE_VIPA_VER_FW_FILESIZE_M400_17),
-                ["VERIFONE_BSP2_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P200_17, VERIFONE_VIPA_VER_FW_FILESIZE_P200_17),
-                ["VERIFONE_BSP4_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P400_17, VERIFONE_VIPA_VER_FW_FILESIZE_P400_17),
-                ["VERIFONE__BSUX_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_UX301_17, VERIFONE_VIPA_VER_FW_FILESIZE_UX301_17),
+                //["VERIFONE_BSM4_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_M400_17, VERIFONE_VIPA_VER_FW_FILESIZE_M400_17),
+                //["VERIFONE_BSP2_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P200_17, VERIFONE_VIPA_VER_FW_FILESIZE_P200_17),
+                //["VERIFONE_BSP4_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P400_17, VERIFONE_VIPA_VER_FW_FILESIZE_P400_17),
+                //["VERIFONE__BSUX_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_UX301_17, VERIFONE_VIPA_VER_FW_FILESIZE_UX301_17),
                 // EMV CONFIGS
-                ["VERIFONE_AES0_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_17, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_17),
-                ["VERIFONE_UES0_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_17, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_17),
+                //["VERIFONE_AES0_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_17, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_17),
+                //["VERIFONE_UES0_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_17, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_17),
                 // IDLE IMAGES
-                ["VERIFONE_IM4_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_199),
-                ["VERIFONE_IM4_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_250),
-                ["VERIFONE_IP2_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_199),
-                ["VERIFONE_IP2_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_250),
-                ["VERIFONE_IP4_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_199),
-                ["VERIFONE_IP4_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_250),
+                //["VERIFONE_IM4_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_199),
+                //["VERIFONE_IM4_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                //["VERIFONE_IP2_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_199),
+                //["VERIFONE_IP2_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_250),
+                //["VERIFONE_IP4_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_199),
+                //["VERIFONE_IP4_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_250),
 
                 // VIPA 6.8.2.19
-                ["VERIFONE_BSM4_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_M400_19, VERIFONE_VIPA_VER_FW_FILESIZE_M400_19),
-                ["VERIFONE_BSP2_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P200_19, VERIFONE_VIPA_VER_FW_FILESIZE_P200_19),
-                ["VERIFONE_BSP4_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P400_19, VERIFONE_VIPA_VER_FW_FILESIZE_P400_19),
-                ["VERIFONE_BSUX_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_UX301_19, VERIFONE_VIPA_VER_FW_FILESIZE_UX301_19),
+                //["VERIFONE_BSM4_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_M400_19, VERIFONE_VIPA_VER_FW_FILESIZE_M400_19),
+                //["VERIFONE_BSP2_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P200_19, VERIFONE_VIPA_VER_FW_FILESIZE_P200_19),
+                //["VERIFONE_BSP4_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P400_19, VERIFONE_VIPA_VER_FW_FILESIZE_P400_19),
+                //["VERIFONE_BSUX_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_UX301_19, VERIFONE_VIPA_VER_FW_FILESIZE_UX301_19),
                 // EMV CONFIGS
-                ["VERIFONE_AES0_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_19, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_19),
-                ["VERIFONE_UES0_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_19, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_19),
+                //["VERIFONE_AES0_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_19, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_19),
+                //["VERIFONE_UES0_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_19, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_19),
                 // IDLE IMAGES
-                ["VERIFONE_IM4_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_199),
-                ["VERIFONE_IM4_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_250),
-                ["VERIFONE_IP2_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_199),
-                ["VERIFONE_IP2_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_250),
-                ["VERIFONE_IP4_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_199),
-                ["VERIFONE_IP4_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_250),
+                //["VERIFONE_IM4_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_199),
+                //["VERIFONE_IM4_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                //["VERIFONE_IP2_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_199),
+                //["VERIFONE_IP2_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_250),
+                //["VERIFONE_IP4_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_199),
+                //["VERIFONE_IP4_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_250),
 
                 // VIPA 6.8.2.21
-                ["VERIFONE_BSM4_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_M400_21, VERIFONE_VIPA_VER_FW_FILESIZE_M400_21),
-                ["VERIFONE_BSP2_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P200_21, VERIFONE_VIPA_VER_FW_FILESIZE_P200_21),
-                ["VERIFONE_BSP4_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P400_21, VERIFONE_VIPA_VER_FW_FILESIZE_P400_21),
-                ["VERIFONE_BSUX_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_UX301_21, VERIFONE_VIPA_VER_FW_FILESIZE_UX301_21),
+                //["VERIFONE_BSM4_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_M400_21, VERIFONE_VIPA_VER_FW_FILESIZE_M400_21),
+                //["VERIFONE_BSP2_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P200_21, VERIFONE_VIPA_VER_FW_FILESIZE_P200_21),
+                //["VERIFONE_BSP4_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_P400_21, VERIFONE_VIPA_VER_FW_FILESIZE_P400_21),
+                //["VERIFONE_BSUX_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_UX301_21, VERIFONE_VIPA_VER_FW_FILESIZE_UX301_21),
                 // EMV CONFIGS
-                ["VERIFONE_AES0_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_21, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_21),
-                ["VERIFONE_UES0_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_21, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_21),
+                //["VERIFONE_AES0_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_21, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_21),
+                //["VERIFONE_UES0_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, VERIFONE_VIPA_VER_EMV_HASH_SLOT_0_21, VERIFONE_VIPA_VER_EMV_FILESIZE_SLOT_0_21),
                 // IDLE IMAGES
-                ["VERIFONE_IM4_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_199),
-                ["VERIFONE_IM4_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_250),
-                ["VERIFONE_IP2_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_199),
-                ["VERIFONE_IP2_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_250),
-                ["VERIFONE_IP4_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_199),
-                ["VERIFONE_IP4_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_250),
+                //["VERIFONE_IM4_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_199),
+                //["VERIFONE_IM4_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_M400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                //["VERIFONE_IP2_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_199),
+                //["VERIFONE_IP2_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P200_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P200_250),
+                //["VERIFONE_IP4_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_199, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_199),
+                //["VERIFONE_IP4_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, VERIFONE_VIPA_VER_IDLE_HASH_P400_250, VERIFONE_VIPA_VER_IDLE_FILESIZE_P400_250),
 
                 // VIPA 6.8.2.23
                 ["VERIFONE_BSM4_23"] = (VIPA_BUNDLES_23, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, VERIFONE_VIPA_VER_FW_HASH_M400_23, VERIFONE_VIPA_VER_FW_FILESIZE_M400_23),
@@ -1106,52 +1110,52 @@ namespace Devices.Verifone.VIPA.Helpers
                 ["SPHERE_IP4_250_11"] = (VIPA_BUNDLES_11, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_P400_250),
 
                 // VIPA 6.8.2.17
-                ["SPHERE_BSM4_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_M400_17, SPHERE_VIPA_VER_FW_FILESIZE_M400_17),
-                ["SPHERE_BSP2_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P200_17, SPHERE_VIPA_VER_FW_FILESIZE_P200_17),
-                ["SPHERE_BSP4_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P400_17, SPHERE_VIPA_VER_FW_FILESIZE_P400_17),
-                ["SPHERE_BSUX_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_UX301_17, SPHERE_VIPA_VER_FW_FILESIZE_UX301_17),
+                //["SPHERE_BSM4_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_M400_17, SPHERE_VIPA_VER_FW_FILESIZE_M400_17),
+                //["SPHERE_BSP2_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P200_17, SPHERE_VIPA_VER_FW_FILESIZE_P200_17),
+                //["SPHERE_BSP4_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P400_17, SPHERE_VIPA_VER_FW_FILESIZE_P400_17),
+                //["SPHERE_BSUX_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_UX301_17, SPHERE_VIPA_VER_FW_FILESIZE_UX301_17),
                 // EMV CONFIGS
-                ["SPHERE_AES0_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_17, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_17),
-                ["SPHERE_UES0_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_17, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_17),
+                //["SPHERE_AES0_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_17, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_17),
+                //["SPHERE_UES0_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_17, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_17),
                 // IDLE IMAGES
-                ["SPHERE_IM4_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_199),
-                ["SPHERE_IM4_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
-                ["SPHERE_IP2_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_199),
-                ["SPHERE_IP2_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_250, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_250),
-                ["SPHERE_IP4_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P400_199),
-                ["SPHERE_IP4_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                //["SPHERE_IM4_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_199),
+                //["SPHERE_IM4_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                //["SPHERE_IP2_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_199),
+                //["SPHERE_IP2_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_250, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_250),
+                //["SPHERE_IP4_199_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P400_199),
+                //["SPHERE_IP4_250_17"] = (VIPA_BUNDLES_17, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
 
                 // VIPA 6.8.2.19
-                ["SPHERE_BSM4_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_M400_19, SPHERE_VIPA_VER_FW_FILESIZE_M400_19),
-                ["SPHERE_BSP2_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P200_19, SPHERE_VIPA_VER_FW_FILESIZE_P200_19),
-                ["SPHERE_BSP4_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P400_19, SPHERE_VIPA_VER_FW_FILESIZE_P400_19),
-                ["SPHERE_BSUX_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_UX301_19, SPHERE_VIPA_VER_FW_FILESIZE_UX301_19),
+                //["SPHERE_BSM4_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_M400_19, SPHERE_VIPA_VER_FW_FILESIZE_M400_19),
+                //["SPHERE_BSP2_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P200_19, SPHERE_VIPA_VER_FW_FILESIZE_P200_19),
+                //["SPHERE_BSP4_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P400_19, SPHERE_VIPA_VER_FW_FILESIZE_P400_19),
+                //["SPHERE_BSUX_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_UX301_19, SPHERE_VIPA_VER_FW_FILESIZE_UX301_19),
                 // EMV CONFIGS
-                ["SPHERE_AES0_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_19, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_19),
-                ["SPHERE_UES0_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_19, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_19),
+                //["SPHERE_AES0_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_19, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_19),
+                //["SPHERE_UES0_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_19, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_19),
                 // IDLE IMAGES
-                ["SPHERE_IM4_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_199),
-                ["SPHERE_IM4_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
-                ["SPHERE_IP2_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_199),
-                ["SPHERE_IP2_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_250, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_250),
-                ["SPHERE_IP4_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P400_199),
-                ["SPHERE_IP4_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                //["SPHERE_IM4_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_199),
+                //["SPHERE_IM4_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                //["SPHERE_IP2_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_199),
+                //["SPHERE_IP2_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_250, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_250),
+                //["SPHERE_IP4_199_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P400_199),
+                //["SPHERE_IP4_250_19"] = (VIPA_BUNDLES_19, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
 
                 // VIPA 6.8.2.21
-                ["SPHERE_BSM4_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_M400_21, SPHERE_VIPA_VER_FW_FILESIZE_M400_21),
-                ["SPHERE_BSP2_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P200_21, SPHERE_VIPA_VER_FW_FILESIZE_P200_21),
-                ["SPHERE_BSP4_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P400_21, SPHERE_VIPA_VER_FW_FILESIZE_P400_21),
-                ["SPHERE_BSUX_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_UX301_21, SPHERE_VIPA_VER_FW_FILESIZE_UX301_21),
+                //["SPHERE_BSM4_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_M400_21, SPHERE_VIPA_VER_FW_FILESIZE_M400_21),
+                //["SPHERE_BSP2_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P200_21, SPHERE_VIPA_VER_FW_FILESIZE_P200_21),
+                //["SPHERE_BSP4_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_P400_21, SPHERE_VIPA_VER_FW_FILESIZE_P400_21),
+                //["SPHERE_BSUX_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_UX301_21, SPHERE_VIPA_VER_FW_FILESIZE_UX301_21),
                 // EMV CONFIGS
-                ["SPHERE_AES0_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_21, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_21),
-                ["SPHERE_UES0_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_21, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_21),
+                //["SPHERE_AES0_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.ENGAGE_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_21, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_21),
+                //["SPHERE_UES0_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.EMVConfiguration, BinaryStatusObject.UX_DEVICES, VIPA_VER_EMV, SPHERE_VIPA_VER_EMV_HASH_SLOT_0_21, SPHERE_VIPA_VER_EMV_FILESIZE_SLOT_0_21),
                 // IDLE IMAGES
-                ["SPHERE_IM4_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_199),
-                ["SPHERE_IM4_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
-                ["SPHERE_IP2_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_199),
-                ["SPHERE_IP2_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_250, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_250),
-                ["SPHERE_IP4_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P400_199),
-                ["SPHERE_IP4_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                //["SPHERE_IM4_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_199),
+                //["SPHERE_IM4_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                //["SPHERE_IP2_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_199),
+                //["SPHERE_IP2_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_250, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_250),
+                //["SPHERE_IP4_199_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P400_199),
+                //["SPHERE_IP4_250_21"] = (VIPA_BUNDLES_21, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
 
                 // VIPA 6.8.2.23
                 ["SPHERE_BSM4_23"] = (VIPA_BUNDLES_23, DeviceConfigurationTypes.BaseConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_FW, SPHERE_VIPA_VER_FW_HASH_M400_23, SPHERE_VIPA_VER_FW_FILESIZE_M400_23),

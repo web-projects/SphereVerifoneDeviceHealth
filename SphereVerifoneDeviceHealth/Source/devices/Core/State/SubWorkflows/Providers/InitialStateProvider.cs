@@ -39,6 +39,7 @@ namespace Devices.Core.State.SubWorkflows.Providers
                 LinkDeviceActionType.SetTerminalDateTime => DeviceSubWorkflowState.SetTerminalDateTime,
                 LinkDeviceActionType.VIPAVersions => DeviceSubWorkflowState.VIPAVersions,
                 LinkDeviceActionType.GetSphereHealthFile => DeviceSubWorkflowState.GetSphereHealthFile,
+                LinkDeviceActionType.ManualCardEntry => DeviceSubWorkflowState.ManualCardEntry,
                 _ => DeviceSubWorkflowState.Undefined
             });
 

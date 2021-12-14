@@ -4,6 +4,7 @@ using Devices.Common.AppConfig;
 using Execution;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using static Common.XO.Responses.LinkEventResponse;
 
 namespace Devices.Common.Interfaces
@@ -67,5 +68,6 @@ namespace Devices.Common.Interfaces
         LinkRequest SetTerminalDateTime(LinkRequest linkRequest);
         LinkActionRequest VIPAVersions(LinkActionRequest linkRequest);
         LinkRequest GetSphereHealthFile(LinkRequest linkRequest);
+        LinkRequest ManualCardEntry(LinkRequest linkRequest, CancellationToken cancellationToken);
     }
 }

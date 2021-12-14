@@ -35,6 +35,7 @@ namespace Common.XO.Requests
         Reboot24Hour,
         SetTerminalDateTime,
         VIPAVersions,
-        GetSphereHealthFile
+        GetSphereHealthFile,
+        ManualCardEntry
     }
 }
