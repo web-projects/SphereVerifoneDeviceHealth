@@ -260,6 +260,18 @@ namespace DEVICE_CORE
                                 await application.Command(LinkDeviceActionType.ManualCardEntry).ConfigureAwait(false);
                                 break;
                             }
+                            case ConsoleKey.T:
+                            {
+                                //Console.WriteLine("\r\nCOMMAND: [TEST]");
+                                await application.Command(LinkDeviceActionType.GenerateHMAC).ConfigureAwait(false);
+                                break;
+                            }
+                            case ConsoleKey.U:
+                            {
+                                //Console.WriteLine("\r\nCOMMAND: [UPDATE]");
+                                await application.Command(LinkDeviceActionType.UpdateHMACKeys).ConfigureAwait(false);
+                                break;
+                            }
                             case ConsoleKey.V:
                             {
                                 //Console.WriteLine("\r\nCOMMAND: [VERSION]");
@@ -323,18 +335,6 @@ namespace DEVICE_CORE
                             //Task.Run(async () => await application.Command(LinkDeviceActionType.GetSecurityConfiguration)).GetAwaiter().GetResult();
                             break;
                         }
-                        //case ConsoleKey.T:
-                        //{
-                        //    //Console.WriteLine("\r\nCOMMAND: [TEST]");
-                        //    await application.Command(LinkDeviceActionType.GenerateHMAC).ConfigureAwait(false);
-                        //    break;
-                        //}
-                        //case ConsoleKey.U:
-                        //{
-                        //    //Console.WriteLine("\r\nCOMMAND: [UPDATE]");
-                        //    await application.Command(LinkDeviceActionType.UpdateHMACKeys).ConfigureAwait(false);
-                        //    break;
-                        //}
                         case ConsoleKey.V:
                         {
                             //Console.WriteLine("\r\nCOMMAND: [SLOT]");
