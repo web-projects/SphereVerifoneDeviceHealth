@@ -24,7 +24,7 @@
         public int? Timeout { get; set; }
         public bool Valid { get; set; } = false;
         public SerialDeviceConfig SerialConfig { get; private set; }
-
+        public SupportedTransactions SupportedTransactions { get; set; }
         public DeviceConfig SetSerialDeviceConfig(in SerialDeviceConfig serialDeviceConfig)
         {
             SerialConfig = serialDeviceConfig;

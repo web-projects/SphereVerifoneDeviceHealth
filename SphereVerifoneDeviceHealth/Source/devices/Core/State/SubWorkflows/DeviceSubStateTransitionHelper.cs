@@ -167,6 +167,13 @@ namespace Devices.Core.State.SubWorkflows
             false => SanityCheck
         };
 
+        private static DeviceSubWorkflowState ComputeReportEMVKernelVersionsStateTransition(bool exception) =>
+        exception switch
+        {
+            true => SanityCheck,
+            false => SanityCheck
+        };
+
         private static DeviceSubWorkflowState ComputeSanityCheckStateTransition(bool exception) =>
             exception switch
             {
@@ -207,6 +214,7 @@ namespace Devices.Core.State.SubWorkflows
                 VIPAVersions => ComputeVIPAVersionsStateTransition(exception),
                 GetSphereHealthFile => ComputeGetSphereDeviceHealthStateTransition(exception),
                 ManualCardEntry => ComputeManualCardEntryStateTransition(exception),
+                ReportEMVKernelVersions => ComputeReportEMVKernelVersionsStateTransition(exception),
                 SanityCheck => ComputeSanityCheckStateTransition(exception),
                 RequestComplete => ComputeRequestCompletedStateTransition(exception),
                 _ => throw new StateException($"Invalid state transition '{state}' requested.")

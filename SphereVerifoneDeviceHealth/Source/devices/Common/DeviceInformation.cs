@@ -21,5 +21,7 @@ namespace Devices.Common
         public string VipaPackageTag { get; set; }
         public string CertPackageTag { get; set; }
         public string IdleImagePackageTag { get; set; }
+        public string ContactlessKernelInformation { get; set; }
+        public string EMVL2KernelVersion { get; set; }
     }
 }

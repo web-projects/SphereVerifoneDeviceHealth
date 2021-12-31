@@ -234,41 +234,40 @@ namespace Devices.Verifone.VIPA.Helpers
 
         #region --- SPHERE-SIGNED ATTENDED EMV BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_11 = "sphere.sphere.emv.attended.FD...6_8_2_11.211217.tgz";
-        public const string SPHERE_EPIC_ATTENDED_CONFIG0_HASH_11 = "E7C25D955571D39CE117DA078F261394";
-        public const int SPHERE_EPIC_ATTENDED_CONFIG0_SIZE_11 = 0x000110D0;
+        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_11 = "sphere.sphere.emv.attended.FD...6_8_2_11.211223.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG0_HASH_11 = "F35D4AE31C239941598CB2866CE90069";
+        public const int SPHERE_EPIC_ATTENDED_CONFIG0_SIZE_11 = 0x0001102B;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_11 = "sphere.sphere.emv.attended.FD...6_8_2_11.211217_S8.tgz";
-        public const string SPHERE_EPIC_ATTENDED_CONFIG8_HASH_11 = "16CA7E4EFCE5A99BA822B8B6427A6F84";
-        public const int SPHERE_EPIC_ATTENDED_CONFIG8_SIZE_11 = 0x000112BF;
+        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_11 = "sphere.sphere.emv.attended.FD...6_8_2_11.211223_S8.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG8_HASH_11 = "1289F429FDA3C4D35A5471A9EA7C7B37";
+        public const int SPHERE_EPIC_ATTENDED_CONFIG8_SIZE_11 = 0x000113E2;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_NJT_ATTENDED_CONFIG0_BUNDLE_11 = "sphere.njt.emv.attended.FD...6_8_2_11.211215.tgz";
-        public const string SPHERE_NJT_ATTENDED_CONFIG0_HASH_11 = "E7C25D955571D39CE117DA078F261394";
-        public const int SPHERE_NJT_ATTENDED_CONFIG0_SIZE_11 = 0x00011623;
+        public const string SPHERE_NJT_ATTENDED_CONFIG0_BUNDLE_11 = "sphere.njt.emv.attended.FD...6_8_2_11.211223.tgz";
+        public const string SPHERE_NJT_ATTENDED_CONFIG0_HASH_11 = "6CDCDF10E68F156BE34B259672D92BB0";
+        public const int SPHERE_NJT_ATTENDED_CONFIG0_SIZE_11 = 0x00011638;
         // NJT ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_NJT_ATTENDED_CONFIG8_BUNDLE_11 = "sphere.njt.emv.attended.FD...6_8_2_11.211215_S8.tgz";
-        public const string SPHERE_NJT_ATTENDED_CONFIG8_HASH_11 = "16CA7E4EFCE5A99BA822B8B6427A6F84";
-        public const int SPHERE_NJT_ATTENDED_CONFIG8_SIZE_11 = 0x00011627;
+        public const string SPHERE_NJT_ATTENDED_CONFIG8_BUNDLE_11 = "sphere.njt.emv.attended.FD...6_8_2_11.211223_S8.tgz";
+        public const string SPHERE_NJT_ATTENDED_CONFIG8_HASH_11 = "16D969DB2E44079848996CE26158853B";
+        public const int SPHERE_NJT_ATTENDED_CONFIG8_SIZE_11 = 0x00011491;
         #endregion --- SPHERE-SIGNED ATTENDED EMV BUNDLES ---
 
         #region --- SPHERE-SIGNED UNATTENDED BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_11 = "sphere.sphere.emv.unattended.FD...6_8_2_11.211217.tgz";
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_HASH_11 = "0C3BB88D5E1B86A3EF2826456B1A982D";
-        public const int SPHERE_EPIC_UNATTENDED_CONFIG0_SIZE_11 = 0x00011096;
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_11 = "sphere.sphere.emv.unattended.FD...6_8_2_11.211223.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_HASH_11 = "0CB1634A0FBDF0C2DBC4D76F9F6F5664";
+        public const int SPHERE_EPIC_UNATTENDED_CONFIG0_SIZE_11 = 0x0001121E;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_11 = "sphere.sphere.emv.unattended.FD...6_8_2_11.211217_S8.tgz";
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_11 = "F973314CB88151D4CCB31AE306A3280D";
-
-        public const int SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_11 = 0x00011082;
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_11 = "sphere.sphere.emv.unattended.FD...6_8_2_11.211223_S8.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_11 = "6524A02DC0E7A0F59C1A425E348388F8";
+        public const int SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_11 = 0x0001122E;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_NJT_UNATTENDED_CONFIG0_BUNDLE_11 = "sphere.njt.emv.unattended.FD...6_8_2_11.211215.tgz";
-        public const string SPHERE_NJT_UNATTENDED_CONFIG0_HASH_11 = "F973314CB88151D4CCB31AE306A3280D";
-        public const int SPHERE_NJT_UNATTENDED_CONFIG0_SIZE_11 = 0x00011610;
+        public const string SPHERE_NJT_UNATTENDED_CONFIG0_BUNDLE_11 = "sphere.njt.emv.unattended.FD...6_8_2_11.211223.tgz";
+        public const string SPHERE_NJT_UNATTENDED_CONFIG0_HASH_11 = "94ABA85F687949AAF8A06B9B5F496CD5";
+        public const int SPHERE_NJT_UNATTENDED_CONFIG0_SIZE_11 = 0x0001160F;
         // NJT ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_NJT_UNATTENDED_CONFIG8_BUNDLE_11 = "sphere.njt.emv.unattended.FD...6_8_2_11.211215_S8.tgz";
-        public const string SPHERE_NJT_UNATTENDED_CONFIG8_HASH_11 = "4E39EF3E1B8158056B8639CF85159F51";
-        public const int SPHERE_NJT_UNATTENDED_CONFIG8_SIZE_11 = 0x000111FA;
+        public const string SPHERE_NJT_UNATTENDED_CONFIG8_BUNDLE_11 = "sphere.njt.emv.unattended.FD...6_8_2_11.211223_S8.tgz";
+        public const string SPHERE_NJT_UNATTENDED_CONFIG8_HASH_11 = "87194FE9A5FFA7EC6E24D6488BC6C342";
+        public const int SPHERE_NJT_UNATTENDED_CONFIG8_SIZE_11 = 0x0001124F;
         #endregion --- SPHERE-SIGNED ATTENDED CONFIGURATIONS ---
 
         #region --- VERIFONE-SIGNED ATTENDED EMV BUNDLES ---
@@ -506,40 +505,40 @@ namespace Devices.Verifone.VIPA.Helpers
 
         #region --- SPHERE-SIGNED ATTENDED EMV BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_23 = "sphere.sphere.emv.attended.FD...6_8_2_23.211217.tgz";
-        public const string SPHERE_EPIC_ATTENDED_CONFIG0_HASH_23 = "DB179C6D0BBBA1AD41C8E7FA01531740";
-        public const int SPHERE_EPIC_ATTENDED_CONFIG0_SIZE_23 = 0x000112F3;
+        public const string SPHERE_EPIC_ATTENDED_CONFIG0_BUNDLE_23 = "sphere.sphere.emv.attended.FD...6_8_2_23.211223.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG0_HASH_23 = "84D3098782D4BD843EED07F6AB4AD64E";
+        public const int SPHERE_EPIC_ATTENDED_CONFIG0_SIZE_23 = 0x0001125B;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_23 = "sphere.sphere.emv.attended.FD...6_8_2_23.211217_S8.tgz";
-        public const string SPHERE_EPIC_ATTENDED_CONFIG8_HASH_23 = "44D2538287EFFDCF0C58705BBCF1A352";
-        public const int SPHERE_EPIC_ATTENDED_CONFIG8_SIZE_23 = 0x000112D1;
+        public const string SPHERE_EPIC_ATTENDED_CONFIG8_BUNDLE_23 = "sphere.sphere.emv.attended.FD...6_8_2_23.211223_S8.tgz";
+        public const string SPHERE_EPIC_ATTENDED_CONFIG8_HASH_23 = "3DFF2336298D30119B254CB782F6F77F";
+        public const int SPHERE_EPIC_ATTENDED_CONFIG8_SIZE_23 = 0x0001141F;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_NJT_ATTENDED_CONFIG0_BUNDLE_23 = "sphere.njt.emv.attended.FD...6_8_2_23.211215.tgz";
-        public const string SPHERE_NJT_ATTENDED_CONFIG0_HASH_23 = "8C601582C88C3E6C94669A7FD2BE138A";
+        public const string SPHERE_NJT_ATTENDED_CONFIG0_BUNDLE_23 = "sphere.njt.emv.attended.FD...6_8_2_23.211223.tgz";
+        public const string SPHERE_NJT_ATTENDED_CONFIG0_HASH_23 = "F74F781B8902F00B2A683C4F40DCF370";
         public const int SPHERE_NJT_ATTENDED_CONFIG0_SIZE_23 = 0x00011653;
         // NJT ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_NJT_ATTENDED_CONFIG8_BUNDLE_23 = "sphere.njt.emv.attended.FD...6_8_2_23.211215_S8.tgz";
-        public const string SPHERE_NJT_ATTENDED_CONFIG8_HASH_23 = "357346D56191B5844906026A7C62106A";
-        public const int SPHERE_NJT_ATTENDED_CONFIG8_SIZE_23 = 0x00011633;
+        public const string SPHERE_NJT_ATTENDED_CONFIG8_BUNDLE_23 = "sphere.njt.emv.attended.FD...6_8_2_23.211223_S8.tgz";
+        public const string SPHERE_NJT_ATTENDED_CONFIG8_HASH_23 = "5251BF12AC453EA8EFB8DA0AE3F25238";
+        public const int SPHERE_NJT_ATTENDED_CONFIG8_SIZE_23 = 0x0001162D;
         #endregion --- SPHERE-SIGNED ATTENDED EMV BUNDLES ---
 
         #region --- SPHERE-SIGNED UNATTENDED BUNDLES ---
         // EPIC ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_23 = "sphere.sphere.emv.unattended.FD...6_8_2_23.211217.tgz";
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_HASH_23 = "4E39EF3E1B8158056B8639CF85159F51";
-        public const int SPHERE_EPIC_UNATTENDED_CONFIG0_SIZE_23 = 0x000110D0;
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_BUNDLE_23 = "sphere.sphere.emv.unattended.FD...6_8_2_23.211223.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG0_HASH_23 = "2308520140FB5B928B9D8F705BA8C609";
+        public const int SPHERE_EPIC_UNATTENDED_CONFIG0_SIZE_23 = 0x0001101B;
         // EPIC ADE SLOT-8 LOCK CONFIGURATIONS
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_23 = "sphere.sphere.emv.unattended.FD...6_8_2_23.211217_S8.tgz";
-        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_23 = "80D20AA45B470D1512724555A7CC1F77";
-        public const int SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_23 = 0x00010F54;
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_BUNDLE_23 = "sphere.sphere.emv.unattended.FD...6_8_2_23.211223_S8.tgz";
+        public const string SPHERE_EPIC_UNATTENDED_CONFIG8_HASH_23 = "9CA3C85E5C94AA8B7CE27821E30DB4EF";
+        public const int SPHERE_EPIC_UNATTENDED_CONFIG8_SIZE_23 = 0x00011014;
         // NJT ADE SLOT-0 LOCK CONFIGURATIONS
-        public const string SPHERE_NJT_UNATTENDED_CONFIG0_BUNDLE_23 = "phere.njt.emv.unattended.FD...6_8_2_23.211215.tgz";
-        public const string SPHERE_NJT_UNATTENDED_CONFIG0_HASH_23 = "0C3BB88D5E1B86A3EF2826456B1A982D";
-        public const int SPHERE_NJT_UNATTENDED_CONFIG0_SIZE_23 = 0x00011227;
+        public const string SPHERE_NJT_UNATTENDED_CONFIG0_BUNDLE_23 = "sphere.njt.emv.unattended.FD...6_8_2_23.211223.tgz";
+        public const string SPHERE_NJT_UNATTENDED_CONFIG0_HASH_23 = "DB879E65F9C0558D28EDC9D98643ABDA";
+        public const int SPHERE_NJT_UNATTENDED_CONFIG0_SIZE_23 = 0x00011228;
         // NJT ADE SLOT-8 LOCK CONFIGURATIONS
         public const string SPHERE_NJT_UNATTENDED_CONFIG8_BUNDLE_23 = "sphere.njt.emv.unattended.FD...6_8_2_23.211215_S8.tgz";
-        public const string SPHERE_NJT_UNATTENDED_CONFIG8_HASH_23 = "80D20AA45B470D1512724555A7CC1F77";
-        public const int SPHERE_NJT_UNATTENDED_CONFIG8_SIZE_23 = 0x000115EF;
+        public const string SPHERE_NJT_UNATTENDED_CONFIG8_HASH_23 = "B3977E6A7FF1198EE029B1FB0315B9A6";
+        public const int SPHERE_NJT_UNATTENDED_CONFIG8_SIZE_23 = 0x000115CD;
         #endregion --- SPHERE-SIGNED ATTENDED CONFIGURATIONS ---
 
         #region --- VERIFONE-SIGNED ATTENDED BUNDLES ---

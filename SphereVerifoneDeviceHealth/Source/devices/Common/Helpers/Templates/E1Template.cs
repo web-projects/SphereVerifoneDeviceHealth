@@ -11,5 +11,6 @@
         public static readonly uint SerialNumber = 0xDFC021;
         public static readonly uint FirmwareRevision = 0xDFC022;
         public static readonly uint InitializationStatus = 0xDFC023;
+        public static readonly uint KernelInformation = 0xDFC028;
     }
 }

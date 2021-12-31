@@ -316,6 +316,14 @@ namespace Devices.Simulator
             return linkRequest;
         }
 
+        public LinkRequest ReportEMVKernelVersions(LinkRequest linkRequest, CancellationToken cancellationToken)
+        {
+            LinkActionRequest linkActionRequest = linkRequest?.Actions?.First();
+            Console.WriteLine("----------------------------------------------------------------------------------------------------");
+            Console.WriteLine($"simulator: EMV KERNEL VERSIONS for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
+            return linkRequest;
+        }
+
         #endregion --- subworkflow mapping
     }
 }

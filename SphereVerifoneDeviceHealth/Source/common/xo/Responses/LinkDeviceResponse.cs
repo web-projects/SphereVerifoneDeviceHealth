@@ -16,6 +16,8 @@ namespace Common.XO.Responses
         public string Port { get; set; }
         public List<string> Features { get; set; }
         public List<string> Configurations { get; set; }
+        public string EMVL2KernelVersion { get; set; }
+        public string ContactlessKernelInformation { get; set; }
         //CardWorkflowControls only used when request Action = 'DALStatus'; can be null
         //public LinkCardWorkflowControls CardWorkflowControls { get; set; }
     }

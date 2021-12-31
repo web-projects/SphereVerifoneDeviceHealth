@@ -30,9 +30,13 @@ namespace Devices.Verifone.VIPA.Interfaces
 
         (int VipaResult, int VipaResponse) GetActiveKeySlot();
 
+        (DeviceInfoObject deviceInfoObject, int VipaResponse) GetDeviceHealth(SupportedTransactions supportedTransactions);
+
         (SecurityConfigurationObject securityConfigurationObject, int VipaResponse) GetSecurityConfiguration(byte hostID, byte vssSlot);
 
         (KernelConfigurationObject kernelConfigurationObject, int VipaResponse) GetEMVKernelChecksum();
+
+        string GetContactlessEMVKernelVersions();
 
         int ConfigurationPackage(string deviceModel, bool activeSigningMethodIsSphere);
 

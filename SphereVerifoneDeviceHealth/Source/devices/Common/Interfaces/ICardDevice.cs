@@ -69,5 +69,6 @@ namespace Devices.Common.Interfaces
         LinkActionRequest VIPAVersions(LinkActionRequest linkRequest);
         LinkRequest GetSphereHealthFile(LinkRequest linkRequest);
         LinkRequest ManualCardEntry(LinkRequest linkRequest, CancellationToken cancellationToken);
+        LinkRequest ReportEMVKernelVersions(LinkRequest linkRequest, CancellationToken cancellationToken);
     }
 }

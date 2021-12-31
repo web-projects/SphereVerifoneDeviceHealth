@@ -8,5 +8,8 @@
         public static readonly uint EFTemplateTag = 0xEF;
         public static readonly uint WhiteListHash = 0xDFDB09;
         public static readonly uint FirmwareVersion = 0xDF7F;
+        public static readonly string ADKEVMKernel = "ADK_EMV_CT_Kern";
+        public static readonly uint EMVLibraryName = 0xDF8106;
+        public static readonly uint EMVL2KernelVersion = 0xDF8107;
     }
 }

@@ -38,6 +38,7 @@ namespace Devices.Core.State.SubWorkflows.Actions.Controllers
                     [VIPAVersions] = (IDeviceSubStateController _) => new DeviceVIPAVersionsSubStateAction(_),
                     [GetSphereHealthFile] = (IDeviceSubStateController _) => new DeviceGetSphereHealthFileSubStateAction(_),
                     [ManualCardEntry] = (IDeviceSubStateController _) => new DeviceManualCardEntrySubStateAction(_),
+                    [ReportEMVKernelVersions] = (IDeviceSubStateController _) => new DeviceReportEMVKernelVersionsSubStateAction(_),
                     [SanityCheck] = (IDeviceSubStateController _) => new DeviceSanityCheckSubStateAction(_),
                     [RequestComplete] = (IDeviceSubStateController _) => new DeviceRequestCompleteSubStateAction(_)
                 }

@@ -70,6 +70,19 @@ namespace Devices.Verifone.VIPA
             Backlight = 1 << 0,
             Track2Format = 1 << 1
         }
+
+        private enum ContactlessReaderConfig
+        {
+            DeviceCount = 0,
+            DeviceFirmwareVersion = 1 << 0,     // Retrieve device firmware revision (tag DFC022)
+            DeviceName = 1 << 1,                // Retrieve device name(tag DFC020)
+            DeviceSerialNumber = 1 << 2,        // Retrieve device serial number (tag DFC021)
+            DeviceInitStatus = 1 << 3,          // Retrieve device initialization status(tag DFC023)
+            DeviceDispCapabilities = 1 << 4,    // Retrieve device display capabilities(tag DFC024)
+            DeviceSoundCapabilities = 1 << 5,   // Retrieve device sound capabilities(tag DFC025)
+            DeviceLEDCapabilities = 1 << 6,     // Retrieve device LED capabilities(tag DFC026)
+            DeviceKernelInformation = 1 << 7    // Retrieve additional Kernel information(tag DFC028)
+        }
         #endregion --- enumerations ---
 
         #region --- attributes ---
@@ -80,6 +93,8 @@ namespace Devices.Verifone.VIPA
         private const int DefaultDeviceResultTimeoutMS = 15000;
 
         private int ResponseTagsHandlerSubscribed = 0;
+        private int ResponseTaglessHandlerSubscribed = 0;
+        private int ResponseContactlessHandlerSubscribed = 0;
 
         private Modes.Execution ExecutionMode { get; set; } = Modes.Execution.StandAlone;
 
@@ -100,6 +115,7 @@ namespace Devices.Verifone.VIPA
 
         public TaskCompletionSource<(DeviceInfoObject deviceInfoObject, int VipaResponse)> DeviceIdentifier = null;
         public TaskCompletionSource<(SecurityConfigurationObject securityConfigurationObject, int VipaResponse)> DeviceSecurityConfiguration = null;
+        public TaskCompletionSource<(DeviceContactlessInfo deviceContactlessInfo, int VipaResponse)> ResponseCodeWithDataResult = null;
         public TaskCompletionSource<(KernelConfigurationObject kernelConfigurationObject, int VipaResponse)> DeviceKernelConfiguration = null;
 
         public TaskCompletionSource<(string HMAC, int VipaResponse)> DeviceGenerateHMAC = null;
@@ -268,8 +284,34 @@ namespace Devices.Verifone.VIPA
             //TODO: soften this requirement for US only through configuration
             //cardResponse.TerminalCountryCode = BitConverter.ToString(EETemplate.CountryCodeUS).Replace("-", "");
         }
-        #endregion --- Template Processing ---
 
+        private void E1TemplateProcessing(DeviceContactlessInfo device, TLV tag)
+        {
+            foreach (TLV dataTag in tag.InnerTags)
+            {
+                if (dataTag.Tag == E1Template.DeviceName)
+                {
+                    device.DeviceName = Encoding.UTF8.GetString(dataTag.Data);
+                }
+                else if (dataTag.Tag == E1Template.SerialNumber)
+                {
+                    device.SerialNumber = Encoding.UTF8.GetString(dataTag.Data);
+                }
+                else if (dataTag.Tag == E1Template.FirmwareRevision)
+                {
+                    device.FirmwareRevision = Encoding.UTF8.GetString(dataTag.Data);
+                }
+                else if (dataTag.Tag == E1Template.InitializationStatus)
+                {
+                    device.InitialStatus = Encoding.UTF8.GetString(dataTag.Data);
+                }
+                else if (dataTag.Tag == E1Template.KernelInformation)
+                {
+                    device.KernelInformation = Encoding.UTF8.GetString(dataTag.Data);
+                }
+            }
+        }
+        #endregion --- Template Processing ---
 
         private void ConsoleWriteLine(string output)
         {
@@ -277,6 +319,25 @@ namespace Devices.Verifone.VIPA
             {
                 Console.WriteLine(output);
             }
+        }
+
+        #region -- contactless reader --
+
+        private (DeviceContactlessInfo deviceContactlessInfo, int VipaResponse) GetContactlessReaderStatus(byte readerConfig)
+        {
+            ResponseCodeWithDataResult = new TaskCompletionSource<(DeviceContactlessInfo, int)>();
+
+            ResponseTaglessHandlerSubscribed++;
+            ResponseTaglessHandler += ResponseCodeWithDataHandler;
+
+            SendVipaCommand(VIPACommandType.GetContactlessStatus, readerConfig, 0x00);
+
+            (DeviceContactlessInfo deviceContactlessInfo, int VipaResponse) deviceResponse = ResponseCodeWithDataResult.Task.Result;
+
+            ResponseTaglessHandler -= ResponseCodeWithDataHandler;
+            ResponseTaglessHandlerSubscribed--;
+
+            return deviceResponse;
         }
 
         /// <summary>
@@ -309,6 +370,8 @@ namespace Devices.Verifone.VIPA
 
             return commandResult;
         }
+
+        #endregion -- contactless reader --
 
         public bool DisplayMessage(VIPADisplayMessageValue displayMessageValue = VIPADisplayMessageValue.Idle, bool enableBacklight = false, string customMessage = "")
         {
@@ -562,6 +625,53 @@ namespace Devices.Verifone.VIPA
             ArrayPool<byte>.Shared.Return(fileStatus.binaryStatusObject.ReadResponseBytes, true);
 
             return response;
+        }
+
+        public (DeviceInfoObject deviceInfoObject, int VipaResponse) GetDeviceHealth(SupportedTransactions supportedTransactions)
+        {
+            //TODO: DEFINE WHAT CONSTITUTES A GOOD DEVICE HEALTH STATUS?
+            /*
+             * 1. SECURITY CONFIGURATION
+             * -- INIT VECTOR
+             * -- ONLINEPINKSN
+             * -- KEY SLOT
+             * 2. HMAC
+             * -- PRIMARY HASH
+             * -- SECONDARY HASH
+             * 3. CONTACTLESS MSR
+             * -- AID FILES
+             * -- CONTLEMV.CFG
+             * -- ICCDATA.DAT
+             * -- ICCKEYS.KEY
+             * 4. KERNEL CHECKSUM
+             * -- MATCHING LOA EMV CONFIGURATION 16C
+             * 5. VIPA/CONFIGS/IDLE IMAGE CHECKSUMS
+             * -- vipa_ver.txt
+             * -- emv_ver.txt
+             * -- idle_ver.txt
+            */
+            (DeviceInfoObject deviceInfoObject, int VipaResponse) deviceInfo = GetDeviceInfo();
+
+            (DeviceContactlessInfo deviceContactlessInfo, int VipaResponse) clessReaderStatus = GetContactlessReaderStatus((byte)ContactlessReaderConfig.DeviceKernelInformation);
+            
+            if (clessReaderStatus.VipaResponse == (int)VipaSW1SW2Codes.Success)
+            {
+                DeviceInformation.ContactlessKernelInformation = clessReaderStatus.deviceContactlessInfo.KernelInformation;
+                DeviceLogger(LogLevel.Info, $"VIPA: EMV KERNEL INFORMATION - [{DeviceInformation.ContactlessKernelInformation}]");
+            }
+
+            return deviceInfo;
+        }
+
+        public (DeviceInfoObject deviceInfoObject, int VipaResponse) GetDeviceInfo()
+        {
+            (DeviceInfoObject deviceInfoObject, int VipaResponse) deviceResponse = (null, (int)VipaSW1SW2Codes.Success);
+            return deviceResponse;
+        }
+
+        public string GetContactlessEMVKernelVersions()
+        {
+            return DeviceInformation.ContactlessKernelInformation;
         }
 
         public (KernelConfigurationObject kernelConfigurationObject, int VipaResponse) GetEMVKernelChecksum()
@@ -2352,6 +2462,49 @@ namespace Devices.Verifone.VIPA
             ResponseCodeResult?.TrySetResult(cancelled ? -1 : responseCode);
         }
 
+        public void ResponseCodeWithDataHandler(byte[] data, int dataLength, int responseCode, bool cancelled = false)
+        {
+            if (cancelled)
+            {
+                ResponseCodeWithDataResult?.TrySetResult((null, -1));
+                return;
+            }
+
+            if (responseCode == (int)VipaSW1SW2Codes.Success && dataLength > 0)
+            {
+                if (dataLength == 1)
+                {
+                    byte[] array = new byte[] { data[0], 0x00 };
+                    ResponseCodeWithDataResult?.TrySetResult((null, BitConverter.ToUInt16(array, 0)));
+                }
+                else
+                {
+                    List<TLV> tags = TLV.Decode(data, 0, dataLength, E1Template.E1TemplateTag);
+
+                    DeviceContactlessInfo device = new DeviceContactlessInfo();
+
+                    foreach (TLV tag in tags)
+                    {
+                        if (tag.Tag == E1Template.E1TemplateTag)
+                        {
+                            E1TemplateProcessing(device, tag);
+                        }
+                    }
+
+                    ResponseCodeWithDataResult?.TrySetResult((device, responseCode));
+                }
+            }
+            else
+            {
+                // log error responses for device troubleshooting purposes
+                if (responseCode != (int)VipaSW1SW2Codes.Success)
+                {
+                    DeviceLogger(LogLevel.Error, string.Format("VIPA STATUS CODE=0x{0:X4} - HANDLER 001", responseCode));
+                    ResponseCodeWithDataResult?.TrySetResult((null, 0));
+                }
+            }
+        }
+
         public void DeviceResetResponseHandler(List<TLV> tags, int responseCode, bool cancelled = false)
         {
             if (cancelled || tags == null)
@@ -2443,6 +2596,7 @@ namespace Devices.Verifone.VIPA
                 }
                 else if (tag.Tag == EFTemplate.EFTemplateTag)
                 {
+                    bool isEMVKernel = false;
                     foreach (var dataTag in tag.InnerTags)
                     {
                         if (dataTag.Tag == EFTemplate.WhiteListHash)
@@ -2452,6 +2606,16 @@ namespace Devices.Verifone.VIPA
                         else if (dataTag.Tag == EFTemplate.FirmwareVersion && string.IsNullOrWhiteSpace(deviceResponse.FirmwareVersion))
                         {
                             deviceResponse.FirmwareVersion = Encoding.UTF8.GetString(dataTag.Data);
+                        }
+                        else if (dataTag.Tag == EFTemplate.EMVLibraryName)
+                        {
+                            string libraryName = Encoding.UTF8.GetString(dataTag.Data);
+                            isEMVKernel = libraryName.Equals(EFTemplate.ADKEVMKernel, StringComparison.OrdinalIgnoreCase);
+                        }
+                        else if (dataTag.Tag == EFTemplate.EMVL2KernelVersion && isEMVKernel)
+                        {
+                            DeviceInformation.EMVL2KernelVersion = Encoding.UTF8.GetString(dataTag.Data);
+                            isEMVKernel = false;
                         }
                     }
                 }

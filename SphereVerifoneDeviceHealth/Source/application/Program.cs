@@ -260,6 +260,11 @@ namespace DEVICE_CORE
                                 await application.Command(LinkDeviceActionType.ManualCardEntry).ConfigureAwait(false);
                                 break;
                             }
+                            case ConsoleKey.R:
+                            {
+                                await application.Command(LinkDeviceActionType.ReportEMVKernelVersions).ConfigureAwait(false);
+                                break;
+                            }
                             case ConsoleKey.T:
                             {
                                 //Console.WriteLine("\r\nCOMMAND: [TEST]");

@@ -40,6 +40,7 @@ namespace Devices.Core.State.SubWorkflows.Providers
                 LinkDeviceActionType.VIPAVersions => DeviceSubWorkflowState.VIPAVersions,
                 LinkDeviceActionType.GetSphereHealthFile => DeviceSubWorkflowState.GetSphereHealthFile,
                 LinkDeviceActionType.ManualCardEntry => DeviceSubWorkflowState.ManualCardEntry,
+                LinkDeviceActionType.ReportEMVKernelVersions => DeviceSubWorkflowState.ReportEMVKernelVersions,
                 _ => DeviceSubWorkflowState.Undefined
             });
 

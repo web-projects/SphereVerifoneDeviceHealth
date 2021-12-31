@@ -36,6 +36,7 @@ namespace Common.XO.Requests
         SetTerminalDateTime,
         VIPAVersions,
         GetSphereHealthFile,
-        ManualCardEntry
+        ManualCardEntry,
+        ReportEMVKernelVersions
     }
 }

@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\Core.Patterns\Core.Patterns.csproj" />
     <ProjectReference Include="..\..\config\Config.csproj" />
+    <ProjectReference Include="..\..\servicer\servicer.core\Servicer.Core.csproj" />
     <ProjectReference Include="..\Devices.Sdk\Devices.Sdk.csproj" />
   </ItemGroup>
 

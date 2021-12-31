@@ -20,6 +20,7 @@ using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Composition;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -140,6 +141,36 @@ namespace Devices.Verifone
             return VipaConnection;
         }
 
+        private int GetDeviceHealthStatus()
+        {
+            (DeviceInfoObject deviceInfoObject, int VipaResponse) deviceInfo = VipaDevice.GetDeviceHealth(deviceConfiguration.SupportedTransactions);
+
+            if (deviceInfo.VipaResponse == (int)VipaSW1SW2Codes.Success)
+            {
+                DeviceInformation.ContactlessKernelInformation = VipaDevice.GetContactlessEMVKernelVersions();
+                Debug.WriteLine($"EMV KERNEL VERSION: \"{DeviceInformation.ContactlessKernelInformation}\"");
+            }
+
+            return deviceInfo.VipaResponse;
+        }
+
+        private void ReportEMVKernelInformation()
+        {
+            if (!string.IsNullOrEmpty(DeviceInformation.EMVL2KernelVersion))
+            {
+                Debug.WriteLine($"EMV L2 KERNEL VERSION: \"{DeviceInformation.EMVL2KernelVersion}\"");
+            }
+
+            if (!string.IsNullOrEmpty(DeviceInformation.ContactlessKernelInformation))
+            {
+                string[] kernelRevisions = DeviceInformation.ContactlessKernelInformation.Split(';');
+                foreach (string version in kernelRevisions)
+                {
+                    Debug.WriteLine($"EMV KERNEL VERSION: \"{version}\"");
+                }
+            }
+        }
+
         private void GetBundleSignatures()
         {
             if (VipaDevice != null)
@@ -184,6 +215,14 @@ namespace Devices.Verifone
 
         public void SetDeviceSectionConfig(DeviceSection config, AppExecConfig appConfig, bool displayOutput)
         {
+            // L2 Kernel Information
+            int healthStatus = GetDeviceHealthStatus();
+
+            if (healthStatus == (int)VipaSW1SW2Codes.Success)
+            {
+                ReportEMVKernelInformation();
+            }
+
             deviceSectionConfig = config;
 
             AppExecConfig = appConfig;
@@ -1481,6 +1520,40 @@ namespace Devices.Verifone
             }
 
             DeviceSetIdle();
+
+            return linkRequest;
+        }
+
+        public LinkRequest ReportEMVKernelVersions(LinkRequest linkRequest, CancellationToken cancellationToken)
+        {
+            LinkActionRequest linkActionRequest = linkRequest?.Actions?.First();
+            Console.WriteLine($"DEVICE[{DeviceInformation.ComPort}]: EMV KERNEL VERSIONS for SN='{linkActionRequest?.DeviceRequest?.DeviceIdentifier?.SerialNumber}'");
+
+            //PaymentActionProcessor paymentActionProcessor = new PaymentActionProcessor(DeviceInformation.EMVL2KernelVersion, DeviceInformation.ContactlessKernelInformation);
+
+            //string kernelVersion = paymentActionProcessor.GetPaymentEMVKernelVersion("A00000002501");
+            //Console.WriteLine($"AID {"AMEX"}: EMV KERNEL VERSION='{kernelVersion}'\n");
+
+            linkRequest.LinkObjects = new LinkRequestIPA5Object()
+            {
+                LinkActionResponseList = new List<LinkActionResponse>()
+                {
+                    new LinkActionResponse()
+                    {
+                        DALResponse = new LinkDALResponse()
+                        {
+                            Devices = new List<LinkDeviceResponse>()
+                            {
+                                new LinkDeviceResponse()
+                                {
+                                  EMVL2KernelVersion = DeviceInformation.EMVL2KernelVersion,
+                                  ContactlessKernelInformation = DeviceInformation.ContactlessKernelInformation
+                                }
+                            }
+                        }
+                    }
+                }
+            };
 
             return linkRequest;
         }
