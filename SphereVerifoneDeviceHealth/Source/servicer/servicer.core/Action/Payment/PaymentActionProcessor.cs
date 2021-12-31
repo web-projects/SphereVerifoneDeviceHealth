@@ -28,31 +28,35 @@ namespace Servicer.Core.Action.Payment
             }
         }
 
-        private string AddAidKernelVersion(string aid, string kernelVersion)
+        private string AddAidKernelVersion(string[] aids, string kernelVersion)
         {
-            aidKernelVersions.Add(new AidKernelVersions(aid, kernelVersion));
+            foreach (string aid in aids)
+            {
+                aidKernelVersions.Add(new AidKernelVersions(aid, kernelVersion));
+            }
             return string.Empty;
         }
 
         private string SetContactlessEMVKernelVersion(string kernelIdentifier, string kernelVersion) => kernelIdentifier switch
         {
-            "AK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.FirstOrDefault(x => x.CardBrand == TenderType.AMEX).AIDValue, kernelVersion),
-            "DK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.FirstOrDefault(x => x.CardBrand == TenderType.DinersClub).AIDValue, kernelVersion),
-            "IK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.FirstOrDefault(x => x.CardBrand == TenderType.Interac).AIDValue, kernelVersion),
-            "JK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.FirstOrDefault(x => x.CardBrand == TenderType.JCB).AIDValue, kernelVersion),
-            "MK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.FirstOrDefault(x => x.CardBrand == TenderType.MasterCard).AIDValue, kernelVersion),
-            "VK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.FirstOrDefault(x => x.CardBrand == TenderType.Visa).AIDValue, kernelVersion),
-            // UNMAPPED AIDS
-            "CK" => AddAidKernelVersion(kernelIdentifier, kernelVersion),
-            "EK" => AddAidKernelVersion(kernelIdentifier, kernelVersion),
-            "EP" => AddAidKernelVersion(kernelIdentifier, kernelVersion),
-            "GK" => AddAidKernelVersion(kernelIdentifier, kernelVersion),
-            "MR" => AddAidKernelVersion(kernelIdentifier, kernelVersion),
-            "PB" => AddAidKernelVersion(kernelIdentifier, kernelVersion),
-            "PK" => AddAidKernelVersion(kernelIdentifier, kernelVersion),
-            "RK" => AddAidKernelVersion(kernelIdentifier, kernelVersion),
+            "AK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.Where(x => x.CardBrand == TenderType.AMEX).Select(x => x.AIDValue).ToArray(), kernelVersion),
+            "DK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.Where(x => x.CardBrand == TenderType.Discover).Select(x => x.AIDValue).ToArray(), kernelVersion),
+            "IK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.Where(x => x.CardBrand == TenderType.Interac).Select(x => x.AIDValue).ToArray(), kernelVersion),
+            "JK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.Where(x => x.CardBrand == TenderType.JCB || x.CardBrand == TenderType.Discover).Select(x => x.AIDValue).ToArray(), kernelVersion),
+            "MK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.Where(x => x.CardBrand == TenderType.MasterCard).Select(x => x.AIDValue).ToArray(), kernelVersion),
+            "VK" => AddAidKernelVersion(AidList.FirstDataRapidConnectAIDList.Where(x => x.CardBrand == TenderType.Visa).Select(x => x.AIDValue).ToArray(), kernelVersion),
 
-            _ => throw new Exception($"Invalid EMV Kernel Version: '{kernelVersion}'.")
+            // UNMAPPED AIDS
+            "CK" => AddAidKernelVersion(new string[] { kernelIdentifier }, kernelVersion),
+            "EK" => AddAidKernelVersion(new string[] { kernelIdentifier }, kernelVersion),
+            "EP" => AddAidKernelVersion(new string[] { kernelIdentifier }, kernelVersion),
+            "GK" => AddAidKernelVersion(new string[] { kernelIdentifier }, kernelVersion),
+            "MR" => AddAidKernelVersion(new string[] { kernelIdentifier }, kernelVersion),
+            "PB" => AddAidKernelVersion(new string[] { kernelIdentifier }, kernelVersion),
+            "PK" => AddAidKernelVersion(new string[] { kernelIdentifier }, kernelVersion),
+            "RK" => AddAidKernelVersion(new string[] { kernelIdentifier }, kernelVersion),
+
+            _ => throw new Exception($"Invalid EMV Kernel Identifier: '{kernelIdentifier}'.")
         };
 
         private AidEntry GetPaymentType(string paymentAID)

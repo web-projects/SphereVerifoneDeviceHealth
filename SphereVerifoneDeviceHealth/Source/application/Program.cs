@@ -464,9 +464,9 @@ namespace DEVICE_CORE
                     string filepath = path + "\\logs\\" + logname;
 
                     int levels = 0;
-                    foreach (var item in logLevels)
+                    foreach (string item in logLevels)
                     {
-                        foreach (var level in LogLevels.LogLevelsDictonary.Where(x => x.Value.Equals(item)).Select(x => x.Key))
+                        foreach (LOGLEVELS level in LogLevels.LogLevelsDictonary.Where(x => x.Value.Equals(item)).Select(x => x.Key))
                         {
                             levels += (int)level;
                         }
