@@ -1583,7 +1583,7 @@ namespace Devices.Verifone.VIPA
             // When the file cannot be accessed, VIPA returns SW1SW2 equal to 9F13
             if (fileStatus.VipaResponse != (int)VipaSW1SW2Codes.Success)
             {
-                ConsoleWriteLine(string.Format("DEVICE: ACCESS ERROR=0x{0:X4}: {1} - [{2}]",
+                ConsoleWriteLine(string.Format("DEVICE: ACCESS ERROR=0x{0:X4} : {1} - [{2}]",
                     fileStatus.VipaResponse, targetFilename, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
                 return (fileStatus.VipaResponse, null);
             }
@@ -1593,7 +1593,7 @@ namespace Devices.Verifone.VIPA
 
             if (fileStatus.VipaResponse != (int)VipaSW1SW2Codes.Success)
             {
-                ConsoleWriteLine(string.Format("DEVICE: ACCESS ERROR=0x{0:X4}: {1} - [{2}]",
+                ConsoleWriteLine(string.Format("DEVICE: ACCESS ERROR=0x{0:X4} : {1} - [{2}]",
                     fileStatus.VipaResponse, targetFilename, ((VipaSW1SW2Codes)fileStatus.VipaResponse).GetStringValue()));
                 return (fileStatus.VipaResponse, null);
             }
