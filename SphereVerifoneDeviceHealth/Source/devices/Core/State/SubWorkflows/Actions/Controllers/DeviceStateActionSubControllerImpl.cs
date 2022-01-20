@@ -19,6 +19,7 @@ namespace Devices.Core.State.SubWorkflows.Actions.Controllers
                     [GetActiveKeySlot] = (IDeviceSubStateController _) => new DeviceGetActiveKeySlotSubStateAction(_),
                     [GetEMVKernelChecksum] = (IDeviceSubStateController _) => new DeviceGetEMVKernelChecksumSubStateAction(_),
                     [GetSecurityConfiguration] = (IDeviceSubStateController _) => new DeviceGetSecurityConfigurationSubStateAction(_),
+                    [SecurityConfigurationSftpTransfer] = (IDeviceSubStateController _) => new DeviceSftpTransferSubStateAction(_),
                     [Configuration] = (IDeviceSubStateController _) => new DeviceConfigurationSubStateAction(_),
                     [FeatureEnablementToken] = (IDeviceSubStateController _) => new DeviceFeatureEnablementTokenSubStateAction(_),
                     [LockDeviceConfig0] = (IDeviceSubStateController _) => new DeviceLockConfiguration0SubStateAction(_),

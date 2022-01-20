@@ -22,6 +22,7 @@ using Devices.Core.State.SubWorkflows;
 using Devices.Core.State.SubWorkflows.Management;
 using Devices.Sdk;
 using Execution;
+using FileTransfer.Providers;
 using Newtonsoft.Json;
 using Ninject;
 using System;
@@ -66,6 +67,9 @@ namespace Devices.Core.State.Management
 
         [Inject]
         public IDeviceCancellationBrokerProvider DeviceCancellationBrokerProvider { get; set; }
+
+        [Inject]
+        public IFileTransferProvider FileTransferProvider { get; set; }
 
         public DeviceSection Configuration { get; private set; }
 

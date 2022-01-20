@@ -2,9 +2,12 @@
 using Common.Execution;
 using Common.LoggerManager;
 using Common.XO.Requests;
+using Config.AppConfig;
 using Execution;
+using FileTransfer;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +24,11 @@ namespace DEVICE_CORE
         public const int SC_MINIMIZE = 0xF020;
         public const int SC_MAXIMIZE = 0xF030;
         public const int SC_SIZE = 0xF000;
+        // window position
+        const short SWP_NOMOVE = 0X2;
+        const short SWP_NOSIZE = 1;
+        const short SWP_NOZORDER = 0X4;
+        const int SWP_SHOWWINDOW = 0x0040;
 
         [DllImport("user32.dll")]
         public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
@@ -30,6 +38,9 @@ namespace DEVICE_CORE
 
         [DllImport("kernel32.dll", ExactSpelling = true)]
         private static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
+        public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
         #endregion --- Win32 API ---
 
         const int STARTUP_WAIT_DELAY = 2048;
@@ -57,15 +68,17 @@ namespace DEVICE_CORE
             "  "
         };
 
-
         static bool applicationIsExiting = false;
+
+        static private IConfiguration configuration;
+
         static async Task Main(string[] args)
         {
             SetupWindow();
 
             // setup working environment
             (DirectoryInfo di, bool allowDebugCommands, Modes.Execution executionMode,
-                string healthCheckValidationMode, bool displayProgressBar, bool terminalBypassHealthRecord) = SetupEnvironment();
+                string healthCheckValidationMode, bool displayProgressBar, bool terminalBypassHealthRecord, SftpConnectionParameters sftpConnectionParameters) = SetupEnvironment();
 
             if (executionMode == Modes.Execution.Undefined)
             {
@@ -89,7 +102,8 @@ namespace DEVICE_CORE
                 ForeGroundColor = foreGroundColor,
                 BackGroundColor = backGroundColor,
                 ExecutionMode = executionMode,
-                HealthCheckValidationMode = healthCheckValidationMode
+                HealthCheckValidationMode = healthCheckValidationMode,
+                SftpConnectionParameters = sftpConnectionParameters
             }).ConfigureAwait(false);
 
             switch (executionMode)
@@ -115,7 +129,7 @@ namespace DEVICE_CORE
             DeleteWorkingDirectory(di);
         }
 
-        static private (DirectoryInfo, bool, Modes.Execution, string, bool, bool) SetupEnvironment()
+        static private (DirectoryInfo, bool, Modes.Execution, string, bool, bool, SftpConnectionParameters) SetupEnvironment()
         {
             DirectoryInfo di = null;
 
@@ -126,33 +140,34 @@ namespace DEVICE_CORE
             }
 
             // Get appsettings.json config - AddEnvironmentVariables() requires package: Microsoft.Extensions.Configuration.EnvironmentVariables
-            IConfiguration configuration = new ConfigurationBuilder()
+            configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
             // logger manager
-            SetLogging(configuration);
+            SetLogging();
 
             // Screen Colors
-            SetScreenColors(configuration);
+            SetScreenColors();
 
             Console.WriteLine($"\r\n==========================================================================================");
             Console.WriteLine($"{Assembly.GetEntryAssembly().GetName().Name} - Version {Assembly.GetEntryAssembly().GetName().Version}");
             Console.WriteLine($"==========================================================================================\r\n");
 
-            Modes.Execution executionMode = GetApplicationExecutionMode(configuration);
+            Modes.Execution executionMode = GetApplicationExecutionMode();
             string healthCheckValidationMode = null;
 
             if (executionMode == Modes.Execution.StandAlone)
             {
-                healthCheckValidationMode = GetHealthCheckStatusSetup(configuration);
+                healthCheckValidationMode = GetHealthCheckStatusSetup();
             }
 
-            bool displayProgressBar = GetApplicationDisplayProgressBar(configuration);
-            bool terminalBypassHealthRecord = GetApplicationTerminalBypassHealthRecord(configuration);
+            bool displayProgressBar = GetApplicationDisplayProgressBar();
+            bool terminalBypassHealthRecord = GetApplicationTerminalBypassHealthRecord();
+            SftpConnectionParameters sftpClientParameters = GetSftpConfiguration();
 
-            return (di, AllowDebugCommands(configuration, 0), executionMode, healthCheckValidationMode, displayProgressBar, terminalBypassHealthRecord);
+            return (di, AllowDebugCommands(0), executionMode, healthCheckValidationMode, displayProgressBar, terminalBypassHealthRecord, sftpClientParameters);
         }
 
         static private void SetupWindow()
@@ -382,6 +397,8 @@ namespace DEVICE_CORE
 
         static void StandAloneOperation(IDeviceApplication application, Modes.Execution executionMode)
         {
+            //StartAllProcesses();
+
             // setup automatic scrolling
             //ScrollWindowAsNeeded(application, executionMode);
 
@@ -391,6 +408,8 @@ namespace DEVICE_CORE
             {
                 keypressed = GetKeyPressed(false);
             }
+
+            //StopAllProcesses();
         }
 
         static private void DeleteWorkingDirectory(DirectoryInfo di)
@@ -440,21 +459,21 @@ namespace DEVICE_CORE
             Console.Write("SELECT COMMAND: ");
         }
 
-        static bool AllowDebugCommands(IConfiguration configuration, int index)
+        static bool AllowDebugCommands(int index)
         {
             return configuration.GetSection("Devices:Verifone").GetValue<bool>("AllowDebugCommands");
         }
 
-        static string[] GetLoggingLevels(IConfiguration configuration, int index)
+        static string[] GetLoggingLevels(int index)
         {
             return configuration.GetSection("LoggerManager:Logging").GetValue<string>("Levels").Split("|");
         }
 
-        static void SetLogging(IConfiguration configuration)
+        static void SetLogging()
         {
             try
             {
-                string[] logLevels = GetLoggingLevels(configuration, 0);
+                string[] logLevels = GetLoggingLevels(0);
 
                 if (logLevels.Length > 0)
                 {
@@ -483,7 +502,7 @@ namespace DEVICE_CORE
             }
         }
 
-        static void SetScreenColors(IConfiguration configuration)
+        static void SetScreenColors()
         {
             try
             {
@@ -501,25 +520,35 @@ namespace DEVICE_CORE
             }
         }
 
-        static bool GetApplicationDisplayProgressBar(IConfiguration configuration)
+        static bool GetApplicationDisplayProgressBar()
         {
             return configuration.GetValue<bool>("Application:DisplayProgressBar");
         }
 
-        static bool GetApplicationTerminalBypassHealthRecord(IConfiguration configuration)
+        static bool GetApplicationTerminalBypassHealthRecord()
         {
             return configuration.GetValue<bool>("Application:TerminalBypassHealthRecord");
         }
 
-        static Modes.Execution GetApplicationExecutionMode(IConfiguration configuration)
+        static Modes.Execution GetApplicationExecutionMode()
         {
             return GetExecutionMode(configuration.GetValue<string>("Application:ExecutionMode"));
         }
 
-        static string GetHealthCheckStatusSetup(IConfiguration configuration)
+        static string GetHealthCheckStatusSetup()
         {
             return configuration.GetSection("Devices:Verifone").GetValue<string>("HealthStatusValidationRequired");
         }
+
+        static SftpConnectionParameters GetSftpConfiguration()
+        {
+            return configuration.GetSection(nameof(SftpConnectionParameters)).Get<SftpConnectionParameters>();
+        }
+
+        //static AppSection GetAppConfiguration()
+        //{
+        //    return configuration.GetSection("Launcher").Get<AppSection>();
+        //}
 
         static ConsoleColor GetColor(string color) => color switch
         {
@@ -548,5 +577,85 @@ namespace DEVICE_CORE
             "Console" => Modes.Execution.Console,
             _ => Modes.Execution.StandAlone
         };
+
+        //static private Process Launch(string workingDirectory, string fullFileName, string arguments)
+        //{
+        //    try
+        //    {
+        //        Process process = new Process();
+
+        //        process.StartInfo.Verb = "runas";
+        //        process.StartInfo.FileName = fullFileName;
+        //        process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
+        //        process.StartInfo.UseShellExecute = true;
+        //        process.StartInfo.CreateNoWindow = false;
+        //        process.StartInfo.WorkingDirectory = workingDirectory;
+
+        //        if (arguments is { })
+        //        {
+        //            process.StartInfo.Arguments = arguments;
+        //        }
+
+        //        // UseShellExecute = false required to redirect output streams
+        //        //process.StartInfo.RedirectStandardError = true;
+        //        //process.StartInfo.RedirectStandardOutput = true;
+        //        //process.StartInfo.RedirectStandardInput = false;
+
+        //        if (!process.Start())
+        //        {
+        //            Logger.warning($"Unable to start process '{fullFileName}'.");
+        //        }
+        //        else
+        //        {
+        //            // Reposition window
+        //            SetWindowPos(process.MainWindowHandle, Console.WindowLeft, Console.WindowTop + Console.WindowHeight, 0,
+        //                Console.WindowWidth, Console.WindowHeight, SWP_NOZORDER | SWP_SHOWWINDOW);
+        //        }
+
+        //        //process.BeginOutputReadLine();
+        //        //process.BeginErrorReadLine();
+
+        //        return process;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.error($"Exception while attempting to launch process '{fullFileName}' - {ex.Message}");
+        //        return null;
+        //    }
+        //}
+
+        //static void StartAllProcesses()
+        //{
+        //    AppSection appSection = GetAppConfiguration();
+
+        //    foreach (AppConfiguration appConfiguration in appSection.Apps)
+        //    {
+        //        Process process = Launch(Directory.GetCurrentDirectory(), appConfiguration.Name, appConfiguration.Arguments);
+
+        //        if (process == null || process.Id <= 0)
+        //        {
+        //            Logger.error($"Unable to launch '{appConfiguration.Name}' as a child process.");
+        //        }
+        //    }
+        //}
+
+        //static void StopAllProcesses()
+        //{
+        //    //AppSection appSection = GetAppConfiguration();
+
+        //    //foreach (AppConfiguration appConfiguration in appSection.Apps)
+        //    //{
+        //    //    Process process = pair.Value.Process;
+        //    //    try
+        //    //    {
+        //    //        process?.Kill();
+        //    //        process?.Dispose();
+        //    //    }
+        //    //    catch (Exception ex)
+        //    //    {
+        //    //        Logger.error($"Exception while attempting to kill process '{app.Name}' - {ex.Message}");
+        //    //    }
+        //    //}
+        //}
     }
 }

@@ -6,6 +6,7 @@ using Devices.Core.SerialPort;
 using Devices.Core.SerialPort.Interfaces;
 using Devices.Core.State.Management;
 using Devices.Core.State.Providers;
+using FileTransfer.Providers;
 
 namespace DEVICE_CORE.Modules
 {
@@ -21,6 +22,7 @@ namespace DEVICE_CORE.Modules
             Bind<IControllerVisitorProvider>().To<ControllerVisitorProvider>();
             Bind<ISerialPortMonitor>().To<SerialPortMonitor>();
             Bind<IDeviceCancellationBrokerProvider>().To<DeviceCancellationBrokerProviderImpl>();
+            Bind<IFileTransferProvider>().To<FileTransferProviderImpl>();
             Bind<DeviceActivator>().ToSelf();
             Bind<DeviceApplication>().ToSelf();
         }

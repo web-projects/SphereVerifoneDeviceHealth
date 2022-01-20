@@ -8,6 +8,11 @@ namespace Common.Helpers
 
     public static class Utils
     {
+        public const int DeviceHealthKeyValueLength = 29;
+        public const char DeviceHealthKeyValuePaddingCharacter = '_';
+        public const int DeviceLogKeyValueLength = 43;
+        public const char DeviceLogKeyValuePaddingCharacter = '_';
+
         public static IEnumerable<byte[]> Split(this byte[] value, int bufferLength)
         {
             int countOfArray = value.Length / bufferLength;
@@ -54,6 +59,22 @@ namespace Common.Helpers
         {
             DateTime value = DateTime.Now;
             return value.ToString("yyyyMMdd-HH:mm:ss.fff");
+        }
+
+
+        public static string FormatStringAsRequired(string input, int length = DeviceHealthKeyValueLength, char filler = DeviceHealthKeyValuePaddingCharacter)
+        {
+            return input.PadRight(length, filler);
+        }
+
+        private static string AssembleString(bool format, string valueMissing, params string[] items)
+        {
+            string result = "";
+            foreach (string item in items)
+            {
+                result += $"{item ?? valueMissing}";
+            }
+            return format ? FormatStringAsRequired(result) : result;
         }
     }
 

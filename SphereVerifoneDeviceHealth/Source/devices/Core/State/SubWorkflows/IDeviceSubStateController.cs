@@ -3,6 +3,7 @@ using Devices.Common.Helpers;
 using Devices.Common.Interfaces;
 using Devices.Core.Cancellation;
 using Devices.Core.State.SubWorkflows.Actions;
+using FileTransfer.Providers;
 using System.Collections.Generic;
 
 namespace Devices.Core.State.SubWorkflows
@@ -12,6 +13,7 @@ namespace Devices.Core.State.SubWorkflows
         DeviceSection Configuration { get; }
         //ILoggingServiceClient LoggingClient { get; }
         //IListenerConnector Connector { get; }
+        IFileTransferProvider FileTransferProvider { get; }
         List<ICardDevice> TargetDevices { get; }
         bool DidTimeoutOccur { get; }
         public DeviceEvent DeviceEvent { get; }

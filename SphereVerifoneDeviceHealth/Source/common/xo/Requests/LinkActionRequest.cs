@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Converters;
 using Common.XO.Requests.Payment;
 using Common.XO.Requests.DAL;
+using XO.Requests.SFTP;
 
 namespace Common.XO.Requests
 {
@@ -22,6 +23,8 @@ namespace Common.XO.Requests
         public LinkDALRequest DALRequest { get; set; }
 
         public LinkPaymentRequest PaymentRequest { get; set; }
+
+        public LinkSftpRequest SftpRequest { get; set; }
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
@@ -33,6 +36,7 @@ namespace Common.XO.Requests
         DALAction,
         EstablishProxy,
         Report,
-        Session
+        Session,
+        SftpTransfer
     }
 }

@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\..\Source\common\ProtoBuf\ProtoBuf.csproj" />
     <ProjectReference Include="..\..\..\Source\devices\common\Devices.Common.csproj" />
     <ProjectReference Include="..\..\..\Source\devices\Verifone\Devices.Verifone.csproj" />
+    <ProjectReference Include="..\..\..\Source\SftpConnection\FileTransfer.csproj" />
     <ProjectReference Include="..\..\TestHelper\TestHelper.csproj" />
   </ItemGroup>
 

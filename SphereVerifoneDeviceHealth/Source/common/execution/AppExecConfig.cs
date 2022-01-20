@@ -1,4 +1,5 @@
 ﻿using Common.Execution;
+using FileTransfer;
 using System;
 
 namespace Execution
@@ -11,5 +12,6 @@ namespace Execution
         public ConsoleColor BackGroundColor { get; set; }
         public Modes.Execution ExecutionMode { get; set; }
         public string HealthCheckValidationMode { get; set; }
+        public SftpConnectionParameters SftpConnectionParameters { get; set; }
     }
 }

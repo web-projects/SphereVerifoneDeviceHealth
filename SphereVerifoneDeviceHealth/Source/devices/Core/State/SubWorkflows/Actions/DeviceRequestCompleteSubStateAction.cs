@@ -25,8 +25,8 @@ namespace Devices.Core.State.SubWorkflows.Actions
 
             PaymentActionProcessor paymentActionProcessor = new PaymentActionProcessor(EMVL2KernelVersion, ContactlessKernelInformation);
 
-            List<(string name, string aid)> cardBrands = new List<(string name, string aid)> 
-            { 
+            List<(string name, string aid)> cardBrands = new List<(string name, string aid)>
+            {
                 ("AMEX", "A00000002501"),
                 ("MC C", "A0000000041010"),
                 ("VISA", "A0000000031010"),
@@ -49,21 +49,44 @@ namespace Devices.Core.State.SubWorkflows.Actions
             }
         }
 
+        private void ProcessCompletionActions(LinkRequest linkResponse)
+        {
+            if (linkResponse.Actions[0].DeviceActionRequest.DeviceAction == LinkDeviceActionType.ReportEMVKernelVersions)
+            {
+                ReportEMVKernelVersions(linkResponse.LinkObjects);
+            }
+        }
+
+        private void DeviceCompleteAction(LinkRequest linkResponse)
+        {
+            string serializedResponse = JsonConvert.SerializeObject(linkResponse);
+
+            //_ = Controller.LoggingClient.LogInfoAsync($"Request completed. Sending to Listener.");
+            Debug.WriteLine("Request completed. Sending to Listener.");
+            //_ = Controller.Connector.Publish(serializedResponse, new TopicOption[] { TopicOption.Servicer }).ConfigureAwait(false);
+
+            // special case to report emv kernel versions: normally handled in Servicer
+            ProcessCompletionActions(linkResponse);
+        }
+
         public override Task DoWork()
         {
             if (StateObject != null)
             {
                 LinkRequest linkResponse = StateObject as LinkRequest;
-                string serializedResponse = JsonConvert.SerializeObject(linkResponse);
 
-                //_ = Controller.LoggingClient.LogInfoAsync($"Request completed. Sending to Listener.");
-                Debug.WriteLine($"Request completed. Sending to Listener.");
-                //_ = Controller.Connector.Publish(serializedResponse, new TopicOption[] { TopicOption.Servicer }).ConfigureAwait(false);
-
-                // special case to report emv kernel versions: normally handled in Servicer
-                if (linkResponse.Actions[0].DeviceActionRequest.DeviceAction == LinkDeviceActionType.ReportEMVKernelVersions)
+                if (linkResponse is { })
                 {
-                    ReportEMVKernelVersions(linkResponse.LinkObjects);
+                    DeviceCompleteAction(linkResponse);
+                }
+                else
+                {
+                    List<LinkRequest> linkRequests = StateObject as List<LinkRequest>;
+
+                    foreach (LinkRequest request in linkRequests)
+                    {
+                        DeviceCompleteAction(request);
+                    }
                 }
             }
             else

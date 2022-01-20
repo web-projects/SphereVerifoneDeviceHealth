@@ -31,6 +31,13 @@ namespace Devices.Core.State.SubWorkflows
             exception switch
             {
                 true => SanityCheck,
+                false => SecurityConfigurationSftpTransfer
+            };
+
+        private static DeviceSubWorkflowState ComputeSftpTransferStateTransition(bool exception) =>
+            exception switch
+            {
+                true => SanityCheck,
                 false => SanityCheck
             };
 
@@ -195,6 +202,7 @@ namespace Devices.Core.State.SubWorkflows
                 GetActiveKeySlot => ComputeGetActiveKeySlotStateTransition(exception),
                 GetEMVKernelChecksum => ComputeGetEMVKernelChecksumStateTransition(exception),
                 GetSecurityConfiguration => ComputeGetSecurityConfigurationStateTransition(exception),
+                SecurityConfigurationSftpTransfer => ComputeSftpTransferStateTransition(exception),
                 AbortCommand => ComputeDeviceAbortStateTransition(exception),
                 ResetCommand => ComputeDeviceResetStateTransition(exception),
                 VIPARestart => ComputeVIPARestartStateTransition(exception),

@@ -36,6 +36,8 @@ namespace Devices.Core.State.SubWorkflows.Actions
                 IDeviceCancellationBroker cancellationBroker = Controller.GetDeviceCancellationBroker();
 
                 List<LinkRequest> devicesRequest = new List<LinkRequest>();
+                List<LinkRequest> sftpTransferRequests = new List<LinkRequest>();
+                //List<LinkActionRequest> sftpTransferRequests = new List<LinkActionRequest>();
 
                 foreach (Common.Interfaces.ICardDevice device in Controller.TargetDevices)
                 {
@@ -50,7 +52,7 @@ namespace Devices.Core.State.SubWorkflows.Actions
 
                     devicesRequest.Add(JsonConvert.DeserializeObject<LinkRequest>(JsonConvert.SerializeObject(linkRequest)));
 
-                    var timeoutPolicy = await cancellationBroker.ExecuteWithTimeoutAsync<LinkRequest>(
+                    Polly.PolicyResult<LinkRequest> timeoutPolicy = await cancellationBroker.ExecuteWithTimeoutAsync<LinkRequest>(
                         _ => device.GetSecurityConfiguration(devicesRequest.Last()),
                         DeviceConstants.CardCaptureTimeout,
                         System.Threading.CancellationToken.None);
@@ -61,6 +63,22 @@ namespace Devices.Core.State.SubWorkflows.Actions
                         Console.WriteLine($"Unable to obtain security configuration - '{Controller.DeviceEvent}'.");
                         BuildSubworkflowErrorResponse(linkRequest, device.DeviceInformation, Controller.DeviceEvent);
                     }
+                    else
+                    {
+                        //sftpTransferRequests.Add(timeoutPolicy.Result.Actions.Where(e => e.Action == LinkAction.SftpTransfer).First());
+                        sftpTransferRequests.Add(timeoutPolicy.Result);
+                    }
+                }
+
+                // List of Requests
+                if(sftpTransferRequests.Count > 0)
+                {
+                    //foreach(LinkActionRequest request in sftpTransferRequests)
+                    //{
+                    //    linkRequest.Actions.Add(request);
+                    //}
+                    //Controller.SaveState(linkRequest);
+                    Controller.SaveState(sftpTransferRequests);
                 }
 
                 /*if (linkRequest.LinkObjects.LinkActionResponseList[0].DALResponse == null)
@@ -85,8 +103,6 @@ namespace Devices.Core.State.SubWorkflows.Actions
                         });
                     }
                 }*/
-
-                Controller.SaveState(linkRequest);
 
                 _ = Complete(this);
             }

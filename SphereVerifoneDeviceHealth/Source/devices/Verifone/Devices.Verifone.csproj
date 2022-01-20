@@ -14,10 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\common\Constants\Constants.csproj" />
     <ProjectReference Include="..\..\common\helpers\Helpers.csproj" />
     <ProjectReference Include="..\..\common\LoggerManager\LoggerManager.csproj" />
     <ProjectReference Include="..\..\common\xo\XO.csproj" />
     <ProjectReference Include="..\..\config\Config.csproj" />
+    <ProjectReference Include="..\..\SftpConnection\FileTransfer.csproj" />
     <ProjectReference Include="..\common\Devices.Common.csproj" />
   </ItemGroup>
 

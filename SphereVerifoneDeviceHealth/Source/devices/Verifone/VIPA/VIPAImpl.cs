@@ -141,13 +141,13 @@ namespace Devices.Verifone.VIPA
         #endregion --- attributes ---
 
         #region --- connection ---
-        private SerialConnection VerifoneConnection { get; set; }
+        private VerifoneConnection VerifoneConnection { get; set; }
 
-        public bool Connect(SerialConnection connection, DeviceInformation deviceInformation)
+        public bool Connect(VerifoneConnection connection, DeviceInformation deviceInformation)
         {
             VerifoneConnection = connection;
             DeviceInformation = deviceInformation;
-            return VerifoneConnection.Connect();
+            return VerifoneConnection.Connect(DeviceInformation, DeviceLogHandler);
         }
 
         public bool IsConnected()
@@ -158,6 +158,35 @@ namespace Devices.Verifone.VIPA
         public void Dispose()
         {
             VerifoneConnection?.Dispose();
+        }
+
+        public void ConnectionConfiguration(SerialDeviceConfig serialConfig, DeviceEventHandler deviceEventHandler, DeviceLogHandler deviceLogHandler)
+        {
+            DeviceLogHandler = deviceLogHandler;
+            DeviceEventHandler = deviceEventHandler;
+
+            if (serialConfig != null)
+            {
+                if (serialConfig.CommPortName.Length > 0)
+                {
+                    VerifoneConnection.serialConnection.Config.SerialConfig.CommPortName = serialConfig.CommPortName;
+                }
+
+                if (serialConfig.CommBaudRate > 0)
+                {
+                    VerifoneConnection.serialConnection.Config.SerialConfig.CommBaudRate = serialConfig.CommBaudRate;
+                }
+
+                if (serialConfig.CommReadTimeout > 0)
+                {
+                    VerifoneConnection.serialConnection.Config.SerialConfig.CommReadTimeout = serialConfig.CommReadTimeout;
+                }
+
+                if (serialConfig.CommWriteTimeout > 0)
+                {
+                    VerifoneConnection.serialConnection.Config.SerialConfig.CommWriteTimeout = serialConfig.CommWriteTimeout;
+                }
+            }
         }
 
         #endregion --- connection ---
@@ -1667,12 +1696,13 @@ namespace Devices.Verifone.VIPA
                         int offset = payload.IndexOf(targetString, StringComparison.OrdinalIgnoreCase);
                         if (offset != -1)
                         {
-                            string workstationTimeZone = payload.Substring(offset + targetString.Length + 3, 11);
+                            string workstationTimeZone = payload.Substring(offset + targetString.Length + 3, 15);
                             // string looks like "(UTC-00:00)"
                             if (workstationTimeZone.Contains("(UTC-"))
                             {
+                                offset = workstationTimeZone.IndexOf('(');
                                 // only need "(UTC-00:00)" part
-                                return workstationTimeZone.Substring(0, 11);
+                                return workstationTimeZone.Substring(offset, 11);
                             }
                         }
                     }

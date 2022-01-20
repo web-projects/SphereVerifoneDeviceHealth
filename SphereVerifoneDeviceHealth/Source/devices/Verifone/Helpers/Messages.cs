@@ -1,7 +1,4 @@
 ﻿using Devices.Common.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Devices.Verifone.Helpers
 {
@@ -30,7 +27,7 @@ namespace Devices.Verifone.Helpers
             [StringValue("VIPA: ABORT COMMAND")]
             AbortCommand,
             [StringValue("VIPA: RESTART")]
-            VIPARestart, 
+            VIPARestart,
             [StringValue("VIPA: REBOOT DEVICE")]
             RebootDevice,
             [StringValue("VIPA: GET CARD STATUS")]
@@ -52,7 +49,7 @@ namespace Devices.Verifone.Helpers
             [StringValue("VIPA: GET SIGNATURE")]
             GetSignature,
             [StringValue("VIPA: SET KEYBOARD STATUS")]
-            KeyboardStatus,			
+            KeyboardStatus,
             [StringValue("VIPA: UPDATE IDLE SCREEN")]
             UpdateIdleScreen,
             [StringValue("VIPA: DISPLAY CUSTOM SCREEN")]

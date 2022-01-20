@@ -35,6 +35,11 @@ namespace Devices.Core.State.Enums
         GetSecurityConfiguration,
 
         /// <summary>
+        /// Represents a state where a request for Health Status processes an SFTP file transfer.
+        /// </summary>
+        SecurityConfigurationSftpTransfer,
+
+        /// <summary>
         /// Represents a state when DAL aborts pending device commands
         /// </summary>
         AbortCommand,

@@ -4,10 +4,10 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>SphereVerifoneDeviceHealth</AssemblyName>
-    <AssemblyVersion>1.0.63.0</AssemblyVersion>
-    <FileVersion>1.0.63.0</FileVersion>
+    <AssemblyVersion>1.0.60.0</AssemblyVersion>
+    <FileVersion>1.0.60.0</FileVersion>
     <PackageReleaseNotes>IPA5 Build 5.0.42 Compatible</PackageReleaseNotes>
-    <Version>1.0.63.0</Version>
+    <Version>1.0.60.0</Version>
     <RuntimeIdentifier Condition=" '$(OS)' == 'Windows_NT' ">win10-x64</RuntimeIdentifier>
     <RuntimeIdentifier Condition=" '$(OS)' == 'Unix' ">linux-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
@@ -241,6 +241,7 @@
     <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="Polly" Version="7.2.2" />
     <PackageReference Include="SerialPortStream" Version="2.3.1" />
+    <PackageReference Include="SSH.NET" Version="2020.0.1" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.0" />
   </ItemGroup>
@@ -254,6 +255,7 @@
     <ProjectReference Include="..\devices\common\Devices.Common.csproj" />
     <ProjectReference Include="..\devices\Core\Devices.Core.csproj" />
     <ProjectReference Include="..\devices\Devices.Sdk\Devices.Sdk.csproj" />
+    <ProjectReference Include="..\SftpConnection\FileTransfer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -269,7 +271,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="%25WINDIR%25\System32\XCOPY /y /i /d &quot;$(SolutionDir)devices\Verifone\bin\$(ConfigurationName)\netcoreapp3.1\Devices.Verifone.dll&quot; &quot;$(TargetDir)DevicePlugins\&quot;" />
+    <Exec Command="%25WINDIR%25\System32\XCOPY /y /i /d &quot;$(SolutionDir)devices\Verifone\bin\$(ConfigurationName)\netcoreapp3.1\Devices.Verifone.dll&quot; &quot;$(TargetDir)DevicePlugins\&quot;&#xD;&#xA;%25WINDIR%25\System32\XCOPY /y /i /d &quot;$(SolutionDir)SftpTransferApp\bin\$(ConfigurationName)\netcoreapp3.1\SftpTransferApp.exe&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;%25WINDIR%25\System32\XCOPY /y /i /d &quot;$(SolutionDir)SftpTransferApp\bin\$(ConfigurationName)\netcoreapp3.1\SftpTransferApp.dll&quot; &quot;$(TargetDir)&quot;" />
     <Exec Command="%25WINDIR%25\System32\XCOPY /y /i /d &quot;$(SolutionDir)devices\Simulator\bin\$(ConfigurationName)\netcoreapp3.1\Devices.Simulator.dll&quot; &quot;$(TargetDir)DevicePlugins\&quot;" />
   </Target>
 

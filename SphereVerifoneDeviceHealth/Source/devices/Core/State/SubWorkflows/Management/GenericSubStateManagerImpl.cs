@@ -11,6 +11,7 @@ using Devices.Core.State.SubWorkflows.Actions;
 using Devices.Core.State.SubWorkflows.Actions.Controllers;
 using Devices.Core.State.SubWorkflows.Providers;
 using Devices.Core.State.Visitors;
+using FileTransfer.Providers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,18 +22,6 @@ namespace Devices.Core.State.SubWorkflows.Management
 {
     internal class GenericSubStateManagerImpl : IDeviceSubStateManager, IDeviceSubStateController, IStateControllerVisitable<ISubWorkflowHook, IDeviceSubStateController>
     {
-        public DeviceSection Configuration => context.Configuration;
-
-        //public ILoggingServiceClient LoggingClient => context.LoggingClient;
-
-        //public IListenerConnector Connector => context.Connector;
-
-        public List<ICardDevice> TargetDevices => context.TargetDevices;
-
-        public bool DidTimeoutOccur { get; private set; }
-
-        public DeviceEvent DeviceEvent { get; private set; }
-
         private readonly IDeviceStateController context;
         private readonly Stack<object> savedStackState = new Stack<object>();
 
@@ -47,8 +36,22 @@ namespace Devices.Core.State.SubWorkflows.Management
 
         private ProgressBar DeviceProgressBar = null;
 
+        public DeviceSection Configuration => context.Configuration;
+
+        //public ILoggingServiceClient LoggingClient => context.LoggingClient;
+
+        //public IListenerConnector Connector => context.Connector;
+
+        public List<ICardDevice> TargetDevices => context.TargetDevices;
+
+        public bool DidTimeoutOccur { get; private set; }
+
+        public DeviceEvent DeviceEvent { get; private set; }
+
         public event OnSubWorkflowCompleted SubWorkflowComplete;
         public event OnSubWorkflowError SubWorkflowError;
+
+        public IFileTransferProvider FileTransferProvider => context.FileTransferProvider;
 
         internal GenericSubStateManagerImpl(IDeviceStateController _)
         {

@@ -14,7 +14,9 @@ namespace Devices.Verifone.VIPA.Interfaces
 {
     public interface IVipa : IDisposable
     {
-        bool Connect(SerialConnection connection, DeviceInformation deviceInformation);
+        bool Connect(VerifoneConnection connection, DeviceInformation deviceInformation);
+
+        void ConnectionConfiguration(SerialDeviceConfig serialConfig, DeviceEventHandler deviceEventHandler, DeviceLogHandler deviceLogHandler);
 
         void ResponseCodeHandler(List<TLV> tags, int responseCode, bool cancelled = false);
 

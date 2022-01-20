@@ -16,9 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\common\Constants\Constants.csproj" />
     <ProjectReference Include="..\..\common\core\Core.Patterns\Core.Patterns.csproj" />
+    <ProjectReference Include="..\..\common\LoggerManager\LoggerManager.csproj" />
     <ProjectReference Include="..\..\config\Config.csproj" />
+    <ProjectReference Include="..\..\FileTransferAppLauncher\FileTransferAppLauncher.csproj" />
     <ProjectReference Include="..\..\servicer\servicer.core\Servicer.Core.csproj" />
+    <ProjectReference Include="..\..\SftpConnection\FileTransfer.csproj" />
     <ProjectReference Include="..\Devices.Sdk\Devices.Sdk.csproj" />
   </ItemGroup>
 

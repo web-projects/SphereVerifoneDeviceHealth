@@ -1,4 +1,6 @@
-﻿using Common.Execution;
+﻿using Common.Constants;
+using Common.Execution;
+using Common.Helpers;
 using Common.LoggerManager;
 using Common.XO.Device;
 using Common.XO.Private;
@@ -7,6 +9,7 @@ using Common.XO.Responses;
 using Devices.Common;
 using Devices.Common.AppConfig;
 using Devices.Common.Config;
+using Devices.Common.Constants;
 using Devices.Common.Helpers;
 using Devices.Common.Interfaces;
 using Devices.Verifone.Connection;
@@ -41,8 +44,9 @@ namespace Devices.Verifone
         public event DeviceEventHandler DeviceEventOccured;
         public event DeviceLogHandler DeviceLogHandler;
 
-        private SerialConnection SerialConnection { get; set; }
+        private VerifoneConnection VerifoneConnection { get; set; }
 
+        private (DeviceInfoObject deviceInfoObject, int VipaResponse) deviceVIPAInfo;
         private bool IsConnected { get; set; }
 
         DeviceConfig deviceConfiguration;
@@ -79,7 +83,23 @@ namespace Devices.Verifone
 
         public VerifoneDevice()
         {
+            string logsDir = Directory.GetCurrentDirectory() + Path.Combine("\\", LogDirectories.LogDirectory);
+            if (!Directory.Exists(logsDir))
+            {
+                Directory.CreateDirectory(logsDir);
+            }
 
+            string pendingDir = Path.Combine(logsDir, LogDirectories.PendingDirectory);
+            if (!Directory.Exists(pendingDir))
+            {
+                Directory.CreateDirectory(pendingDir);
+            }
+
+            string completedDir = Path.Combine(logsDir, LogDirectories.CompletedDirectory);
+            if (!Directory.Exists(completedDir))
+            {
+                Directory.CreateDirectory(completedDir);
+            }
         }
 
         public object Clone()
@@ -96,7 +116,7 @@ namespace Devices.Verifone
 
         public void Disconnect()
         {
-            SerialConnection?.Disconnect();
+            VerifoneConnection?.Disconnect();
             IsConnected = false;
         }
 
@@ -178,8 +198,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -212,6 +232,12 @@ namespace Devices.Verifone
 
             return string.Empty;
         }
+
+        private bool IsSftpTransferEnabled(string filename) => 
+            !string.IsNullOrWhiteSpace(filename) &&
+            !string.IsNullOrWhiteSpace(AppExecConfig.SftpConnectionParameters?.Hostname) &&
+            !string.IsNullOrWhiteSpace(AppExecConfig.SftpConnectionParameters?.Username) &&
+            !string.IsNullOrWhiteSpace(AppExecConfig.SftpConnectionParameters?.Password);
 
         public void SetDeviceSectionConfig(DeviceSection config, AppExecConfig appConfig, bool displayOutput)
         {
@@ -260,8 +286,8 @@ namespace Devices.Verifone
             DeviceInformation.Manufacturer = ManufacturerConfigID;
             DeviceInformation.ComPort = deviceInfo.ComPort;
 
-            SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-            active = IsConnected = VipaConnection.Connect(SerialConnection, DeviceInformation);
+            VerifoneConnection = new VerifoneConnection();
+            active = IsConnected = VipaConnection.Connect(VerifoneConnection, DeviceInformation);
 
             if (active)
             {
@@ -409,8 +435,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -445,8 +471,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -509,8 +535,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -527,9 +553,10 @@ namespace Devices.Verifone
                             VipaDevice.GetSecurityConfiguration(deviceSectionConfig.Verifone.ConfigurationHostId, DeviceInformation.ADEKeySetId);
                         TimeSpan span = tracker.GetTimeLapsed();
 
+                        string spanFormatted = string.Format("[{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds);
                         if (configProd.VipaResponse == (int)VipaSW1SW2Codes.Success)
                         {
-                            Logger.info(string.Format("DEVICE: ADE-PROD KEY READ TIME _____ : [{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds));
+                            Logger.info($"{Utils.FormatStringAsRequired("DEVICE: ADE-PROD KEY READ TIME ", Utils.DeviceLogKeyValueLength, Utils.DeviceLogKeyValuePaddingCharacter)} : {spanFormatted}");
                         }
 
                         // ADE TEST KEY
@@ -538,28 +565,32 @@ namespace Devices.Verifone
                             VipaDevice.GetSecurityConfiguration(deviceSectionConfig.Verifone.ConfigurationHostId, configProd.securityConfigurationObject.ADETestSlot);
 
                         span = tracker.GetTimeLapsed();
-                        Logger.info(string.Format("DEVICE: ADE-PROD KEY READ TIME _____ : [{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds));
+                        spanFormatted = string.Format("[{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds);
+                        Logger.info($"{Utils.FormatStringAsRequired("DEVICE: ADE-PROD KEY READ TIME ", Utils.DeviceLogKeyValueLength, Utils.DeviceLogKeyValuePaddingCharacter)} : {spanFormatted}");
 
                         tracker.StartTracking();
                         (SecurityConfigurationObject securityConfigurationObject, int VipaResponse) configDebitPin =
                             VipaDevice.GetSecurityConfiguration(deviceSectionConfig.Verifone.ConfigurationHostId, deviceSectionConfig.Verifone.OnlinePinKeySetId);
 
                         span = tracker.GetTimeLapsed();
-                        Logger.info(string.Format("DEVICE: DEBIT PIN KEY READ TIME ____ : [{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds));
+                        spanFormatted = string.Format("[{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds);
+                        Logger.info($"{Utils.FormatStringAsRequired("DEVICE: DEBIT PIN KEY READ TIME ", Utils.DeviceLogKeyValueLength, Utils.DeviceLogKeyValuePaddingCharacter)} : {spanFormatted}");
 
                         // Terminal datetime
                         tracker.StartTracking();
                         (string Timestamp, int VipaResponse) terminalDateTime = VipaDevice.GetTerminalDateTime();
 
                         span = tracker.GetTimeLapsed();
-                        Logger.info(string.Format("DEVICE: TERMINAL DATETIME READ TIME  : [{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds));
+                        spanFormatted = string.Format("[{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds);
+                        Logger.info($"{Utils.FormatStringAsRequired("DEVICE: TERMINAL DATETIME READ TIME  ", Utils.DeviceLogKeyValueLength, Utils.DeviceLogKeyValuePaddingCharacter)} : {spanFormatted}");
 
                         // 24 HOUR REBOOT
                         tracker.StartTracking();
                         (string Timestamp, int VipaResponse) reboot24Hour = VipaDevice.Get24HourReboot();
 
                         span = tracker.GetTimeLapsed();
-                        Logger.info(string.Format("DEVICE: 24 HOUR REBOOT READ TIME ___ : [{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds));
+                        spanFormatted = string.Format("[{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds);
+                        Logger.info($"{Utils.FormatStringAsRequired("DEVICE: 24 HOUR REBOOT READ TIME ", Utils.DeviceLogKeyValueLength, Utils.DeviceLogKeyValuePaddingCharacter)} : {spanFormatted}");
 
                         // validate configuration
                         tracker.StartTracking();
@@ -569,7 +600,8 @@ namespace Devices.Verifone
                         (KernelConfigurationObject kernelConfigurationObject, int VipaResponse) emvKernelInformation = (null, (int)VipaSW1SW2Codes.Failure);
 
                         span = tracker.GetTimeLapsed();
-                        Logger.info(string.Format("DEVICE: BUNDLE SIGNATURE(S) READ TIME: [{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds));
+                        spanFormatted = string.Format("[{0:D2}:{1:D2}.{2:D3}]", span.Minutes, span.Seconds, span.Milliseconds);
+                        Logger.info($"{Utils.FormatStringAsRequired("DEVICE: BUNDLE SIGNATURE(S) READ TIME ", Utils.DeviceLogKeyValueLength, Utils.DeviceLogKeyValuePaddingCharacter)} : {spanFormatted}");
 
                         if (vipaResponse == (int)VipaSW1SW2Codes.Success)
                         {
@@ -596,7 +628,8 @@ namespace Devices.Verifone
                             EmvKernelInformation = emvKernelInformation
                         };
                         healthStatusCheckImpl.DeviceEventOccured += DeviceEventOccured;
-                        healthStatusCheckImpl.ProcessHealthFromExectutionMode();
+
+                        bool success = healthStatusCheckImpl.ProcessHealthFromExectutionMode();
 
                         // Save file to device
                         if (AppExecConfig.ExecutionMode == Modes.Execution.StandAlone && !AppExecConfig.TerminalBypassHealthRecord)
@@ -605,6 +638,28 @@ namespace Devices.Verifone
                             {
                                 VipaDevice.SaveDeviceHealthFile(DeviceInformation.SerialNumber, healthStatusCheckImpl.DeviceHealthFile);
                             }
+                        }
+
+                        // Modify Action to perform an SFTP Transfer
+                        if (success && IsSftpTransferEnabled(healthStatusCheckImpl.DeviceHealthFile))
+                        {
+                            linkRequest.Actions.Add(new LinkActionRequest()
+                            {
+                                Action = LinkAction.SftpTransfer,
+                                SftpRequest = new XO.Requests.SFTP.LinkSftpRequest()
+                                {
+                                    Hostname = AppExecConfig.SftpConnectionParameters.Hostname,
+                                    Username = AppExecConfig.SftpConnectionParameters.Username,
+                                    Password = AppExecConfig.SftpConnectionParameters.Password,
+                                    DeviceHealthStatusFilename = healthStatusCheckImpl.DeviceHealthFile,
+                                    Port = AppExecConfig.SftpConnectionParameters.Port
+                                }
+                            });
+                            Logger.info($"{Utils.FormatStringAsRequired("DEVICE: SFTP TRANSFER TO HOST ", Utils.DeviceLogKeyValueLength, Utils.DeviceLogKeyValuePaddingCharacter)} : {AppExecConfig.SftpConnectionParameters.Hostname}");
+                        }
+                        else
+                        {
+                            Logger.warning($"{Utils.FormatStringAsRequired("DEVICE: NO SFTP TRANSFER WITH HEALTH STATUS", Utils.DeviceLogKeyValueLength, Utils.DeviceLogKeyValuePaddingCharacter)} : {(success ? "PASS" : "FAIL")}");
                         }
                     }
 
@@ -626,8 +681,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, null);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -720,8 +775,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -756,8 +811,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -821,8 +876,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -885,8 +940,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -928,8 +983,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -967,8 +1022,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1011,8 +1066,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1043,8 +1098,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1080,8 +1135,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1113,8 +1168,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1185,8 +1240,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1268,8 +1323,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1344,8 +1399,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1390,8 +1445,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1449,8 +1504,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)
@@ -1482,8 +1537,8 @@ namespace Devices.Verifone
                 if (!IsConnected)
                 {
                     VipaDevice.Dispose();
-                    SerialConnection = new SerialConnection(DeviceInformation, DeviceLogHandler);
-                    IsConnected = VipaDevice.Connect(SerialConnection, DeviceInformation);
+                    VerifoneConnection = new VerifoneConnection();
+                    IsConnected = VipaDevice.Connect(VerifoneConnection, DeviceInformation);
                 }
 
                 if (IsConnected)

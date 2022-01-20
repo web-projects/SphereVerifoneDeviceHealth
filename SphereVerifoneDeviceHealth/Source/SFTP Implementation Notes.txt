@@ -1,0 +1,25 @@
+SFTP IMPLEMENTATION FOR TPG - Verifone Device Health Tool
+
+THIS SHOULD BE AN INDEPENDENT PROCESS THAT KNOWS HOW TO BATCH UPLOAD TO SFTP SERVER
+====================================================================================
+1. SFTP host/credentials
+2. Target directory
+3. What to do with failure to upload file?
+4. Report all time frames
+   a. all required components in single bundle = 1 single device reboot
+   b. sftp transfer : time to complete
+   c. total time
+5. Create folder to move succesful sftp transfer into: Build.XX\logs\sftp
+   SFTP SERVER: /202201 ---
+                /year
+                  /month
+                   /day
+
+x FACTOR
+
+TPG ISSUES
+
+1. Preparing a device is taking too long
+2. Formatting
+3. SFTP file transfer
+

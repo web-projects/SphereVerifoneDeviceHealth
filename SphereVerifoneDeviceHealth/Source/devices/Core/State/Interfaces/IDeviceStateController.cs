@@ -9,6 +9,7 @@ using Devices.Core.State.Actions.Preprocessing;
 using Devices.Core.State.Providers;
 using System.Collections.Generic;
 using Execution;
+using FileTransfer.Providers;
 
 namespace Devices.Core.State.Interfaces
 {
@@ -20,6 +21,7 @@ namespace Devices.Core.State.Interfaces
         IDevicePluginLoader DevicePluginLoader { get; set; }
         List<ICardDevice> TargetDevices { get; }
         ISerialPortMonitor SerialPortMonitor { get; }
+        IFileTransferProvider FileTransferProvider { get; }
         PriorityQueue<PriorityQueueDeviceEvents> PriorityQueue { get; set; }
         //ILoggingServiceClient LoggingClient { get; }
         //IListenerConnector Connector { get; }
