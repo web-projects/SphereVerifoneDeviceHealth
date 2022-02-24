@@ -117,14 +117,6 @@ namespace FileTransferAppLauncher
                     {
                         Logger.warning($"Unable to start process '{fullFileName}'.");
                     }
-                    else
-                    {
-                        if (parentWindowRectangle.Left > 0 && parentWindowRectangle.Bottom > 0)
-                        {
-                            SetWindowPos(process.MainWindowHandle, parentWindowRectangle.Left, parentWindowRectangle.Bottom, HWND_NOTOPMOST,
-                                Console.WindowWidth, Console.WindowHeight, SWP_NOZORDER | SWP_SHOWWINDOW);
-                        }
-                    }
 
                     //process.BeginOutputReadLine();
                     //process.BeginErrorReadLine();
@@ -146,11 +138,14 @@ namespace FileTransferAppLauncher
 
             AppSection appSection = GetAppConfiguration();
 
-            SetParentWindowRectangle();
+            //SetParentWindowRectangle();
 
             foreach (AppConfiguration appConfiguration in appSection.Apps)
             {
-                (Process process, bool status) = Launch(Directory.GetCurrentDirectory(), appConfiguration.Name, appConfiguration.Arguments);
+                // arguments
+                string arguments = appConfiguration.Arguments + $"--mainlog {parentWindow}.log";
+
+                (Process process, bool status) = Launch(Directory.GetCurrentDirectory(), appConfiguration.Name, arguments);
 
                 if ((process == null || process.Id <= 0) && status == false)
                 {

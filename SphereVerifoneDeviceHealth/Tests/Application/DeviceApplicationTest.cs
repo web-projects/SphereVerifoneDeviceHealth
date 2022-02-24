@@ -5,6 +5,7 @@ using Devices.Core.State.Management;
 using System;
 using Xunit;
 using static Common.Execution.Modes;
+using Devices.Core.State.Enums;
 
 namespace DEVICE_CORE.Application.Tests
 {
@@ -49,6 +50,7 @@ namespace DEVICE_CORE.Application.Tests
             mockStateManager.Setup(e => e.LaunchWorkflow()).Callback(() => asyncManager.Trigger());
 
             subject.Initialize(someFakePath);
+            mockStateManager.Setup(e => e.GetCurrentWorkflow()).Returns(DeviceWorkflowState.Manage);
             await subject.Run(new Execution.AppExecConfig{ });
 
             Assert.True(asyncManager.WaitFor());

@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace SftpTransfer
@@ -16,12 +18,15 @@ namespace SftpTransfer
         static SftpConnection sftpConnection = new SftpConnection();
         static SftpConnectionParameters sftpConnectionParameters;
 
+        static private IConfiguration configuration;
+        static private string parentLog;
+
         static async Task Main(string[] args)
         {
             Console.WriteLine("Checking for the existance of pending files to upload...");
             Debug.WriteLine($"TARGET PATH=[{filePath}]");
 
-            SetupEnvironment();
+            SetupEnvironment(args);
 
             bool filesLocated = false;
             Stopwatch sw =new Stopwatch();
@@ -81,15 +86,35 @@ namespace SftpTransfer
             await Task.Delay(2000);
         }
 
-        static void SetupEnvironment()
+        static void ParseArguments(string[] args)
         {
+            if (args.Length > 0)
+            {
+                int mainlogArgIndex = Array.IndexOf(args, "--mainlog");
+
+                if (mainlogArgIndex >= 0 && mainlogArgIndex + 1 < args.Length)
+                {
+                    parentLog = args[mainlogArgIndex + 1];
+                }
+            }
+        }
+
+        static void SetupEnvironment(string[] args)
+        {
+            // attempt to synchronize writing to the main log - otherwise, create a separate log for sftp transfer status/errors
+            //ParseArguments(args);
+
             // Get appsettings.json config - AddEnvironmentVariables() requires package: Microsoft.Extensions.Configuration.EnvironmentVariables
-            IConfiguration configuration = new ConfigurationBuilder()
+            configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
-            sftpConnectionParameters = GetSftpConfiguration(configuration);
+            // logger
+            SetLogging();
+
+            // sftp parameters
+            sftpConnectionParameters = GetSftpConfiguration();
         }
 
         static bool AttemptSftpFileTransfer(string filename)
@@ -114,10 +139,48 @@ namespace SftpTransfer
             }
         }
 
-        static SftpConnectionParameters GetSftpConfiguration(IConfiguration configuration)
+        static SftpConnectionParameters GetSftpConfiguration()
         {
             // Microsoft.Extensions.Configuration.Json
             return configuration.GetSection(nameof(SftpConnectionParameters)).Get<SftpConnectionParameters>();
+        }
+
+        static string[] GetLoggingLevels(int index)
+        {
+            return configuration.GetSection("LoggerManager:Logging").GetValue<string>("Levels").Split("|");
+        }
+
+        static void SetLogging()
+        {
+            try
+            {
+                string[] logLevels = GetLoggingLevels(0);
+
+                if (logLevels.Length > 0)
+                {
+                    string fullName = Assembly.GetEntryAssembly().Location;
+                    string logname = string.IsNullOrWhiteSpace(parentLog) ? Path.GetFileNameWithoutExtension(fullName) + ".log" : parentLog;
+                    string path = Directory.GetCurrentDirectory();
+                    string filepath = path + "\\logs\\" + logname;
+
+                    int levels = 0;
+                    foreach (string item in logLevels)
+                    {
+                        foreach (LOGLEVELS level in LogLevels.LogLevelsDictonary.Where(x => x.Value.Equals(item)).Select(x => x.Key))
+                        {
+                            levels += (int)level;
+                        }
+                    }
+
+                    Logger.SetFileLoggerConfiguration(filepath, levels);
+
+                    Logger.info($"{Assembly.GetEntryAssembly().GetName().Name} ({Assembly.GetEntryAssembly().GetName().Version}) - LOGGING INITIALIZED.");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.error("main: SetupLogging() - exception={0}", e.Message);
+            }
         }
     }
 }

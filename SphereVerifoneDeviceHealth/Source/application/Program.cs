@@ -2,12 +2,11 @@
 using Common.Execution;
 using Common.LoggerManager;
 using Common.XO.Requests;
-using Config.AppConfig;
+using Config.Application;
 using Execution;
 using FileTransfer;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -77,13 +76,12 @@ namespace DEVICE_CORE
             SetupWindow();
 
             // setup working environment
-            (DirectoryInfo di, bool allowDebugCommands, Modes.Execution executionMode,
-                string healthCheckValidationMode, bool displayProgressBar, bool terminalBypassHealthRecord, SftpConnectionParameters sftpConnectionParameters) = SetupEnvironment();
+            (DirectoryInfo di, bool allowDebugCommands, Application appParams, string healthCheckValidationMode, SftpConnectionParameters sftpConnectionParameters) = SetupEnvironment();
 
-            if (executionMode == Modes.Execution.Undefined)
+            if (appParams.ExecutionMode == Modes.Execution.Undefined)
             {
                 ParseArguments(args);
-                executionMode = ParseArguments(args);
+                appParams.ExecutionMode = ParseArguments(args);
             }
 
             // save current colors
@@ -97,16 +95,16 @@ namespace DEVICE_CORE
 
             await application.Run(new AppExecConfig
             {
-                TerminalBypassHealthRecord = terminalBypassHealthRecord,
-                DisplayProgressBar = displayProgressBar,
+                TerminalBypassHealthRecord = appParams.TerminalBypassHealthRecord,
+                DisplayProgressBar = appParams.DisplayProgressBar,
                 ForeGroundColor = foreGroundColor,
                 BackGroundColor = backGroundColor,
-                ExecutionMode = executionMode,
+                ExecutionMode = appParams.ExecutionMode,
                 HealthCheckValidationMode = healthCheckValidationMode,
                 SftpConnectionParameters = sftpConnectionParameters
             }).ConfigureAwait(false);
 
-            switch (executionMode)
+            switch (appParams.ExecutionMode)
             {
                 case Modes.Execution.Console:
                 {
@@ -129,7 +127,7 @@ namespace DEVICE_CORE
             DeleteWorkingDirectory(di);
         }
 
-        static private (DirectoryInfo, bool, Modes.Execution, string, bool, bool, SftpConnectionParameters) SetupEnvironment()
+        static private (DirectoryInfo, bool, Application, string, SftpConnectionParameters) SetupEnvironment()
         {
             DirectoryInfo di = null;
 
@@ -155,19 +153,18 @@ namespace DEVICE_CORE
             Console.WriteLine($"{Assembly.GetEntryAssembly().GetName().Name} - Version {Assembly.GetEntryAssembly().GetName().Version}");
             Console.WriteLine($"==========================================================================================\r\n");
 
-            Modes.Execution executionMode = GetApplicationExecutionMode();
+            Application application = GetApplicationConfiguration();
+
             string healthCheckValidationMode = null;
 
-            if (executionMode == Modes.Execution.StandAlone)
+            if (application.ExecutionMode == Modes.Execution.StandAlone)
             {
                 healthCheckValidationMode = GetHealthCheckStatusSetup();
             }
 
-            bool displayProgressBar = GetApplicationDisplayProgressBar();
-            bool terminalBypassHealthRecord = GetApplicationTerminalBypassHealthRecord();
             SftpConnectionParameters sftpClientParameters = GetSftpConfiguration();
 
-            return (di, AllowDebugCommands(0), executionMode, healthCheckValidationMode, displayProgressBar, terminalBypassHealthRecord, sftpClientParameters);
+            return (di, AllowDebugCommands(0), application, healthCheckValidationMode, sftpClientParameters);
         }
 
         static private void SetupWindow()
@@ -530,6 +527,11 @@ namespace DEVICE_CORE
             return configuration.GetValue<bool>("Application:TerminalBypassHealthRecord");
         }
 
+        static Application GetApplicationConfiguration()
+        {
+            return configuration.GetSection(nameof(Application)).Get<Application>();
+        }
+
         static Modes.Execution GetApplicationExecutionMode()
         {
             return GetExecutionMode(configuration.GetValue<string>("Application:ExecutionMode"));
@@ -544,11 +546,6 @@ namespace DEVICE_CORE
         {
             return configuration.GetSection(nameof(SftpConnectionParameters)).Get<SftpConnectionParameters>();
         }
-
-        //static AppSection GetAppConfiguration()
-        //{
-        //    return configuration.GetSection("Launcher").Get<AppSection>();
-        //}
 
         static ConsoleColor GetColor(string color) => color switch
         {
@@ -577,85 +574,5 @@ namespace DEVICE_CORE
             "Console" => Modes.Execution.Console,
             _ => Modes.Execution.StandAlone
         };
-
-        //static private Process Launch(string workingDirectory, string fullFileName, string arguments)
-        //{
-        //    try
-        //    {
-        //        Process process = new Process();
-
-        //        process.StartInfo.Verb = "runas";
-        //        process.StartInfo.FileName = fullFileName;
-        //        process.StartInfo.WindowStyle = ProcessWindowStyle.Normal;
-        //        process.StartInfo.UseShellExecute = true;
-        //        process.StartInfo.CreateNoWindow = false;
-        //        process.StartInfo.WorkingDirectory = workingDirectory;
-
-        //        if (arguments is { })
-        //        {
-        //            process.StartInfo.Arguments = arguments;
-        //        }
-
-        //        // UseShellExecute = false required to redirect output streams
-        //        //process.StartInfo.RedirectStandardError = true;
-        //        //process.StartInfo.RedirectStandardOutput = true;
-        //        //process.StartInfo.RedirectStandardInput = false;
-
-        //        if (!process.Start())
-        //        {
-        //            Logger.warning($"Unable to start process '{fullFileName}'.");
-        //        }
-        //        else
-        //        {
-        //            // Reposition window
-        //            SetWindowPos(process.MainWindowHandle, Console.WindowLeft, Console.WindowTop + Console.WindowHeight, 0,
-        //                Console.WindowWidth, Console.WindowHeight, SWP_NOZORDER | SWP_SHOWWINDOW);
-        //        }
-
-        //        //process.BeginOutputReadLine();
-        //        //process.BeginErrorReadLine();
-
-        //        return process;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.error($"Exception while attempting to launch process '{fullFileName}' - {ex.Message}");
-        //        return null;
-        //    }
-        //}
-
-        //static void StartAllProcesses()
-        //{
-        //    AppSection appSection = GetAppConfiguration();
-
-        //    foreach (AppConfiguration appConfiguration in appSection.Apps)
-        //    {
-        //        Process process = Launch(Directory.GetCurrentDirectory(), appConfiguration.Name, appConfiguration.Arguments);
-
-        //        if (process == null || process.Id <= 0)
-        //        {
-        //            Logger.error($"Unable to launch '{appConfiguration.Name}' as a child process.");
-        //        }
-        //    }
-        //}
-
-        //static void StopAllProcesses()
-        //{
-        //    //AppSection appSection = GetAppConfiguration();
-
-        //    //foreach (AppConfiguration appConfiguration in appSection.Apps)
-        //    //{
-        //    //    Process process = pair.Value.Process;
-        //    //    try
-        //    //    {
-        //    //        process?.Kill();
-        //    //        process?.Dispose();
-        //    //    }
-        //    //    catch (Exception ex)
-        //    //    {
-        //    //        Logger.error($"Exception while attempting to kill process '{app.Name}' - {ex.Message}");
-        //    //    }
-        //    //}
-        //}
     }
 }

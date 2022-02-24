@@ -9,7 +9,11 @@
         public static readonly uint WhiteListHash = 0xDFDB09;
         public static readonly uint FirmwareVersion = 0xDF7F;
         public static readonly string ADKEVMKernel = "ADK_EMV_CT_Kern";
+        public static readonly string ADKVault = "Vault";
+        public static readonly string ADKOpenProtocol = "OpenProtocol";
+        public static readonly string ADKSRED = "OS_SRED";
+        public static readonly string ADKAppManager = "AppManager";
         public static readonly uint EMVLibraryName = 0xDF8106;
-        public static readonly uint EMVL2KernelVersion = 0xDF8107;
+        public static readonly uint EMVLibraryVersion = 0xDF8107;
     }
 }

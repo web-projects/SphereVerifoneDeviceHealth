@@ -1,4 +1,5 @@
-﻿using Common.XO.Requests;
+﻿using Common.XO.Device;
+using Common.XO.Requests;
 using Common.XO.Requests.DAL;
 using Common.XO.Requests.Payment;
 using Devices.Common.Helpers;
@@ -8,12 +9,12 @@ namespace Devices.Verifone.Tests.Helpers
 {
     internal static class RequestBuilder
     {
-        //internal static LinkRequest LinkRequestGetDalStatus() =>
-        //    new LinkRequest()
-        //    {
-        //        Actions = new List<LinkActionRequest> { BuildLinkGetDalStatusAction() },
-        //        MessageID = RandomGenerator.BuildRandomString(8),
-        //    };
+        internal static LinkRequest LinkRequestGetDalStatus() =>
+            new LinkRequest()
+            {
+                Actions = new List<LinkActionRequest> { BuildLinkGetDalStatusAction() },
+                MessageID = RandomGenerator.BuildRandomString(8),
+            };
 
         //internal static LinkRequest LinkRequestSelectCreditOrDebit() =>
         //    new LinkRequest()
@@ -132,18 +133,27 @@ namespace Devices.Verifone.Tests.Helpers
         //        }
         //    };
 
-        //private static LinkActionRequest BuildLinkGetDalStatusAction()
-        //{
-        //    var action = new LinkActionRequest
-        //    {
-        //        Action = LinkAction.DALAction,
-        //        DALActionRequest = new LinkDALActionRequest
-        //        {
-        //            DALAction = LinkDALActionType.GetStatus
-        //        }
-        //    };
-        //    return action;
-        //}
+        private static LinkActionRequest BuildLinkGetDalStatusAction()
+        {
+            var action = new LinkActionRequest
+            {
+                Action = LinkAction.DALAction,
+                DALActionRequest = new LinkDALActionRequest
+                {
+                    DALAction = LinkDALActionType.GetStatus
+                },
+                DeviceRequest = new LinkDeviceRequest()
+                {
+                    DeviceIdentifier = new LinkDeviceIdentifier()
+                    {
+                        Manufacturer = "ACME",
+                        Model = "RockSolid",
+                        SerialNumber = "DEADBEEF"
+                    }
+                }
+            };
+            return action;
+        }
 
         //private static LinkActionRequest BuildLinkGetCreditOrDebit()
         //{

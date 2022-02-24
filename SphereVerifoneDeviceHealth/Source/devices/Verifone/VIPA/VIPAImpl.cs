@@ -48,11 +48,11 @@ namespace Devices.Verifone.VIPA
         private enum ResetDeviceCfg
         {
             ReturnSerialNumber = 1 << 0,
-            ReturnAfterCardRemoval = 1 << 1,
-            LeaveScreenDisplayUnchanged = 1 << 2,
-            SlideShowStartsNormalTiming = 1 << 3,
-            NoBeepDuringReset = 1 << 4,
-            ResetImmediately = 1 << 5,
+            ScreenDisplayState = 1 << 1,
+            SlideShowStartsNormalTiming = 1 << 2,
+            BeepDuringReset = 1 << 3,
+            WaitforCardRemoval = 1 << 4,
+            NoAdditionalInformation = 1 << 5,
             ReturnPinpadConfiguration = 1 << 6,
             AddVOSComponentsInformation = 1 << 7
         }
@@ -456,8 +456,8 @@ namespace Devices.Verifone.VIPA
                 ResponseTagsHandler += GetDeviceInfoResponseHandler;
 
                 // VIPA restart with beep
-                byte p2 = (byte)(ResetDeviceCfg.ReturnSerialNumber);
-                SendVipaCommand(VIPACommandType.ResetDevice, 0x02, p2);
+                SendVipaCommand(VIPACommandType.ResetDevice, 0x02,
+                    (byte)(ResetDeviceCfg.ReturnSerialNumber | ResetDeviceCfg.ScreenDisplayState | ResetDeviceCfg.BeepDuringReset));
 
                 deviceResponse = GetDeviceResponse(DefaultDeviceResultTimeoutMS);
 
@@ -484,7 +484,8 @@ namespace Devices.Verifone.VIPA
 
                 Debug.WriteLine(ConsoleMessages.DeviceReset.GetStringValue());
                 // Reset Device [D0, 00]
-                SendVipaCommand(VIPACommandType.ResetDevice, 0x00, (byte)(ResetDeviceCfg.ReturnSerialNumber | ResetDeviceCfg.ReturnAfterCardRemoval | ResetDeviceCfg.ReturnPinpadConfiguration));
+                SendVipaCommand(VIPACommandType.ResetDevice, 0x00, 
+                    (byte)(ResetDeviceCfg.ReturnSerialNumber | ResetDeviceCfg.ReturnPinpadConfiguration | ResetDeviceCfg.AddVOSComponentsInformation));
 
                 deviceResponse = DeviceIdentifier.Task.Result;
 
@@ -682,7 +683,7 @@ namespace Devices.Verifone.VIPA
             (DeviceInfoObject deviceInfoObject, int VipaResponse) deviceInfo = GetDeviceInfo();
 
             (DeviceContactlessInfo deviceContactlessInfo, int VipaResponse) clessReaderStatus = GetContactlessReaderStatus((byte)ContactlessReaderConfig.DeviceKernelInformation);
-            
+
             if (clessReaderStatus.VipaResponse == (int)VipaSW1SW2Codes.Success)
             {
                 DeviceInformation.ContactlessKernelInformation = clessReaderStatus.deviceContactlessInfo.KernelInformation;
@@ -1741,11 +1742,12 @@ namespace Devices.Verifone.VIPA
             List<TLV> manualPANEntryData = new List<TLV>
             {
                 new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("TEMPLATE_INPUT_TYPE")),
-                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("number")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("text")),
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("allowed_chars")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("0123456789")),
                 new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("input_precision")),
                 new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("0")),
-                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("max_len")),
-                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("16")),
+
                 new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("entry_mode_visibility")),
                 new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("hidden")),
                 new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("timeout")),
@@ -1754,10 +1756,14 @@ namespace Devices.Verifone.VIPA
                 new TLV(E0Template.HTMLResourceName, Encoding.ASCII.GetBytes("mapp/alphanumeric_entry.html")),
                 new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("title_text")),
                 new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("Enter Card Number")),
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("max_length")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("16")),                
                 // Expiry Entry
                 new TLV(E0Template.HTMLResourceName, Encoding.ASCII.GetBytes("mapp/alphanumeric_entry.html")),
                 new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("title_text")),
                 new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("Enter Card Expiry")),
+                new TLV(E0Template.HTMLKeyName, Encoding.ASCII.GetBytes("max_length")),
+                new TLV(E0Template.HTMLValueName, Encoding.ASCII.GetBytes("4")),
                 // PAN maximum length
                 new TLV(E0Template.ManualPANMaxLength, new byte[] { 0x10 })
             };
@@ -2619,6 +2625,37 @@ namespace Devices.Verifone.VIPA
                             //cardInfo.ArsStatus = Encoding.UTF8.GetString(dataTag.Data);
                         }
                     }
+
+                    // VOS Versions: sequentially paired TAG/VALUE sets
+                    List<TLV> vosVersions = tag.InnerTags.Where(x => x.Tag == EFTemplate.EMVLibraryName || x.Tag == EFTemplate.EMVLibraryVersion).ToList();
+
+                    if (vosVersions is { } && vosVersions.Count > 0)
+                    {
+                        // Vault
+                        int vaultVersionIndex = vosVersions.FindIndex(x => Encoding.UTF8.GetString(x.Data).Equals(EFTemplate.ADKVault, StringComparison.OrdinalIgnoreCase));
+                        if (vosVersions.Count > vaultVersionIndex + 1 && vosVersions.ElementAt(vaultVersionIndex + 1).Tag == EFTemplate.EMVLibraryVersion)
+                        {
+                            DeviceInformation.VOSVersions.ADKVault = Encoding.UTF8.GetString(vosVersions.ElementAt(vaultVersionIndex + 1).Data);
+                        }
+                        // AppManager
+                        int appManagerVersionIndex = vosVersions.FindIndex(x => Encoding.UTF8.GetString(x.Data).Equals(EFTemplate.ADKAppManager, StringComparison.OrdinalIgnoreCase));
+                        if (vosVersions.Count > appManagerVersionIndex + 1 && vosVersions.ElementAt(appManagerVersionIndex + 1).Tag == EFTemplate.EMVLibraryVersion)
+                        {
+                            DeviceInformation.VOSVersions.ADKAppManager = Encoding.UTF8.GetString(vosVersions.ElementAt(appManagerVersionIndex + 1).Data);
+                        }
+                        // OpenProtocol
+                        int openProtocolVersionIndex = vosVersions.FindIndex(x => Encoding.UTF8.GetString(x.Data).Equals(EFTemplate.ADKOpenProtocol, StringComparison.OrdinalIgnoreCase));
+                        if (vosVersions.Count > openProtocolVersionIndex + 1 && vosVersions.ElementAt(openProtocolVersionIndex + 1).Tag == EFTemplate.EMVLibraryVersion)
+                        {
+                            DeviceInformation.VOSVersions.ADKOpenProtocol = Encoding.UTF8.GetString(vosVersions.ElementAt(openProtocolVersionIndex + 1).Data);
+                        }
+                        // SRED
+                        int sREDVersionIndex = vosVersions.FindIndex(x => Encoding.UTF8.GetString(x.Data).Equals(EFTemplate.ADKSRED, StringComparison.OrdinalIgnoreCase));
+                        if (vosVersions.Count > sREDVersionIndex + 1 && vosVersions.ElementAt(sREDVersionIndex + 1).Tag == EFTemplate.EMVLibraryVersion)
+                        {
+                            DeviceInformation.VOSVersions.ADKSRED = Encoding.UTF8.GetString(vosVersions.ElementAt(sREDVersionIndex + 1).Data);
+                        }
+                    }
                 }
                 else if (tag.Tag == EETemplate.TerminalId)
                 {
@@ -2642,7 +2679,7 @@ namespace Devices.Verifone.VIPA
                             string libraryName = Encoding.UTF8.GetString(dataTag.Data);
                             isEMVKernel = libraryName.Equals(EFTemplate.ADKEVMKernel, StringComparison.OrdinalIgnoreCase);
                         }
-                        else if (dataTag.Tag == EFTemplate.EMVL2KernelVersion && isEMVKernel)
+                        else if (dataTag.Tag == EFTemplate.EMVLibraryVersion && isEMVKernel)
                         {
                             DeviceInformation.EMVL2KernelVersion = Encoding.UTF8.GetString(dataTag.Data);
                             isEMVKernel = false;

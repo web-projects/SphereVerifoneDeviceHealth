@@ -1,4 +1,5 @@
 ﻿using Devices.Common.Config;
+using AppCommon.Helpers.EMVKernel;
 
 namespace Devices.Common
 {
@@ -23,5 +24,7 @@ namespace Devices.Common
         public string IdleImagePackageTag { get; set; }
         public string ContactlessKernelInformation { get; set; }
         public string EMVL2KernelVersion { get; set; }
+        public VOSVersions VOSVersions { get; set; }
+        public EMVKernelConfiguration EMVKernelConfiguration { get; set; }
     }
 }

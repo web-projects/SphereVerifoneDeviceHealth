@@ -9,7 +9,6 @@ using Common.XO.Responses;
 using Devices.Common;
 using Devices.Common.AppConfig;
 using Devices.Common.Config;
-using Devices.Common.Constants;
 using Devices.Common.Helpers;
 using Devices.Common.Interfaces;
 using Devices.Verifone.Connection;
@@ -38,7 +37,7 @@ namespace Devices.Verifone
     [Export("Verifone-UX300", typeof(ICardDevice))]
     internal class VerifoneDevice : IDisposable, ICardDevice
     {
-        public string Name => StringValueAttribute.GetStringValue(DeviceType.Verifone);
+        public string Name => StringValueAttribute.GetStringValue(Devices.Common.Helpers.DeviceType.Verifone);
 
         public event PublishEvent PublishEvent;
         public event DeviceEventHandler DeviceEventOccured;
@@ -61,7 +60,7 @@ namespace Devices.Verifone
 
         public DeviceInformation DeviceInformation { get; private set; }
 
-        public string ManufacturerConfigID => DeviceType.Verifone.ToString();
+        public string ManufacturerConfigID => Devices.Common.Helpers.DeviceType.Verifone.ToString();
 
         public int SortOrder { get; set; } = -1;
 
@@ -171,6 +170,8 @@ namespace Devices.Verifone
                 Debug.WriteLine($"EMV KERNEL VERSION: \"{DeviceInformation.ContactlessKernelInformation}\"");
             }
 
+            DeviceInformation.VOSVersions = VipaDevice.DeviceInformation.VOSVersions;
+
             return deviceInfo.VipaResponse;
         }
 
@@ -233,7 +234,7 @@ namespace Devices.Verifone
             return string.Empty;
         }
 
-        private bool IsSftpTransferEnabled(string filename) => 
+        private bool IsSftpTransferEnabled(string filename) =>
             !string.IsNullOrWhiteSpace(filename) &&
             !string.IsNullOrWhiteSpace(AppExecConfig.SftpConnectionParameters?.Hostname) &&
             !string.IsNullOrWhiteSpace(AppExecConfig.SftpConnectionParameters?.Username) &&
@@ -347,7 +348,9 @@ namespace Devices.Verifone
                         ComPort = device.ComPort,
                         ProductIdentification = device.ProductID,
                         SerialNumber = device.SerialNumber,
-                        VendorIdentifier = Connection.DeviceDiscovery.VID
+                        VendorIdentifier = Connection.DeviceDiscovery.VID,
+                        VOSVersions = new AppCommon.Helpers.EMVKernel.VOSVersions(),
+                        EMVKernelConfiguration = new AppCommon.Helpers.EMVKernel.EMVKernelConfiguration()
                     });
 
                     System.Diagnostics.Debug.WriteLine($"device: ON PORT={device.ComPort} - VERIFONE MODEL={deviceInformation[deviceInformation.Count - 1].ProductIdentification}, " +
@@ -625,8 +628,9 @@ namespace Devices.Verifone
                             ConfigDebitPin = configDebitPin,
                             TerminalDateTime = terminalDateTime,
                             Reboot24Hour = reboot24Hour,
-                            EmvKernelInformation = emvKernelInformation
-                        };
+                            EmvKernelInformation = emvKernelInformation,
+                            VOSVersions = $"{DeviceInformation.VOSVersions.ADKVault}|{DeviceInformation.VOSVersions.ADKAppManager}|{DeviceInformation.VOSVersions.ADKOpenProtocol}|{DeviceInformation.VOSVersions.ADKSRED}"
+                    };
                         healthStatusCheckImpl.DeviceEventOccured += DeviceEventOccured;
 
                         bool success = healthStatusCheckImpl.ProcessHealthFromExectutionMode();
@@ -1474,7 +1478,7 @@ namespace Devices.Verifone
                             }
 
                             // EMV CONFIG BUNDLE
-                            Console.WriteLine($"DEVICE: {VipaVersions.DALCdbData.EMVVersion.Signature?.ToUpper() ?? "MISSING"} SIGNED BUNDLE: EMV_VER DATECODE  {VipaVersions.DALCdbData.EMVVersion.DateCode ?? "*** NONE ***"} - BUNDLE VER: [{VipaVersions.DALCdbData.EMVVersion.Version}]");
+                            Console.WriteLine($"DEVICE: {VipaVersions.DALCdbData.EMVVersion.Signature?.ToUpper() ?? "MISSING"} SIGNED BUNDLE: EMV_VER DATECODE  {VipaVersions.DALCdbData.EMVVersion.DateCode ?? "*** NONE ***"} - BUNDLE VER: [{VipaVersions.DALCdbData.EMVVersion.Version}] - TERMINAL TYPE: [{VipaVersions.DALCdbData.EMVVersion.TerminalType}] ");
                             if (!string.IsNullOrEmpty(VipaVersions.DALCdbData.EMVVersion?.Version) &&
                                 !DeviceInformation.FirmwareVersion.Equals(VipaVersions.DALCdbData.EMVVersion?.Version?.Replace("_", ".")))
                             {

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SftpTransferApp": {
+      "commandName": "Project",
+      "commandLineArgs": "--mainlog SphereVerifoneDeviceHealth"
+    }
+  }
+}

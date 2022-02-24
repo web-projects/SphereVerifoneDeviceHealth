@@ -121,17 +121,23 @@ namespace FileTransfer
                 {
                     sftpClient.Connect();
 
+                    // Damian Allen (Dallas Office): upload files to root folder
                     // Create directories as necessary
-                    string[] fileParts = FileDirectoryTarget.GetFileTimeStamp(clientParams.Filename);
+                    //string[] fileParts = FileDirectoryTarget.GetFileTimeStamp(clientParams.Filename);
 
                     // set directory
-                    string remotePath = SetRemoteDirectory(sftpClient, fileParts);
+                    //string remotePath = SetRemoteDirectory(sftpClient, fileParts);
+
+                    Debug.WriteLine($"sftp: working directory=[{sftpClient.WorkingDirectory}]");
+                    //Logger.info($"sftp: working directory=[{sftpClient.WorkingDirectory}]");
 
                     using (FileStream fs = new FileStream(clientParams.Filename, FileMode.Open))
                     {
                         sftpClient.BufferSize = 1024;
-                        sftpClient.ChangeDirectory(remotePath);
-                        
+
+                        //sftpClient.ChangeDirectory(remotePath);
+                        sftpClient.ChangeDirectory(FileDirectoryTarget.SfptTargetDirectory);
+
                         // set target directory
                         string filename = Path.GetFileName(clientParams.Filename);
 
@@ -148,7 +154,7 @@ namespace FileTransfer
             }
             catch (Exception ex)
             {
-                Logger.error($"SftpConnection transfer failed with exception={ex.Message}");
+                Logger.error($"SftpConnection transfer failed with exception \"{ex.Message}\"");
             }
 
             return false;

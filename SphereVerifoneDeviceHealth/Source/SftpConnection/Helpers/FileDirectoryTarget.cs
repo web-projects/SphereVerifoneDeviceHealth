@@ -5,6 +5,8 @@ namespace FileTransfer.Helpers
 {
     public static class FileDirectoryTarget
     {
+        public static readonly string SfptTargetDirectory = "/Uploads/ValidationLogs";
+
         public static string[] GetFileTimeStamp(string filename)
         {
             if (File.Exists(filename))

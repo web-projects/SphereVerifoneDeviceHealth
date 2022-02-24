@@ -123,84 +123,19 @@ namespace Devices.Verifone.Tests
         [Fact]
         public void GetStatus_ExpectedValue_WhenCalled()
         {
-            LinkRequest expectedValue = new LinkRequest();
-            var actualValue = subject.GetStatus(expectedValue);
-            Assert.Equal(expectedValue, actualValue);
-        }
-
-        [Theory]
-        [InlineData("1", true, EventCodeType.DEVICE_VERIFY_AMOUNT_APPROVED, 5000)]  //User selects "Yes"
-        [InlineData("2", false, EventCodeType.DEVICE_VERIFY_AMOUNT_DECLINED, 5000)] //User selects "No"
-        [InlineData("0", false, EventCodeType.REQUEST_TIMEOUT, 0)]                  //Request timeout
-        public void SelectVerifyAmount_ShouldReturnUserSelection(string userSelection, bool expectedResult, EventCodeType expectedEvent, int timeout)
-        {
-            EventsSeen = new List<EventCodeType>();
-            subject.PublishEvent += Subject_PublishEvent;
-
-            LinkRequest linkRequest = RequestBuilder.LinkGetPaymentRequest();
-            LinkActionRequest linkActionRequest = linkRequest.Actions.First();
-
-            //(DeviceInfoObject deviceInfoObject, int VipaResult) linkDeviceResponseValue = SetDeviceVIPAInfo();
-            //mockIVipa.Setup(e => e.GetDeviceInfo()).Returns(linkDeviceResponseValue);
-            mockIVipa.Setup(e => e.DisplayMessage(It.IsAny<VIPADisplayMessageValue>(), true, It.IsAny<string>())).Returns(true);
-
-            LinkDALRequestIPA5Object linkDALRequestIPA5Object = new LinkDALRequestIPA5Object()
+            DeviceInformation deviceInformation = new DeviceInformation()
             {
-                DALResponseData = new LinkDALActionResponse()
-                {
-                    Value = userSelection
-                }
+                Manufacturer = "ACME",
+                Model = "RockSolid",
+                ComPort = "COM1"
             };
+            Assert.Null(subject.Probe(deviceConfig, deviceInformation, out bool active));
 
-            //string requestedAmount = linkActionRequest.PaymentRequest.RequestedAmount.ToString();
-            //var verifyAmountInfo = (linkDALRequestIPA5Object, (int)VipaSW1SW2Codes.Success);
-            //mockIVipa.Setup(e => e.ProcessPaymentGetVerifyAmount(It.IsAny<LinkActionRequest>(), It.IsAny<string>())).Returns(verifyAmountInfo);
+            LinkRequest expectedValue = RequestBuilder.LinkRequestGetDalStatus();
 
-            //linkRequest.Actions[0].PaymentRequest.CardWorkflowControls.VerifyAmountEnabled = true;
-
-            Helper.SetPropertyValueToInstance<IVipa>("VipaConnection", false, false, subject, mockIVipa.Object);
-            //mockIVipa.Setup(e => e.Connect(It.IsAny<SerialConnection>(), currentDeviceInformation)).Returns(true);
-            //mockIVipa.Setup(e => e.ResetDevice()).Returns(linkDeviceResponseValue);
-            //Assert.Null(subject.Probe(deviceConfig, currentDeviceInformation, out bool active));
-            //Assert.True(active);
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(timeout);
-            LinkRequest linkResponse = subject.GetVerifyAmount(linkRequest, cancellationTokenSource.Token);
-
-            if (timeout == 0)
-            {
-                Assert.NotNull(linkRequest.Actions[0].DALRequest.LinkObjects.DALResponseData.Errors);
-                Assert.Equal(Enum.GetName(typeof(EventCodeType), EventCodeType.REQUEST_TIMEOUT), linkResponse.Actions.First().DALRequest.LinkObjects.DALResponseData.Errors[0].Code);
-                Assert.Equal(StringValueAttribute.GetStringValue(DeviceEvent.RequestTimeout), linkResponse.Actions.First().DALRequest.LinkObjects.DALResponseData.Errors[0].Description);
-            }
-            else
-            {
-                Assert.True(EventWasHandled(expectedEvent));
-                Assert.Null(linkRequest.LinkObjects.LinkActionResponseList[0].Errors);
-                //Assert.Equal(1, linkRequest.LinkObjects.LinkActionResponseList[0].DALResponse.Devices?.Count);
-            }
-
-            bool actualResult = EventWasHandled(EventCodeType.DEVICE_VERIFY_AMOUNT_APPROVED);
-            Assert.Equal(expectedResult, actualResult);
-
-            if (timeout == 0)
-            {
-                Assert.NotNull(linkRequest.Actions[0].DALRequest.LinkObjects.DALResponseData.Errors);
-                Assert.Equal(StringValueAttribute.GetStringValue(DeviceEvent.RequestTimeout), linkResponse.Actions.First().DALRequest.LinkObjects.DALResponseData.Errors[0].Description);
-                return;
-            }
-
-            if (expectedResult)
-            {
-                Assert.Null(linkRequest.Actions[0].DALRequest.LinkObjects.DALResponseData);
-            }
-            else
-            {
-                Assert.NotNull(linkRequest.Actions[0].DALRequest.LinkObjects.DALResponseData.Errors);
-                Assert.Equal(Enum.GetName(typeof(EventCodeType), EventCodeType.USER_CANCELED), linkResponse.Actions.First().DALRequest.LinkObjects.DALResponseData.Errors[0].Code);
-                string expectedMessage = "Canceled";
-                Assert.Equal(expectedMessage, linkResponse.Actions.First().DALRequest.LinkObjects.DALResponseData.Errors[0].Description);
-            }
+            var actualValue = subject.GetStatus(expectedValue);
+            
+            Assert.Equal(expectedValue, actualValue);
         }
 
         [Theory]

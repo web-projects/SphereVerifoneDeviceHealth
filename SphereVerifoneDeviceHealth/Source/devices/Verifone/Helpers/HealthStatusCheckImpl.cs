@@ -53,14 +53,15 @@ namespace Devices.Verifone.Helpers
         public (string Timestamp, int VipaResponse) TerminalDateTime { get; set; }
         public (string Timestamp, int VipaResponse) Reboot24Hour { get; set; }
         public (KernelConfigurationObject kernelConfigurationObject, int VipaResponse) EmvKernelInformation { get; set; }
+        public string VOSVersions { get; set; }
         #endregion --- attributes ---
 
         private void DeviceLogger(string message) =>
-            Logger.info($"{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Manufacturer}[{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Port}]: {{{message}}}");
+            Logger.info($"{DeviceInformation.Manufacturer}[{DeviceInformation.Model}, {DeviceInformation.SerialNumber}, {DeviceInformation.ComPort}]: {{{message}}}");
 
         private void DeviceErrorLogger(string message) =>
-            Logger.error($"{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Manufacturer}[{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}, {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Port}]: {{{message}}}");
-
+            Logger.error($"[{Utils.FormatStringAsRequired($"{DeviceInformation.Manufacturer}, {DeviceInformation.Model}, {DeviceInformation.SerialNumber}, {DeviceInformation.ComPort}", Utils.DeviceLogKeyValueLength, Utils.DeviceLogKeyValuePaddingCharacter)}]: {{{message}}}");
+        
         public bool ProcessHealthFromExectutionMode() => AppExecConfig.ExecutionMode switch
         {
             Modes.Execution.Console => ConsoleModeOutput(),
@@ -172,7 +173,8 @@ namespace Devices.Verifone.Helpers
                 bool activeSigningMethodIsSphere = SigningMethodActive.Equals("SPHERE");
                 bool activeSigningMethodIsVerifone = SigningMethodActive.Equals("VERIFONE");
                 //                  123456789A123456789B123456789C
-                Console.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: FIRMARE VERSION ")}: {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.FirmwareVersion}");
+                Console.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: FIRMARE VERSION ")}: {DeviceInformation.FirmwareVersion}");
+                Console.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: VOS VERSIONS ")}: {VOSVersions}"); 
                 Console.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{ConfigProd.securityConfigurationObject.KeySlotNumber ?? " ?? "} KEY KSN ")}: {ConfigProd.securityConfigurationObject.SRedCardKSN ?? "[ *** NOT FOUND *** ]"}");
 
                 if (ConfigProd.securityConfigurationObject.SRedCardKSN != null)
@@ -195,11 +197,11 @@ namespace Devices.Verifone.Helpers
 
             if (DeviceSectionConfig.Verifone.ADEKeySetId == VerifoneSettingsSecurityConfiguration.ADEHostIdProd)
             {
-                Console.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE PROD KEY STATUS ")}: {(prodADEKeyFound ? "VALID" : "*** INVALID ***")}");
+                Console.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE PROD KEY STATUS ")}: {(prodADEKeyFound ? "VALID" : "[ *** FAILED VALIDATION *** ]")}");
             }
             else if (DeviceSectionConfig.Verifone.ADEKeySetId == VerifoneSettingsSecurityConfiguration.ADEHostIdTest)
             {
-                Console.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE TEST KEY STATUS ")}: {(testADEKeyFound ? "VALID" : "*** INVALID ***")}");
+                Console.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE TEST KEY STATUS ")}: {(testADEKeyFound ? "VALID" : "[ *** FAILED VALIDATION *** ]")}");
             }
             else
             {
@@ -270,7 +272,7 @@ namespace Devices.Verifone.Helpers
                         EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation));
                 }
 
-                bool IsEngageDevice = BinaryStatusObject.ENGAGE_DEVICES.Any(x => x.Contains(DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model.Substring(0, 4)));
+                bool IsEngageDevice = BinaryStatusObject.ENGAGE_DEVICES.Any(x => x.Contains(DeviceInformation.Model.Substring(0, 4)));
 
                 if (EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET).Equals(IsEngageDevice ? BinaryStatusObject.ENGAGE_EMV_KERNEL_CHECKSUM : BinaryStatusObject.UX301_EMV_KERNEL_CHECKSUM,
                     StringComparison.CurrentCultureIgnoreCase))
@@ -281,7 +283,7 @@ namespace Devices.Verifone.Helpers
                 else
                 {
                     EmvKernelInformation.kernelConfigurationObject.KernelIsValid = false;
-                    Console.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: EMV KERNEL STATUS ")}: INVALID");
+                    Console.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: EMV KERNEL STATUS ")}: [ *** FAILED VALIDATION *** ]");
                 }
             }
             else
@@ -327,8 +329,8 @@ namespace Devices.Verifone.Helpers
 
         private StringBuilder DisplayHealthStatus(bool configIsValid)
         {
-            StringBuilder healthStatus = new StringBuilder($"{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}");
-            healthStatus.Append($"_{DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.FirmwareVersion.Replace(".", "")}");
+            StringBuilder healthStatus = new StringBuilder($"{DeviceInformation.SerialNumber}");
+            healthStatus.Append($"_{DeviceInformation.FirmwareVersion.Replace(".", "")}");
             healthStatus.Append($"_{(configIsValid ? "PASS" : "FAIL")}");
             healthStatus.Append($"_{Utils.GetTimeStampToSeconds()}");
 
@@ -360,7 +362,7 @@ namespace Devices.Verifone.Helpers
         {
             try
             {
-                bool IsEngageDevice = BinaryStatusObject.ENGAGE_DEVICES.Any(x => x.Contains(DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model.Substring(0, 4)));
+                bool IsEngageDevice = BinaryStatusObject.ENGAGE_DEVICES.Any(x => x.Contains(DeviceInformation.Model.Substring(0, 4)));
 
                 DeviceHealthStatus deviceHealthStatus = new DeviceHealthStatus();
 
@@ -511,19 +513,27 @@ namespace Devices.Verifone.Helpers
 
                         //                       123456789A123456789B123456789C
                         streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: HEALTH TOOL VERSION ")}: {Assembly.GetEntryAssembly().GetName().Version}");
-                        int modelNameLength = DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model.Length;
-                        string deviceIdentifier = $"DEVICE: {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model.Substring(0, Math.Min(modelNameLength, 5))} SERIAL NUMBER ";
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired(deviceIdentifier)}: {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.SerialNumber}");
                         streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: VALIDATOR TIMESTAMP ")}: {fileName.Split('_').GetValue(3).ToString().TrimEnd(new char[] { '.', 't', 'x', 't' })}");
 
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: FIRMARE VERSION ")}: {DeviceIdentifier.deviceInfoObject.LinkDeviceResponse.FirmwareVersion}");
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{ConfigProd.securityConfigurationObject.KeySlotNumber ?? " ?? "} KEY KSN ")}: {ConfigProd.securityConfigurationObject.SRedCardKSN ?? "[ *** NOT FOUND *** ]"}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: MANUFACTURER ")}: {DeviceInformation.Manufacturer}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: MODEL ")}: {DeviceInformation.Model}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: SERIAL NUMBER")}: {DeviceInformation.SerialNumber}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: FIRMARE VERSION ")}: {DeviceInformation.FirmwareVersion}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: VOS VERSIONS ")}: {VOSVersions}");
+
+                        string prodKeySlotNumberFormatted = string.Format("{0:X2}", VerifoneSettingsSecurityConfiguration.ADEHostIdProd);
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{prodKeySlotNumberFormatted} KEY KSN ")}: {ConfigProd.securityConfigurationObject.SRedCardKSN ?? "[ *** NOT FOUND *** ]"}");
 
                         if (ConfigProd.securityConfigurationObject.SRedCardKSN != null)
                         {
                             prodADEKeyFound = true;
-                            streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{ConfigProd.securityConfigurationObject.KeySlotNumber ?? "??"} BDK KEY_ID ")}: {ConfigProd.securityConfigurationObject.SRedCardKSN?.Substring(4, 6)}");
-                            streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{ConfigProd.securityConfigurationObject.KeySlotNumber ?? "??"} BDK TRSM ID ")}: {ConfigProd.securityConfigurationObject.SRedCardKSN?.Substring(10, 5)}");
+                            streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{prodKeySlotNumberFormatted} BDK KEY_ID ")}: {ConfigProd.securityConfigurationObject.SRedCardKSN?.Substring(4, 6)}");
+                            streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{prodKeySlotNumberFormatted} BDK TRSM ID ")}: {ConfigProd.securityConfigurationObject.SRedCardKSN?.Substring(10, 5)}");
+                        }
+                        else
+                        {
+                            streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{prodKeySlotNumberFormatted} BDK KEY_ID ")}: [ *** NOT FOUND *** ]");
+                            streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{prodKeySlotNumberFormatted} BDK TRSM ID ")}: [ *** NOT FOUND *** ]");
                         }
                     }
                     else
@@ -532,22 +542,29 @@ namespace Devices.Verifone.Helpers
                     }
 
                     // ADE TEST KEY
+                    string testKeySlotNumberFormatted = string.Format("{0:X2}", VerifoneSettingsSecurityConfiguration.ADEHostIdTest);
                     if (ConfigTest.VipaResponse == (int)VipaSW1SW2Codes.Success)
                     {
                         testADEKeyFound = true;
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{ConfigTest.securityConfigurationObject.KeySlotNumber ?? "??"} KEY KSN ")}: {ConfigTest.securityConfigurationObject.SRedCardKSN ?? "[ *** NOT FOUND *** ]"}");
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{ConfigTest.securityConfigurationObject.KeySlotNumber ?? "??"} BDK KEY_ID ")}: {ConfigTest.securityConfigurationObject.SRedCardKSN?.Substring(4, 6) ?? "[ *** NOT FOUND *** ]"}");
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{ConfigTest.securityConfigurationObject.KeySlotNumber ?? "??"} BDK TRSM ID ")}: {ConfigTest.securityConfigurationObject.SRedCardKSN?.Substring(10, 5) ?? "[ *** NOT FOUND *** ]"}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{testKeySlotNumberFormatted} KEY KSN ")}: {ConfigTest.securityConfigurationObject.SRedCardKSN ?? "[ *** NOT FOUND *** ]"}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{testKeySlotNumberFormatted} BDK KEY_ID ")}: {ConfigTest.securityConfigurationObject.SRedCardKSN?.Substring(4, 6) ?? "[ *** NOT FOUND *** ]"}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{testKeySlotNumberFormatted} BDK TRSM ID ")}: {ConfigTest.securityConfigurationObject.SRedCardKSN?.Substring(10, 5) ?? "[ *** NOT FOUND *** ]"}");
+                    }
+                    else
+                    {
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{testKeySlotNumberFormatted} KEY KSN ")}: [ *** NOT FOUND *** ]");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{testKeySlotNumberFormatted} BDK KEY_ID ")}: [ *** NOT FOUND *** ]");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired($"DEVICE: ADE-{testKeySlotNumberFormatted} BDK TRSM ID ")}: [ *** NOT FOUND *** ]");
                     }
                     streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: ADE PROD KEY SLOT ")}: 0x0{DeviceSectionConfig.Verifone.ADEKeySetId}");
 
                     if (DeviceSectionConfig.Verifone.ADEKeySetId == VerifoneSettingsSecurityConfiguration.ADEHostIdProd)
                     {
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: ADE PROD KEY STATUS ")}: {(prodADEKeyFound ? "VALID" : "*** INVALID ***")}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: ADE PROD KEY STATUS ")}: {(prodADEKeyFound ? "VALID" : "[ *** FAILED VALIDATION *** ]")}");
                     }
                     else if (DeviceSectionConfig.Verifone.ADEKeySetId == VerifoneSettingsSecurityConfiguration.ADEHostIdTest)
                     {
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: ADE TEST KEY STATUS ")}: {(testADEKeyFound ? "VALID" : "*** INVALID ***")}");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: ADE TEST KEY STATUS ")}: {(testADEKeyFound ? "VALID" : "[ *** FAILED VALIDATION *** ]")}");
                     }
                     else
                     {
@@ -584,9 +601,13 @@ namespace Devices.Verifone.Helpers
                         }
                     }
 
-                    if (!deviceHealthStatus.TerminalTimeStampIsValid)
+                    if (deviceHealthStatus.TerminalTimeStampIsValid)
                     {
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: TERMINAL DATETIME ")}: [ *** FAILED VALIDATION *** ]");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: DATETIME VALIDATION ")}: VALID");
+                    }
+                    else
+                    {
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: DATETIME VALIDATION ")}: [ *** FAILED VALIDATION *** ]");
                     }
 
                     // VALIDATION STEP 3: TERMINAL 24 HOUR REBOOT
@@ -611,9 +632,13 @@ namespace Devices.Verifone.Helpers
                         }
                     }
 
-                    if (!deviceHealthStatus.Terminal24HoureRebootIsValid)
+                    if (deviceHealthStatus.Terminal24HoureRebootIsValid)
                     {
-                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: 24 HOUR REBOOT ")}: [ *** FAILED VALIDATION *** ]");
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: 24 HOUR REBOOT STATUS")}: VALID");
+                    }
+                    else
+                    {
+                        streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: 24 HOUR REBOOT STATUS")}: [ *** FAILED VALIDATION *** ]");
                     }
 
                     // VALIDATION STEP 4: EMV KERNEL CHECKSUM
@@ -640,7 +665,7 @@ namespace Devices.Verifone.Helpers
                         }
                         else
                         {
-                            streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: EMV KERNEL STATUS ")}: INVALID");
+                            streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: EMV KERNEL STATUS ")}: [ *** FAILED VALIDATION *** ]");
                         }
                     }
                     else
