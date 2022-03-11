@@ -20,6 +20,8 @@ namespace Devices.Verifone.VIPA.Interfaces
 
         void ConnectionConfiguration(SerialDeviceConfig serialConfig, DeviceEventHandler deviceEventHandler, DeviceLogHandler deviceLogHandler);
 
+        int CloseContactlessReader(bool forceClose = false);
+
         void ResponseCodeHandler(List<TLV> tags, int responseCode, bool cancelled = false);
 
         bool DisplayMessage(VIPADisplayMessageValue displayMessageValue = VIPADisplayMessageValue.Idle, bool enableBacklight = false, string customMessage = "");
@@ -83,6 +85,5 @@ namespace Devices.Verifone.VIPA.Interfaces
         string GetDeviceHealthTimeZone(string deviceSerialNumber);
 
         (LinkDALRequestIPA5Object linkActionRequestIPA5Object, int VipaResponse) ProcessManualPayment(bool requestCVV);
-        
     }
 }

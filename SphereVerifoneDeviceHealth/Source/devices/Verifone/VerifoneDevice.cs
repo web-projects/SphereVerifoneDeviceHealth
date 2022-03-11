@@ -372,6 +372,7 @@ namespace Devices.Verifone
             //Console.WriteLine($"DEVICE[{DeviceInformation.ComPort}]: SET TO IDLE.");
             if (VipaDevice != null)
             {
+                VipaDevice.CloseContactlessReader(true);
                 VipaDevice.DisplayMessage(VIPAImpl.VIPADisplayMessageValue.Idle);
             }
         }
@@ -461,6 +462,8 @@ namespace Devices.Verifone
                 }
             }
 
+            DeviceSetIdle();
+
             return linkRequest;
         }
 
@@ -520,6 +523,8 @@ namespace Devices.Verifone
                     }
                 }
             }
+
+            DeviceSetIdle();
 
             return linkRequest;
         }
@@ -1159,6 +1164,8 @@ namespace Devices.Verifone
                 }
             }
 
+            DeviceSetIdle();
+
             return linkRequest;
         }
 
@@ -1478,7 +1485,9 @@ namespace Devices.Verifone
                             }
 
                             // EMV CONFIG BUNDLE
-                            Console.WriteLine($"DEVICE: {VipaVersions.DALCdbData.EMVVersion.Signature?.ToUpper() ?? "MISSING"} SIGNED BUNDLE: EMV_VER DATECODE  {VipaVersions.DALCdbData.EMVVersion.DateCode ?? "*** NONE ***"} - BUNDLE VER: [{VipaVersions.DALCdbData.EMVVersion.Version}] - TERMINAL TYPE: [{VipaVersions.DALCdbData.EMVVersion.TerminalType}] ");
+                            Console.WriteLine($"DEVICE: {VipaVersions.DALCdbData.EMVVersion.Signature?.ToUpper() ?? "MISSING"} SIGNED BUNDLE: EMV_VER DATECODE  {VipaVersions.DALCdbData.EMVVersion.DateCode ?? "*** NONE ***"} - BUNDLE VER: [{VipaVersions.DALCdbData.EMVVersion.Version}]");
+                            Console.WriteLine($"        APPLICATION: [{VipaVersions.DALCdbData.EMVVersion.Application}] - FRONT END: [{VipaVersions.DALCdbData.EMVVersion.FrontEnd}] - TERMINAL TYPE: [{VipaVersions.DALCdbData.EMVVersion.TerminalType}]");
+
                             if (!string.IsNullOrEmpty(VipaVersions.DALCdbData.EMVVersion?.Version) &&
                                 !DeviceInformation.FirmwareVersion.Equals(VipaVersions.DALCdbData.EMVVersion?.Version?.Replace("_", ".")))
                             {
@@ -1494,6 +1503,8 @@ namespace Devices.Verifone
                     }
                 }
             }
+
+            DeviceSetIdle();
 
             return linkActionRequest;
         }
@@ -1613,6 +1624,8 @@ namespace Devices.Verifone
                     }
                 }
             };
+
+            DeviceSetIdle();
 
             return linkRequest;
         }
