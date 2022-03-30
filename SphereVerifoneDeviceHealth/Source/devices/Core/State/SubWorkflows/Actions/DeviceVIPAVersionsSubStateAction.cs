@@ -1,6 +1,5 @@
 ﻿using Common.XO.Device;
 using Common.XO.Requests;
-using Devices.Common.Helpers;
 using Devices.Common.Interfaces;
 using Devices.Core.Cancellation;
 using Devices.Core.Helpers;
@@ -42,6 +41,8 @@ namespace Devices.Core.State.SubWorkflows.Actions
                     ICardDevice cardDevice = FindTargetDevice(deviceIdentifier);
                     if (cardDevice != null)
                     {
+                        Console.WriteLine("");
+
                         var timeoutPolicy = await cancellationBroker.ExecuteWithTimeoutAsync<LinkActionRequest>(
                             _ => cardDevice.VIPAVersions(linkActionRequest),
                             DeviceConstants.CardCaptureTimeout,

@@ -38,6 +38,8 @@ namespace Devices.Core.State.SubWorkflows.Actions
 
                 foreach (var device in Controller.TargetDevices)
                 {
+                    Console.WriteLine("");
+
                     devicesRequest.Add(JsonConvert.DeserializeObject<LinkRequest>(JsonConvert.SerializeObject(linkRequest)));
 
                     var timeoutPolicy = await cancellationBroker.ExecuteWithTimeoutAsync<LinkRequest>(

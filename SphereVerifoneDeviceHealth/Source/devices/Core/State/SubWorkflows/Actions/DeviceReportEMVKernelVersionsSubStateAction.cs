@@ -39,6 +39,8 @@ namespace Devices.Core.State.SubWorkflows.Actions
                 ICardDevice cardDevice = FindTargetDevice(deviceIdentifier);
                 if (cardDevice != null)
                 {
+                    Console.WriteLine("");
+
                     var timeoutPolicy = await cancellationBroker.ExecuteWithTimeoutAsync<LinkRequest>(
                     _ => cardDevice.ReportEMVKernelVersions(linkRequest, _),
                         DeviceConstants.CardCaptureTimeout,

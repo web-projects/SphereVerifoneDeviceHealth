@@ -1,4 +1,5 @@
-﻿using Common.Constants;
+﻿using AppCommon.Helpers.EMVKernel;
+using Common.Constants;
 using Common.Execution;
 using Common.Helpers;
 using Common.LoggerManager;
@@ -349,8 +350,8 @@ namespace Devices.Verifone
                         ProductIdentification = device.ProductID,
                         SerialNumber = device.SerialNumber,
                         VendorIdentifier = Connection.DeviceDiscovery.VID,
-                        VOSVersions = new AppCommon.Helpers.EMVKernel.VOSVersions(),
-                        EMVKernelConfiguration = new AppCommon.Helpers.EMVKernel.EMVKernelConfiguration()
+                        VOSVersions = new VOSVersions(),
+                        EMVKernelConfiguration = new EMVKernelConfiguration()
                     });
 
                     System.Diagnostics.Debug.WriteLine($"device: ON PORT={device.ComPort} - VERIFONE MODEL={deviceInformation[deviceInformation.Count - 1].ProductIdentification}, " +
@@ -494,12 +495,13 @@ namespace Devices.Verifone
 
                             if (kernelInformation.Length == 4)
                             {
-                                Console.WriteLine(string.Format("VIPA KERNEL CHECKSUM={0}-{1}-{2}-{3}",
-                                   kernelInformation[0], kernelInformation[1], kernelInformation[2], kernelInformation[3]));
+                                string emvConfig = EMVKernelConfiguration.VerifoneKernelConfiguration.Where(e => e.Value.checksum.Equals(kernelInformation[3])).Select(e => e.Key).FirstOrDefault();
+                                Console.WriteLine(string.Format("VIPA KERNEL CHECKSUM-[{0}] : {1}-{2}-{3}-{4}",
+                                   emvConfig, kernelInformation[0], kernelInformation[1], kernelInformation[2], kernelInformation[3]));
                             }
                             else
                             {
-                                Console.WriteLine(string.Format("VIPA KERNEL CHECKSUM={0}",
+                                Console.WriteLine(string.Format("VIPA KERNEL CHECKSUM_={0}",
                                     response.kernelConfigurationObject.ApplicationKernelInformation));
                             }
 
@@ -635,7 +637,7 @@ namespace Devices.Verifone
                             Reboot24Hour = reboot24Hour,
                             EmvKernelInformation = emvKernelInformation,
                             VOSVersions = $"{DeviceInformation.VOSVersions.ADKVault}|{DeviceInformation.VOSVersions.ADKAppManager}|{DeviceInformation.VOSVersions.ADKOpenProtocol}|{DeviceInformation.VOSVersions.ADKSRED}"
-                    };
+                        };
                         healthStatusCheckImpl.DeviceEventOccured += DeviceEventOccured;
 
                         bool success = healthStatusCheckImpl.ProcessHealthFromExectutionMode();
