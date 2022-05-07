@@ -704,16 +704,13 @@ namespace Devices.Verifone
                     {
                         int vipaResponse = (int)VipaSW1SW2Codes.Failure;
 
-                        bool activePackageIsEpic = ConfigurationPackageActive.Equals("EPIC");
-                        bool activePackageIsNJT = ConfigurationPackageActive.Equals("NJT");
                         bool activeSigningMethodIsSphere = SigningMethodActive.Equals("SPHERE");
                         bool activeSigningMethodIsVerifone = SigningMethodActive.Equals("VERIFONE");
 
-                        //TODO: REFACTOR
-                        if (activePackageIsEpic || activePackageIsNJT)
+                        if (ConfigurationPackageActive.Equals("EPIC") || ConfigurationPackageActive.Equals("TSYS") || ConfigurationPackageActive.Equals("NJT"))
                         {
                             vipaResponse = VipaDevice.LockDeviceConfiguration0(deviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model,
-                                activePackageIsEpic, activeSigningMethodIsSphere);
+                                ConfigurationPackageActive, activeSigningMethodIsSphere);
                         }
                         // TTQ MSD ONLY
                         //else if (activePackageIsNJT)
@@ -832,20 +829,17 @@ namespace Devices.Verifone
 
                     if (deviceIdentifier.VipaResponse == (int)VipaSW1SW2Codes.Success)
                     {
-                        bool activePackageIsEpic = ConfigurationPackageActive.Equals("EPIC");
-                        bool activePackageIsNJT = ConfigurationPackageActive.Equals("NJT");
                         bool activeSigningMethodIsSphere = SigningMethodActive.Equals("SPHERE");
                         bool activeSigningMethodIsVerifone = SigningMethodActive.Equals("VERIFONE");
 
                         int vipaResponse = VipaDevice.LockDeviceConfiguration0(deviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model,
-                            activePackageIsEpic, activeSigningMethodIsSphere);
+                            ConfigurationPackageActive, activeSigningMethodIsSphere);
 
                         if (vipaResponse == (int)VipaSW1SW2Codes.Success)
                         {
                             Console.WriteLine($"DEVICE: CONFIGURATION LOCKED SUCCESSFULLY");
 
                             Console.Write("DEVICE: REQUESTING DEVICE REBOOT...");
-
 
                             try
                             {
@@ -897,13 +891,11 @@ namespace Devices.Verifone
 
                     if (deviceIdentifier.VipaResponse == (int)VipaSW1SW2Codes.Success)
                     {
-                        bool activePackageIsEpic = ConfigurationPackageActive.Equals("EPIC");
-                        bool activePackageIsNJT = ConfigurationPackageActive.Equals("NJT");
                         bool activeSigningMethodIsSphere = SigningMethodActive.Equals("SPHERE");
                         bool activeSigningMethodIsVerifone = SigningMethodActive.Equals("VERIFONE");
 
                         int vipaResponse = VipaDevice.LockDeviceConfiguration8(deviceIdentifier.deviceInfoObject.LinkDeviceResponse.Model,
-                            activePackageIsEpic, activeSigningMethodIsSphere);
+                            ConfigurationPackageActive, activeSigningMethodIsSphere);
 
                         if (vipaResponse == (int)VipaSW1SW2Codes.Success)
                         {

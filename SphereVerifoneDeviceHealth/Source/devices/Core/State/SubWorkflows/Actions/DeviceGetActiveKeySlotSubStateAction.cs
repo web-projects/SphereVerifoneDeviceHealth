@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Common.XO.Requests;
+using Common.XO.Device;
 
 namespace Devices.Core.State.SubWorkflows.Actions
 {
@@ -39,6 +40,15 @@ namespace Devices.Core.State.SubWorkflows.Actions
                 foreach (var device in Controller.TargetDevices)
                 {
                     Console.WriteLine("");
+
+                    // Update device information
+                    linkRequest.Actions[0].DeviceRequest.DeviceIdentifier
+                        = new LinkDeviceIdentifier()
+                        {
+                            Manufacturer = device.DeviceInformation?.Manufacturer,
+                            Model = device.DeviceInformation?.Model,
+                            SerialNumber = device.DeviceInformation?.SerialNumber
+                        };
 
                     devicesRequest.Add(JsonConvert.DeserializeObject<LinkRequest>(JsonConvert.SerializeObject(linkRequest)));
 

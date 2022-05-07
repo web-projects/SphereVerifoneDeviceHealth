@@ -1008,22 +1008,37 @@ namespace Devices.Verifone.VIPA
             return fileStatus.VipaResponse;
         }
 
+        private bool BundleMatches(string activeConfiguration, string key) => activeConfiguration switch
+        {
+            "EPIC" => key.Contains("EPIC"),
+            "TSYS" => key.Contains("TSYS"),
+            "NJT"  => key.Contains("NJT"),
+            _ => throw new Exception($"Invalid active configuration '{activeConfiguration}'.")
+        };
+
         private int LockDeviceConfiguration(Dictionary<string, (string configType, string[] deviceTypes, string fileName, string fileHash, int fileSize)> configurationBundle,
-            bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere, bool IsUXDevice)
+            string activeConfiguration, bool activeSigningMethodIsSphere, bool IsUXDevice)
         {
             (BinaryStatusObject binaryStatusObject, int VipaResponse) fileStatus = (null, (int)VipaSW1SW2Codes.Failure);
 
             foreach (var configFile in configurationBundle)
             {
-                bool configurationBundleMatches = activeConfigurationIsEpic ? configFile.Key.Contains("EPIC") : configFile.Key.Contains("NJT");
+                bool configurationBundleMatches = BundleMatches(activeConfiguration, configFile.Key);
                 if (DeviceInformation.FirmwareVersion.StartsWith(configFile.Value.configType, StringComparison.OrdinalIgnoreCase) && configurationBundleMatches)
                 {
                     // validate signing method
                     if (activeSigningMethodIsSphere)
                     {
-                        if (activeConfigurationIsEpic)
+                        if (activeConfiguration.Equals("EPIC"))
                         {
                             if (!configFile.Value.fileName.StartsWith("sphere.sphere"))
+                            {
+                                continue;
+                            }
+                        }
+                        else if (activeConfiguration.Equals("TSYS"))
+                        {
+                            if (!configFile.Value.fileName.StartsWith("sphere.sphere.emv.attended.TSYS"))
                             {
                                 continue;
                             }
@@ -1038,9 +1053,16 @@ namespace Devices.Verifone.VIPA
                     }
                     else
                     {
-                        if (activeConfigurationIsEpic)
+                        if (activeConfiguration.Equals("EPIC"))
                         {
                             if (!configFile.Value.fileName.StartsWith("verifone.sphere"))
+                            {
+                                continue;
+                            }
+                        }
+                        else if (activeConfiguration.Equals("TSYS"))
+                        {
+                            if (!configFile.Value.fileName.StartsWith("sphere.sphere.emv.attended.TSYS"))
                             {
                                 continue;
                             }
@@ -1113,15 +1135,15 @@ namespace Devices.Verifone.VIPA
             return fileStatus.VipaResponse;
         }
 
-        public int LockDeviceConfiguration0(string deviceModel, bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere)
+        public int LockDeviceConfiguration0(string deviceModel, string activeConfiguration, bool activeSigningMethodIsSphere)
         {
-            return LockDeviceConfiguration(BinaryStatusObject.configBundlesSlot0, activeConfigurationIsEpic, activeSigningMethodIsSphere,
+            return LockDeviceConfiguration(BinaryStatusObject.configBundlesSlot0, activeConfiguration, activeSigningMethodIsSphere,
                 BinaryStatusObject.UX_DEVICES.Any(x => x.Contains(deviceModel.Substring(0, 4))));
         }
 
-        public int LockDeviceConfiguration8(string deviceModel, bool activeConfigurationIsEpic, bool activeSigningMethodIsSphere)
+        public int LockDeviceConfiguration8(string deviceModel, string activeConfiguration, bool activeSigningMethodIsSphere)
         {
-            return LockDeviceConfiguration(BinaryStatusObject.configBundlesSlot8, activeConfigurationIsEpic, activeSigningMethodIsSphere,
+            return LockDeviceConfiguration(BinaryStatusObject.configBundlesSlot8, activeConfiguration, activeSigningMethodIsSphere,
                 BinaryStatusObject.UX_DEVICES.Any(x => x.Contains(deviceModel.Substring(0, 4))));
         }
 
