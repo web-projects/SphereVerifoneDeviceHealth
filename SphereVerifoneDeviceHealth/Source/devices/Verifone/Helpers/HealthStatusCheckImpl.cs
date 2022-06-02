@@ -273,9 +273,10 @@ namespace Devices.Verifone.Helpers
                 }
 
                 bool IsEngageDevice = BinaryStatusObject.ENGAGE_DEVICES.Any(x => x.Contains(DeviceInformation.Model.Substring(0, 4)));
+                string emvKernelCheckSum = EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET);
 
-                if (EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET).Equals(IsEngageDevice ? BinaryStatusObject.ENGAGE_EMV_KERNEL_CHECKSUM : BinaryStatusObject.UX301_EMV_KERNEL_CHECKSUM,
-                    StringComparison.CurrentCultureIgnoreCase))
+                if (IsEngageDevice ? AttendedKernelIsValid(VipaVersions.DALCdbData.EMVVersion.TerminalType, emvKernelCheckSum) :
+                                      UnattendedKernelIsValid(VipaVersions.DALCdbData.EMVVersion.TerminalType, emvKernelCheckSum))
                 {
                     EmvKernelInformation.kernelConfigurationObject.KernelIsValid = true;
                     Console.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: EMV KERNEL STATUS ")}: VALID");
@@ -479,8 +480,9 @@ namespace Devices.Verifone.Helpers
                 // VALIDATION STEP 5: EMV Kernel Validation
                 if (EmvKernelInformation.VipaResponse == (int)VipaSW1SW2Codes.Success)
                 {
-                    EmvKernelInformation.kernelConfigurationObject.KernelIsValid = EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET).Equals(IsEngageDevice ? BinaryStatusObject.ENGAGE_EMV_KERNEL_CHECKSUM : BinaryStatusObject.UX301_EMV_KERNEL_CHECKSUM,
-                        StringComparison.CurrentCultureIgnoreCase);
+                    string emvKernelCheckSum = EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET);
+                    EmvKernelInformation.kernelConfigurationObject.KernelIsValid = IsEngageDevice ? AttendedKernelIsValid(VipaVersions.DALCdbData.EMVVersion.TerminalType, emvKernelCheckSum) :
+                                         UnattendedKernelIsValid(VipaVersions.DALCdbData.EMVVersion.TerminalType, emvKernelCheckSum);
                 }
 
                 deviceHealthStatus.EmvKernelConfigurationIsValid = EmvKernelInformation.kernelConfigurationObject?.KernelIsValid ?? false;
@@ -658,10 +660,13 @@ namespace Devices.Verifone.Helpers
                             streamWriter.WriteLine($"{Utils.FormatStringAsRequired("VIPA EMV KERNEL CHECKSUM ")}: {EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation}");
                         }
 
-                        if (EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET).Equals(IsEngageDevice ? BinaryStatusObject.ENGAGE_EMV_KERNEL_CHECKSUM : BinaryStatusObject.UX301_EMV_KERNEL_CHECKSUM,
-                            StringComparison.CurrentCultureIgnoreCase))
+                        string emvKernelCheckSum = EmvKernelInformation.kernelConfigurationObject.ApplicationKernelInformation.Substring(BinaryStatusObject.EMV_KERNEL_CHECKSUM_OFFSET);
+
+                        if (IsEngageDevice ? AttendedKernelIsValid(VipaVersions.DALCdbData.EMVVersion.TerminalType, emvKernelCheckSum) :
+                                             UnattendedKernelIsValid(VipaVersions.DALCdbData.EMVVersion.TerminalType, emvKernelCheckSum))
                         {
                             streamWriter.WriteLine($"{Utils.FormatStringAsRequired("DEVICE: EMV KERNEL STATUS ")}: VALID");
+                            configIsValid = true;
                         }
                         else
                         {
@@ -737,6 +742,19 @@ namespace Devices.Verifone.Helpers
 
             return true;
         }
+
+        private bool AttendedKernelIsValid(string terminaltype, string emvKernelCheckSum) => terminaltype switch
+        {
+            "attended" => emvKernelCheckSum.Equals(BinaryStatusObject.ENGAGE_EMV_KERNEL_CHECKSUM),
+            "attendednopin" => emvKernelCheckSum.Equals(BinaryStatusObject.ENGAGE_EMV_KERNEL_NOPIN_CHECKSUM),
+            _ => false
+        };
+
+        private bool UnattendedKernelIsValid(string terminaltype, string emvKernelCheckSum) => terminaltype switch
+        {
+            "attended" => emvKernelCheckSum.Equals(BinaryStatusObject.UX301_EMV_KERNEL_CHECKSUM),
+            _ => false
+        };
 
         #endregion --- device health validation and reporting ---
     }

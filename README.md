@@ -34,3 +34,4 @@ This an application to query a Verifone device for its health status.
 * 20211214 - GA_RELEASE_1_00_0_61_000
 * 20211220 - GA_RELEASE_1_00_0_62_000
 * 20220223 - GA_RELEASE_1_00_0_64_001
+* 20220602 - GA_RELEASE_1_00_0_66_001

@@ -137,6 +137,8 @@ namespace Devices.Verifone.VIPA.Helpers
         public const string ENGAGE_EMV_KERNEL_CHECKSUM = "96369E1F";
         // LOA: CONFIG=8C, TERMINAL=25 (UX301 DEVICES)
         public const string UX301_EMV_KERNEL_CHECKSUM = "D196BA9D";
+        // LOA: CONFIG=15C, TERMINAL=22 (ENGAGE DEVICES)
+        public const string ENGAGE_EMV_KERNEL_NOPIN_CHECKSUM = "8798CC22";
 
         // GENERIC
         public const string CARDAPPCFG = "cardapp.cfg";
@@ -1220,6 +1222,9 @@ namespace Devices.Verifone.VIPA.Helpers
         public const string SPHERE_VIPA_VER_IDLE_HASH_P400_250 = "D6843CE7A6871CE2A559C0728DB107DC";
         public const int SPHERE_VIPA_VER_IDLE_FILESIZE_P400_250 = 0x00000025;
 
+        public const string SPHERE_VIPA_VER_IDLE_HASH_UX301_NJT = "2D76E313460D49176D693F72C21661AC";
+        public const int SPHERE_VIPA_VER_IDLE_FILESIZE_UX301_NJT = 0x0000A4BB;
+
         // VIPA 6.8.2.19 
         public const string SPHERE_VIPA_VER_IDLE_HASH_M400_19 = "BE6BEC9F77B42F7CD6A2CF19B6C2FA38";
         public const int SPHERE_VIPA_VER_IDLE_FILESIZE_M400_19 = 0x00000025;
@@ -1326,6 +1331,7 @@ namespace Devices.Verifone.VIPA.Helpers
                 ["SPHERE_IP2_250_24"] = (VIPA_BUNDLES_24, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P200 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P200_250, SPHERE_VIPA_VER_IDLE_FILESIZE_P200_250),
                 ["SPHERE_IP4_199_24"] = (VIPA_BUNDLES_24, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_P400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_P400_199, SPHERE_VIPA_VER_IDLE_FILESIZE_P400_199),
                 ["SPHERE_IP4_250_24"] = (VIPA_BUNDLES_24, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_M400 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_M400_250, SPHERE_VIPA_VER_IDLE_FILESIZE_M400_250),
+                ["SPHERE_NJT_199_24"] = (VIPA_BUNDLES_24, DeviceConfigurationTypes.IdleConfiguration, new string[] { BinaryStatusObject.DEVICE_UX301 }, VIPA_VER_IDLE, SPHERE_VIPA_VER_IDLE_HASH_UX301_NJT, SPHERE_VIPA_VER_IDLE_FILESIZE_UX301_NJT),
             };
 
         #endregion --- BASE_BUNDLE packages SPHERE-SIGNED ---
